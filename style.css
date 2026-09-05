@@ -2656,3 +2656,132 @@ button {
             bottom right;
     }
 }
+/* =========================================
+   ST ORAN'S PEER HUB - REPAIR PATCH
+   ========================================= */
+
+/* Make sure the app actually fills the screen */
+#app {
+    min-height: 100vh;
+}
+
+/* Navigation buttons */
+.sidebar button,
+.sidebar .nav-btn,
+nav button {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 10px 14px;
+    margin: 3px 0;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--cream);
+    font-family: inherit;
+    font-size: 14px;
+    text-align: left;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.sidebar button:hover,
+.sidebar .nav-btn:hover,
+nav button:hover {
+    background: rgba(183, 154, 98, 0.14);
+    color: var(--gold);
+}
+
+.sidebar button.active,
+.sidebar .nav-btn.active,
+nav button.active {
+    background: var(--burgundy);
+    color: var(--white);
+}
+
+/* Page visibility */
+.page {
+    display: none;
+}
+
+.page.active {
+    display: block;
+}
+
+/* If the page uses an ID instead of .page */
+#homePage {
+    display: block;
+}
+
+/* Main content */
+.main-content,
+.main,
+.content,
+.app-content {
+    min-height: calc(100vh - 65px);
+}
+
+/* Gold details */
+h1,
+h2,
+h3 {
+    color: var(--green);
+}
+
+.section-title,
+.card-title {
+    color: var(--green);
+}
+
+.gold,
+.gold-text {
+    color: var(--gold);
+}
+
+/* Calendar day boxes */
+.calendar-day,
+.calendar-cell,
+.day-box {
+    min-height: 70px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--white);
+    padding: 8px;
+}
+
+.calendar-day.today,
+.calendar-cell.today,
+.day-box.today {
+    border: 2px solid var(--burgundy);
+}
+
+/* Focus/study area */
+.focus-section,
+.study-focus,
+.study-card {
+    background:
+        radial-gradient(circle at 15px 15px, rgba(183,154,98,.18) 2px, transparent 2.5px),
+        radial-gradient(circle at 45px 40px, rgba(183,154,98,.12) 2px, transparent 2.5px),
+        var(--green);
+    background-size: 60px 60px;
+    color: var(--cream);
+    border-radius: 18px;
+}
+
+/* Keep Roro visible */
+#roroBuddy {
+    position: fixed;
+    right: 25px;
+    bottom: 20px;
+    z-index: 9999;
+}
+
+#roroBuddy .roro-dragon {
+    display: block;
+    visibility: visible;
+}
+
+/* Make sure hidden class works ONLY when actually intended */
+.hidden {
+    display: none !important;
+}
