@@ -1,49 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>St Oran's Peer Hub</title>
 
-    <link rel="stylesheet" href="style.css">
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
 
     <link
         href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap"
         rel="stylesheet"
     >
+
 </head>
+
 
 <body>
 
+
 <!-- =====================================================
      LOGIN
-===================================================== -->
+     ===================================================== -->
 
-<div class="login-screen" id="loginScreen">
+<div
+    class="login-screen"
+    id="loginScreen"
+>
 
     <div class="login-card">
 
         <div class="login-logo">
-            <div class="logo-mark">S</div>
+            <div class="logo-mark">
+                S
+            </div>
         </div>
 
-        <p class="eyebrow">ST ORAN'S COLLEGE</p>
+        <p class="eyebrow">
+            ST ORAN'S COLLEGE
+        </p>
 
-        <h1>Welcome back.</h1>
+        <h1>
+            Welcome back.
+        </h1>
 
         <p class="login-subtitle">
             Sign in to your Peer Hub account.
         </p>
 
+
         <form id="loginForm">
 
             <div class="form-group">
 
-                <label>School email</label>
+                <label>
+                    School email
+                </label>
 
                 <input
                     id="email"
@@ -54,9 +82,12 @@
 
             </div>
 
+
             <div class="form-group">
 
-                <label>Password</label>
+                <label>
+                    Password
+                </label>
 
                 <input
                     id="password"
@@ -67,42 +98,79 @@
 
             </div>
 
-            <div id="loginError" class="login-error"></div>
+
+            <div
+                id="loginError"
+                class="login-error"
+            ></div>
+
 
             <div class="login-options">
 
                 <label class="remember">
-                    <input id="rememberMe" type="checkbox">
+
+                    <input
+                        id="rememberMe"
+                        type="checkbox"
+                    >
+
                     Remember me
+
                 </label>
 
-                <a href="#" onclick="forgotPassword(event)">
+
+                <a
+                    href="#"
+                    onclick="forgotPassword(event)"
+                >
                     Forgot password?
                 </a>
 
             </div>
 
-            <button class="login-button" type="submit">
+
+            <button
+                class="login-button"
+                type="submit"
+            >
                 Log in
             </button>
 
         </form>
 
+
         <div class="login-divider">
             <span>or</span>
         </div>
 
-        <button class="google-button" onclick="googleLogin()">
-            <span class="google-icon">G</span>
+
+        <button
+            class="google-button"
+            onclick="googleLogin()"
+        >
+
+            <span class="google-icon">
+                G
+            </span>
+
             Continue with Google
+
         </button>
 
+
         <p class="signup-text">
+
             New to Peer Hub?
-            <a href="#" onclick="showSignup(event)">
+
+            <a
+                href="#"
+                onclick="showSignup(event)"
+            >
                 Create an account
             </a>
+
         </p>
+
 
         <p class="prototype-note">
             Student academic support platform • Prototype
@@ -113,168 +181,286 @@
 </div>
 
 
+
 <!-- =====================================================
      MAIN APP
-===================================================== -->
+     ===================================================== -->
 
-<div class="app" id="mainApp">
+<div
+    class="app"
+    id="mainApp"
+>
 
-    <!-- SIDEBAR -->
 
-    <aside class="sidebar">
+<!-- =====================================================
+     SIDEBAR
+     ===================================================== -->
 
-        <div class="logo">
+<aside class="sidebar">
 
-            <div class="logo-mark">S</div>
 
-            <div>
-                <h2>St Oran's</h2>
-                <span>Peer Hub</span>
-            </div>
+    <div class="logo">
+
+        <div class="logo-mark">
+            S
+        </div>
+
+        <div>
+
+            <h2>
+                St Oran's
+            </h2>
+
+            <span>
+                Peer Hub
+            </span>
 
         </div>
 
-        <nav class="navigation">
+    </div>
 
-            <a href="#" class="nav-item active" data-page="home">
-                <span>⌂</span>
-                <span>Home</span>
-            </a>
 
-            <a href="#" class="nav-item" data-page="calendar">
-                <span>□</span>
-                <span>Calendar</span>
-            </a>
+    <nav class="navigation">
 
-            <a href="#" class="nav-item" data-page="assignments">
-                <span>✓</span>
-                <span>Assignments</span>
-            </a>
 
-            <a href="#" class="nav-item" data-page="peers">
-                <span>⌕</span>
-                <span>Find a Peer</span>
-            </a>
+        <a
+            href="#"
+            class="nav-item active"
+            data-page="home"
+        >
 
-            <a href="#" class="nav-item" data-page="resources">
-                <span>▤</span>
-                <span>Study Resources</span>
-            </a>
+            <span>⌂</span>
+            <span>Home</span>
 
-            <a href="#" class="nav-item" data-page="study">
-                <span>◷</span>
-                <span>Study Session</span>
-            </a>
+        </a>
 
-            <div class="nav-divider"></div>
 
-            <a href="#" class="nav-item" data-page="profile">
-                <span>○</span>
-                <span>My Profile</span>
-            </a>
+        <a
+            href="#"
+            class="nav-item"
+            data-page="calendar"
+        >
 
-            <a href="#" class="nav-item" data-page="progress">
-                <span>↗</span>
-                <span>My Progress</span>
-            </a>
+            <span>□</span>
+            <span>Calendar</span>
 
-            <a href="#" class="nav-item" data-page="settings">
-                <span>⚙</span>
-                <span>Settings</span>
-            </a>
+        </a>
 
-        </nav>
 
-        <div class="sidebar-bottom">
+        <a
+            href="#"
+            class="nav-item"
+            data-page="assignments"
+        >
 
-            <div class="school-badge">
+            <span>✓</span>
+            <span>Assignments</span>
 
-                <span>ST ORAN'S COLLEGE</span>
+        </a>
 
-                <small>
-                    Learn • Help • Grow
+
+        <a
+            href="#"
+            class="nav-item"
+            data-page="peers"
+        >
+
+            <span>⌕</span>
+            <span>Find a Peer</span>
+
+        </a>
+
+
+        <a
+            href="#"
+            class="nav-item"
+            data-page="resources"
+        >
+
+            <span>▤</span>
+            <span>Study Resources</span>
+
+        </a>
+
+
+        <!-- NEW: STUDY SESSION -->
+
+        <a
+            href="#"
+            class="nav-item"
+            data-page="study"
+        >
+
+            <span>⏱</span>
+            <span>Study Session</span>
+
+        </a>
+
+
+        <div class="nav-divider"></div>
+
+
+        <a
+            href="#"
+            class="nav-item"
+            data-page="profile"
+        >
+
+            <span>○</span>
+            <span>My Profile</span>
+
+        </a>
+
+
+        <a
+            href="#"
+            class="nav-item"
+            data-page="progress"
+        >
+
+            <span>↗</span>
+            <span>My Progress</span>
+
+        </a>
+
+
+        <a
+            href="#"
+            class="nav-item"
+            data-page="settings"
+        >
+
+            <span>⚙</span>
+            <span>Settings</span>
+
+        </a>
+
+
+    </nav>
+
+
+    <div class="sidebar-bottom">
+
+        <div class="school-badge">
+
+            <span>
+                ST ORAN'S COLLEGE
+            </span>
+
+            <small>
+                Learn • Help • Grow
+            </small>
+
+        </div>
+
+    </div>
+
+
+</aside>
+
+
+
+<!-- =====================================================
+     MAIN CONTENT
+     ===================================================== -->
+
+<main class="main-content">
+
+
+<header class="topbar">
+
+
+    <div class="mobile-logo">
+        St Oran's
+    </div>
+
+
+    <div class="topbar-actions">
+
+
+        <button
+            class="icon-button"
+            onclick="showNotifications()"
+        >
+            ♧
+        </button>
+
+
+        <div class="user-mini">
+
+            <div
+                class="avatar"
+                id="topAvatar"
+            >
+                M
+            </div>
+
+            <div>
+
+                <strong id="topName">
+                    Student
+                </strong>
+
+                <small id="topYear">
+                    Year 8
                 </small>
 
             </div>
 
         </div>
 
-    </aside>
+
+    </div>
 
 
-    <!-- MAIN -->
-
-    <main class="main-content">
-
-        <header class="topbar">
-
-            <div class="mobile-logo">
-                St Oran's
-            </div>
-
-            <div class="topbar-actions">
-
-                <button
-                    class="icon-button"
-                    onclick="showNotifications()"
-                >
-                    ♧
-                </button>
-
-                <div class="user-mini">
-
-                    <div class="avatar" id="topAvatar">
-                        M
-                    </div>
-
-                    <div>
-
-                        <strong id="topName">
-                            Student
-                        </strong>
-
-                        <small id="topYear">
-                            Year 8
-                        </small>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </header>
+</header>
 
 
-        <div class="page-container">
+
+<div class="page-container">
+
 
 
 <!-- =====================================================
      HOME
-===================================================== -->
+     ===================================================== -->
 
-<section class="page active-page" id="home">
+<section
+    class="page active-page"
+    id="home"
+>
+
 
     <div class="welcome-section">
 
+
         <div>
 
-            <p class="eyebrow" id="todayLabel"></p>
+            <p
+                class="eyebrow"
+                id="todayLabel"
+            ></p>
+
 
             <h1>
+
                 <span id="greeting">
-                    Good morning
+                    Good afternoon
                 </span>,
+
                 <span id="welcomeName">
                     Student
                 </span>.
+
             </h1>
+
 
             <p class="welcome-text">
                 Ready to learn, help someone out, or both?
             </p>
 
         </div>
+
 
         <button
             class="primary-button"
@@ -283,22 +469,50 @@
             + Find a Peer
         </button>
 
+
     </div>
+
 
 
     <div class="quote-banner">
 
-        <span>✦</span>
+        <span>
+            ✦
+        </span>
 
         <div>
 
-            <small>DAILY THOUGHT</small>
+            <small>
+                DAILY THOUGHT
+            </small>
 
             <p id="homeQuote"></p>
 
         </div>
 
     </div>
+
+
+
+    <div class="search-box">
+
+        <span class="search-icon">
+            ⌕
+        </span>
+
+
+        <input
+            id="peerSearch"
+            placeholder="Search for a subject or topic, e.g. expanding brackets..."
+        >
+
+
+        <button onclick="searchPeers()">
+            Search
+        </button>
+
+    </div>
+
 
 
     <div class="dashboard-grid">
@@ -322,6 +536,7 @@
 
                 </div>
 
+
                 <button
                     class="text-button"
                     onclick="showPage('calendar')"
@@ -330,6 +545,7 @@
                 </button>
 
             </div>
+
 
             <div class="mini-calendar">
 
@@ -345,6 +561,7 @@
 
                 </div>
 
+
                 <div
                     class="calendar-numbers"
                     id="miniCalendar"
@@ -353,6 +570,7 @@
             </div>
 
         </div>
+
 
 
         <!-- DEADLINES -->
@@ -373,6 +591,7 @@
 
                 </div>
 
+
                 <button
                     class="text-button"
                     onclick="showPage('assignments')"
@@ -382,6 +601,7 @@
 
             </div>
 
+
             <div
                 class="assignment-list"
                 id="deadlineList"
@@ -390,7 +610,8 @@
         </div>
 
 
-        <!-- PEERS -->
+
+        <!-- PEER SUPPORT -->
 
         <div class="card">
 
@@ -408,6 +629,7 @@
 
                 </div>
 
+
                 <button
                     class="text-button"
                     onclick="showPage('peers')"
@@ -417,6 +639,7 @@
 
             </div>
 
+
             <div
                 class="peer-list"
                 id="recommendedPeers"
@@ -425,7 +648,8 @@
         </div>
 
 
-        <!-- POINTS -->
+
+        <!-- PROGRESS -->
 
         <div class="card">
 
@@ -443,6 +667,7 @@
 
                 </div>
 
+
                 <button
                     class="text-button"
                     onclick="showPage('progress')"
@@ -452,6 +677,7 @@
 
             </div>
 
+
             <div class="points-display">
 
                 <div
@@ -460,6 +686,7 @@
                 >
                     0
                 </div>
+
 
                 <div>
 
@@ -475,6 +702,7 @@
 
             </div>
 
+
             <div class="progress-bar">
 
                 <div
@@ -483,6 +711,7 @@
                 ></div>
 
             </div>
+
 
             <p
                 class="progress-caption"
@@ -494,14 +723,20 @@
 
     </div>
 
+
 </section>
+
 
 
 <!-- =====================================================
      CALENDAR
-===================================================== -->
+     ===================================================== -->
 
-<section class="page" id="calendar">
+<section
+    class="page"
+    id="calendar"
+>
+
 
     <div class="page-heading">
 
@@ -519,13 +754,16 @@
 
     </div>
 
+
     <div class="quote-banner">
 
         <span>✦</span>
 
         <div>
 
-            <small>DAILY THOUGHT</small>
+            <small>
+                DAILY THOUGHT
+            </small>
 
             <p class="pageQuote"></p>
 
@@ -533,30 +771,15 @@
 
     </div>
 
-    <div class="calendar-controls">
-
-        <button onclick="changeMonth(-1)">
-            ←
-        </button>
-
-        <h2 id="fullMonthTitle">
-            September 2026
-        </h2>
-
-        <button onclick="changeMonth(1)">
-            →
-        </button>
-
-        <button
-            class="primary-button"
-            onclick="showAddEvent()"
-        >
-            + Add event
-        </button>
-
-    </div>
 
     <div class="calendar-full card">
+
+        <div class="card-header">
+
+            <h2 id="fullMonthTitle"></h2>
+
+        </div>
+
 
         <div
             class="full-calendar"
@@ -565,14 +788,20 @@
 
     </div>
 
+
 </section>
+
 
 
 <!-- =====================================================
      ASSIGNMENTS
-===================================================== -->
+     ===================================================== -->
 
-<section class="page" id="assignments">
+<section
+    class="page"
+    id="assignments"
+>
+
 
     <div class="page-heading">
 
@@ -590,13 +819,16 @@
 
     </div>
 
+
     <div class="quote-banner">
 
         <span>✦</span>
 
         <div>
 
-            <small>DAILY THOUGHT</small>
+            <small>
+                DAILY THOUGHT
+            </small>
 
             <p class="pageQuote"></p>
 
@@ -604,41 +836,6 @@
 
     </div>
 
-    <div class="assignment-toolbar">
-
-        <div class="filter-tabs">
-
-            <button
-                class="filter-tab active"
-                onclick="filterAssignments('all', this)"
-            >
-                All
-            </button>
-
-            <button
-                class="filter-tab"
-                onclick="filterAssignments('upcoming', this)"
-            >
-                Upcoming
-            </button>
-
-            <button
-                class="filter-tab"
-                onclick="filterAssignments('complete', this)"
-            >
-                Complete
-            </button>
-
-        </div>
-
-        <button
-            class="primary-button"
-            onclick="showAddAssignment()"
-        >
-            + Add assignment
-        </button>
-
-    </div>
 
     <div class="card">
 
@@ -646,14 +843,20 @@
 
     </div>
 
+
 </section>
 
 
-<!-- =====================================================
-     FIND PEER
-===================================================== -->
 
-<section class="page" id="peers">
+<!-- =====================================================
+     FIND A PEER
+     ===================================================== -->
+
+<section
+    class="page"
+    id="peers"
+>
+
 
     <div class="page-heading">
 
@@ -671,13 +874,16 @@
 
     </div>
 
+
     <div class="quote-banner">
 
         <span>✦</span>
 
         <div>
 
-            <small>DAILY THOUGHT</small>
+            <small>
+                DAILY THOUGHT
+            </small>
 
             <p class="pageQuote"></p>
 
@@ -692,11 +898,12 @@
             ⌕
         </span>
 
+
         <input
             id="mainPeerSearch"
             placeholder="Try 'fractions', 'biology', 'essay writing'..."
-            oninput="searchMainPeers()"
         >
+
 
         <button onclick="searchMainPeers()">
             Search
@@ -707,20 +914,35 @@
 
     <div class="filters">
 
+
         <select
             id="subjectFilter"
             onchange="searchMainPeers()"
         >
+
             <option value="">
                 All subjects
             </option>
 
-            <option>Maths</option>
-            <option>English</option>
-            <option>Science</option>
-            <option>Spanish</option>
-            <option>History</option>
-            <option>Technology</option>
+            <option>
+                Maths
+            </option>
+
+            <option>
+                English
+            </option>
+
+            <option>
+                Science
+            </option>
+
+            <option>
+                Spanish
+            </option>
+
+            <option>
+                History
+            </option>
 
         </select>
 
@@ -729,6 +951,7 @@
             id="yearFilter"
             onchange="searchMainPeers()"
         >
+
             <option value="">
                 Any year
             </option>
@@ -747,13 +970,22 @@
             id="availabilityFilter"
             onchange="searchMainPeers()"
         >
+
             <option value="">
                 Any availability
             </option>
 
-            <option>Available now</option>
-            <option>Later today</option>
-            <option>Online</option>
+            <option>
+                Available now
+            </option>
+
+            <option>
+                Later today
+            </option>
+
+            <option>
+                Online
+            </option>
 
         </select>
 
@@ -766,9 +998,10 @@
                 onchange="searchMainPeers()"
             >
 
-            Online only
+            Online
 
         </label>
+
 
     </div>
 
@@ -778,14 +1011,20 @@
         class="peer-results"
     ></div>
 
+
 </section>
 
 
-<!-- =====================================================
-     RESOURCES
-===================================================== -->
 
-<section class="page" id="resources">
+<!-- =====================================================
+     STUDY RESOURCES
+     ===================================================== -->
+
+<section
+    class="page"
+    id="resources"
+>
+
 
     <div class="page-heading">
 
@@ -798,10 +1037,11 @@
         </h1>
 
         <p>
-            Resources, study tips and tools to help you learn.
+            Access St Oran's existing study resources and useful learning tools.
         </p>
 
     </div>
+
 
     <div class="quote-banner">
 
@@ -809,7 +1049,9 @@
 
         <div>
 
-            <small>DAILY THOUGHT</small>
+            <small>
+                DAILY THOUGHT
+            </small>
 
             <p class="pageQuote"></p>
 
@@ -820,9 +1062,10 @@
 
     <div class="resource-grid">
 
+
         <div class="resource-card">
 
-            <span class="resource-icon">
+            <span>
                 📚
             </span>
 
@@ -844,9 +1087,10 @@
         </div>
 
 
+
         <div class="resource-card">
 
-            <span class="resource-icon">
+            <span>
                 ✎
             </span>
 
@@ -868,59 +1112,69 @@
         </div>
 
 
-        <div class="resource-card study-tool-card">
 
-            <span class="resource-icon">
-                ◷
+        <div class="resource-card">
+
+            <span>
+                ⏱
             </span>
 
             <h3>
-                Focus Timer
+                Study Timer
             </h3>
 
             <p>
-                Use a Pomodoro session to focus without staring at the clock every 47 seconds.
+                Focus for a set period, then take a proper break.
             </p>
 
             <button
-                class="primary-button"
+                class="secondary-button"
                 onclick="showPage('study')"
             >
-                Start studying
+                Start timer
             </button>
 
         </div>
 
+
     </div>
+
 
 </section>
 
 
+
 <!-- =====================================================
-     STUDY SESSION
-===================================================== -->
+     NEW: STUDY SESSION
+     ===================================================== -->
 
-<section class="page study-page" id="study">
+<section
+    class="page"
+    id="study"
+>
 
-    <div class="study-session-shell">
 
-        <div class="study-top">
+    <div class="study-session-page">
+
+
+        <div class="study-session-top">
 
             <button
-                class="study-back"
-                onclick="showPage('resources')"
+                class="back-button"
+                onclick="showPage('home')"
             >
-                ← Back
+                ← Back to Peer Hub
             </button>
 
-            <div class="study-buddy-mini">
+
+            <div class="study-session-label">
 
                 <span>
-                    ST ROROANS
+                    FOCUS MODE
                 </span>
 
-                <small id="studyBuddyMessage">
-                    Roro is ready to focus with you ✦
+                <small>
+                    ST ORAN'S PEER HUB
                 </small>
 
             </div>
@@ -928,116 +1182,224 @@
         </div>
 
 
-        <div class="study-center">
 
-            <div class="study-eyebrow">
-                STUDY SESSION
-            </div>
+        <!-- Main study screen -->
 
-            <h1>
-                Focus mode
-            </h1>
-
-            <p
-                class="study-date"
-                id="studyDate"
-            ></p>
+        <div class="study-focus-screen">
 
 
-            <div class="pomodoro-card">
+            <!-- Decorative background -->
 
-                <div class="pomodoro-tabs">
-
-                    <button
-                        class="pomodoro-tab active"
-                        id="focusTab"
-                        onclick="setPomodoroMode('focus')"
-                    >
-                        Focus
-                    </button>
-
-                    <button
-                        class="pomodoro-tab"
-                        id="breakTab"
-                        onclick="setPomodoroMode('break')"
-                    >
-                        Break
-                    </button>
-
-                </div>
+            <div class="study-orb orb-one"></div>
+            <div class="study-orb orb-two"></div>
+            <div class="study-orb orb-three"></div>
 
 
-                <span
-                    class="pomodoro-mode"
-                    id="pomodoroMode"
-                >
-                    FOCUS SESSION
-                </span>
+            <div class="study-focus-content">
 
 
-                <div
-                    class="pomodoro-time"
-                    id="pomodoroDisplay"
-                >
-                    25:00
-                </div>
-
-
-                <p id="pomodoroRound">
-                    Round 1 of 4
+                <p class="study-focus-eyebrow">
+                    YOUR STUDY SESSION
                 </p>
 
 
-                <button
-                    class="pomodoro-button"
-                    id="pomodoroButton"
-                    onclick="togglePomodoro()"
-                >
-                    Start focus
-                </button>
+                <h1 id="studySessionTitle">
+                    Time to focus.
+                </h1>
 
 
-                <button
-                    class="pomodoro-reset"
-                    onclick="resetPomodoro()"
-                >
-                    Reset
-                </button>
+                <p id="studySessionMessage">
+                    Put your phone down. Yes, this means you.
+                </p>
+
+
+
+                <!-- Pomodoro -->
+
+                <div class="pomodoro-card">
+
+
+                    <div class="pomodoro-mode">
+
+                        <button
+                            class="pomodoro-mode-button active"
+                            id="focusModeButton"
+                            onclick="setPomodoroMode('focus')"
+                        >
+                            Focus
+                        </button>
+
+
+                        <button
+                            class="pomodoro-mode-button"
+                            id="shortBreakButton"
+                            onclick="setPomodoroMode('short')"
+                        >
+                            Short break
+                        </button>
+
+
+                        <button
+                            class="pomodoro-mode-button"
+                            id="longBreakButton"
+                            onclick="setPomodoroMode('long')"
+                        >
+                            Long break
+                        </button>
+
+                    </div>
+
+
+
+                    <div
+                        class="pomodoro-time"
+                        id="pomodoroTime"
+                    >
+                        25:00
+                    </div>
+
+
+                    <p
+                        class="pomodoro-status"
+                        id="pomodoroStatus"
+                    >
+                        Ready when you are.
+                    </p>
+
+
+
+                    <div class="pomodoro-controls">
+
+
+                        <button
+                            class="secondary-button"
+                            onclick="resetPomodoro()"
+                        >
+                            Reset
+                        </button>
+
+
+                        <button
+                            class="primary-button"
+                            id="pomodoroStartButton"
+                            onclick="togglePomodoro()"
+                        >
+                            Start focus
+                        </button>
+
+
+                        <button
+                            class="secondary-button"
+                            onclick="skipPomodoro()"
+                        >
+                            Skip
+                        </button>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- Session stats -->
+
+                <div class="study-session-stats">
+
+
+                    <div>
+
+                        <strong id="studySessionsToday">
+                            0
+                        </strong>
+
+                        <span>
+                            Sessions today
+                        </span>
+
+                    </div>
+
+
+                    <div>
+
+                        <strong id="studyMinutesToday">
+                            0
+                        </strong>
+
+                        <span>
+                            Focus minutes
+                        </span>
+
+                    </div>
+
+
+                    <div>
+
+                        <strong id="studyStreak">
+                            0
+                        </strong>
+
+                        <span>
+                            Day streak
+                        </span>
+
+                    </div>
+
+
+                </div>
+
 
             </div>
 
 
-            <div class="study-stats">
+        </div>
 
-                <span>
-                    ✦ +5 points per focus round
-                </span>
 
-                <span>
-                    ◷ 25 min focus · 5 min break
-                </span>
 
-                <span>
-                    🔥 Streak:
-                    <b id="studyStreak">
-                        0
-                    </b>
-                </span>
+        <!-- Roro encouragement -->
+
+        <div class="study-roro-message">
+
+            <div
+                class="roro-mini"
+                id="studyRoro"
+            >
+                🐉
+            </div>
+
+
+            <div>
+
+                <strong>
+                    St Roroans says:
+                </strong>
+
+                <p id="roroStudyMessage">
+                    You've got this. One focus session at a time.
+                </p>
 
             </div>
 
         </div>
 
+
     </div>
+
 
 </section>
 
 
+
 <!-- =====================================================
      PROFILE
-===================================================== -->
+     ===================================================== -->
 
-<section class="page" id="profile">
+<section
+    class="page"
+    id="profile"
+>
+
 
     <div class="page-heading">
 
@@ -1055,13 +1417,16 @@
 
     </div>
 
+
     <div class="quote-banner">
 
         <span>✦</span>
 
         <div>
 
-            <small>DAILY THOUGHT</small>
+            <small>
+                DAILY THOUGHT
+            </small>
 
             <p class="pageQuote"></p>
 
@@ -1072,7 +1437,9 @@
 
     <div class="profile-card">
 
+
         <div class="profile-top">
+
 
             <div
                 class="large-avatar"
@@ -1080,6 +1447,7 @@
             >
                 M
             </div>
+
 
             <div>
 
@@ -1093,6 +1461,7 @@
 
             </div>
 
+
             <button
                 class="secondary-button"
                 onclick="editProfile()"
@@ -1100,7 +1469,9 @@
                 Edit profile
             </button>
 
+
         </div>
+
 
 
         <div class="profile-section">
@@ -1117,6 +1488,7 @@
         </div>
 
 
+
         <div class="profile-section">
 
             <h3>
@@ -1131,6 +1503,7 @@
         </div>
 
 
+
         <div class="change-notice">
 
             <strong>
@@ -1143,16 +1516,23 @@
 
         </div>
 
+
     </div>
+
 
 </section>
 
 
+
 <!-- =====================================================
      PROGRESS
-===================================================== -->
+     ===================================================== -->
 
-<section class="page" id="progress">
+<section
+    class="page"
+    id="progress"
+>
+
 
     <div class="page-heading">
 
@@ -1165,10 +1545,11 @@
         </h1>
 
         <p>
-            See your study progress and the difference you've made.
+            See your study progress and the difference you've made helping others.
         </p>
 
     </div>
+
 
     <div class="quote-banner">
 
@@ -1176,7 +1557,9 @@
 
         <div>
 
-            <small>DAILY THOUGHT</small>
+            <small>
+                DAILY THOUGHT
+            </small>
 
             <p class="pageQuote"></p>
 
@@ -1185,90 +1568,68 @@
     </div>
 
 
+
     <div class="stats-grid">
 
-        <div class="stat-card">
-            <span>Peer Points</span>
-            <strong id="progressPoints">0</strong>
-        </div>
 
         <div class="stat-card">
-            <span>Students Helped</span>
-            <strong id="progressHelped">0</strong>
-        </div>
-
-        <div class="stat-card">
-            <span>Sessions Completed</span>
-            <strong id="progressSessions">0</strong>
-        </div>
-
-        <div class="stat-card">
-            <span>Badges Earned</span>
-            <strong id="progressBadges">0</strong>
-        </div>
-
-    </div>
-
-
-    <div class="gamification-card card">
-
-        <div>
-
-            <span class="card-label">
-                YOUR LEVEL
-            </span>
-
-            <h2>
-                Level
-                <b id="progressLevel">
-                    1
-                </b>
-            </h2>
-
-            <p id="levelCaption">
-                Complete your first study session to begin earning points.
-            </p>
-
-            <div class="level-progress">
-
-                <div
-                    id="levelProgressFill"
-                ></div>
-
-            </div>
-
-        </div>
-
-
-        <div class="level-ring">
-
-            <span id="levelPercent">
-                0%
-            </span>
-
-        </div>
-
-
-        <div class="streak-box">
 
             <span>
-                🔥 Study streak
+                Peer Points
             </span>
 
-            <strong id="progressStreak">
+            <strong id="progressPoints">
                 0
             </strong>
 
-            <small>
-                focus rounds
-            </small>
+        </div>
+
+
+        <div class="stat-card">
+
+            <span>
+                Students Helped
+            </span>
+
+            <strong id="progressHelped">
+                0
+            </strong>
 
         </div>
+
+
+        <div class="stat-card">
+
+            <span>
+                Sessions Completed
+            </span>
+
+            <strong id="progressSessions">
+                0
+            </strong>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <span>
+                Badges Earned
+            </span>
+
+            <strong id="progressBadges">
+                0
+            </strong>
+
+        </div>
+
 
     </div>
 
 
+
     <div class="card chart-card">
+
 
         <div class="card-header">
 
@@ -1286,77 +1647,76 @@
 
         </div>
 
-        <canvas id="progressChart"></canvas>
+
+        <canvas
+            id="progressChart"
+        ></canvas>
+
 
     </div>
 
 
+
     <div class="points-guide card">
+
 
         <h2>
             How Peer Points work
         </h2>
 
+
         <div class="points-rules">
+
 
             <span>
                 <b>+10</b>
                 Complete a tutoring session
             </span>
 
+
             <span>
                 <b>+5</b>
-                Complete a focus round
+                Help another student
             </span>
+
 
             <span>
                 <b>+3</b>
                 Share a useful resource
             </span>
 
+
             <span>
                 <b>+2</b>
                 Attend a booked session
             </span>
 
-        </div>
 
-    </div>
+            <span>
+                <b>+5</b>
+                Complete a Pomodoro focus session
+            </span>
 
-
-    <div class="badges-section">
-
-        <div class="section-title">
-
-            <div>
-
-                <p class="card-label">
-                    ACHIEVEMENTS
-                </p>
-
-                <h2>
-                    Your badges
-                </h2>
-
-            </div>
 
         </div>
 
-        <div
-            class="badges-grid"
-            id="badgesGrid"
-        ></div>
 
     </div>
+
 
 </section>
 
 
+
 <!-- =====================================================
      SETTINGS
-===================================================== -->
+     ===================================================== -->
 
-<section class="page" id="settings">
+<section
+    class="page"
+    id="settings"
+>
+
 
     <div class="page-heading">
 
@@ -1374,13 +1734,16 @@
 
     </div>
 
+
     <div class="quote-banner">
 
         <span>✦</span>
 
         <div>
 
-            <small>DAILY THOUGHT</small>
+            <small>
+                DAILY THOUGHT
+            </small>
 
             <p class="pageQuote"></p>
 
@@ -1390,6 +1753,7 @@
 
 
     <div class="settings-card card">
+
 
         <div class="setting-row">
 
@@ -1405,35 +1769,6 @@
 
         </div>
 
-
-        <div class="setting-row">
-
-            <div>
-
-                <strong>
-                    Study buddy
-                </strong>
-
-                <p>
-                    Let St Roroans follow you around the Peer Hub.
-                </p>
-
-            </div>
-
-            <label class="toggle">
-
-                <input
-                    type="checkbox"
-                    id="buddyToggle"
-                    checked
-                    onchange="setBuddyVisibility()"
-                >
-
-                <span></span>
-
-            </label>
-
-        </div>
 
 
         <div class="setting-row">
@@ -1453,6 +1788,7 @@
         </div>
 
 
+
         <div class="setting-row">
 
             <div>
@@ -1470,6 +1806,7 @@
         </div>
 
 
+
         <button
             class="signout-button"
             onclick="signOut()"
@@ -1477,129 +1814,140 @@
             Sign out / use a different account
         </button>
 
+
     </div>
+
 
 </section>
 
 
-        </div>
-
-    </main>
 
 </div>
+
+</main>
+
+
+</div>
+
 
 
 <!-- =====================================================
      ST ROROANS
-===================================================== -->
+     ===================================================== -->
 
 <div
-    class="study-buddy"
-    id="studyBuddy"
+    class="roro-buddy"
+    id="roroBuddy"
+    onclick="roroInteract()"
+    aria-label="St Roroans study buddy"
 >
 
-    <button
-        class="buddy-close"
-        onclick="toggleBuddy()"
-        aria-label="Hide study buddy"
-    >
-        ×
-    </button>
 
+    <div class="roro-speech">
 
-    <div class="buddy-character">
-
-        <div class="buddy-horns">
-
-            <span></span>
-            <span></span>
-
-        </div>
-
-
-        <div class="buddy-ears">
-
-            <span></span>
-            <span></span>
-
-        </div>
-
-
-        <div class="buddy-head">
-
-            <div class="buddy-eye left-eye">
-                <span></span>
-            </div>
-
-            <div class="buddy-eye right-eye">
-                <span></span>
-            </div>
-
-            <div class="buddy-snout">
-                <i></i>
-                <i></i>
-                <span></span>
-            </div>
-
-        </div>
-
-
-        <div class="buddy-neck"></div>
-
-
-        <div class="buddy-body">
-
-            <div class="buddy-belly"></div>
-
-            <div class="buddy-tie"></div>
-
-        </div>
-
-
-        <div class="buddy-arm left-arm"></div>
-        <div class="buddy-arm right-arm"></div>
-
-        <div class="buddy-foot left-foot"></div>
-        <div class="buddy-foot right-foot"></div>
-
-    </div>
-
-
-    <div class="buddy-speech">
-
-        <strong>
-            St Roroans
-        </strong>
-
-        <span id="buddyMood">
-            Ready when you are! ✦
+        <span id="roroSpeech">
+            Hi! I'm Roro 🐉
         </span>
 
     </div>
 
+
+    <div class="roro-character">
+
+
+        <div class="roro-horns">
+
+            <span></span>
+            <span></span>
+
+        </div>
+
+
+        <div class="roro-head">
+
+
+            <div class="roro-ear left"></div>
+            <div class="roro-ear right"></div>
+
+
+            <div class="roro-eyes">
+
+                <div class="roro-eye">
+                    <span></span>
+                </div>
+
+                <div class="roro-eye">
+                    <span></span>
+                </div>
+
+            </div>
+
+
+            <div class="roro-snout">
+
+                <div class="roro-nostril left"></div>
+                <div class="roro-nostril right"></div>
+
+            </div>
+
+
+            <div class="roro-smile">
+                ˘
+            </div>
+
+
+        </div>
+
+
+        <div class="roro-body">
+
+            <div class="roro-scarf"></div>
+
+        </div>
+
+
+        <div class="roro-feet">
+
+            <span></span>
+            <span></span>
+
+        </div>
+
+
+    </div>
+
+
 </div>
+
 
 
 <!-- =====================================================
      MODAL
-===================================================== -->
+     ===================================================== -->
 
 <div
     class="modal"
     id="modal"
-    onclick="closeModalOutside(event)"
 >
+
 
     <div
         class="modal-card"
         id="modalContent"
-        onclick="event.stopPropagation()"
     ></div>
+
 
 </div>
 
 
+
+<!-- =====================================================
+     JAVASCRIPT
+     ===================================================== -->
+
 <script src="script.js"></script>
 
+
 </body>
+
 </html>
