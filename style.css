@@ -1685,3 +1685,23 @@ a {
         padding: 30px 22px;
     }
 }
+/* Login error message */
+
+.login-error {
+    display: none;
+
+    background: #f5e4e7;
+    color: #7d3343;
+
+    border: 1px solid #e2c7cd;
+
+    padding: 10px 12px;
+
+    border-radius: 9px;
+
+    font-size: 11px;
+
+    text-align: left;
+
+    margin-bottom: 15px;
+}
