@@ -16,12 +16,10 @@
     --text: #26332e;
     --muted: #85847e;
 
-    /* GOLD */
     --gold: #b79a62;
     --gold-light: #e9dcc0;
     --gold-dark: #927744;
 
-    /* BURGUNDY */
     --burgundy: #7a2638;
     --burgundy-dark: #5f1d2c;
     --burgundy-light: #a64b5d;
@@ -427,6 +425,10 @@ button {
     background: var(--cream);
 }
 
+#app {
+    min-height: 100vh;
+}
+
 
 /* =========================================================
    SIDEBAR
@@ -564,6 +566,12 @@ button {
     min-height: 100vh;
 }
 
+.main,
+.content,
+.app-content {
+    min-height: calc(100vh - 65px);
+}
+
 .topbar {
     height: 72px;
 
@@ -658,6 +666,10 @@ button {
     display: block;
 }
 
+#homePage {
+    display: block;
+}
+
 .page-heading {
     margin-bottom: 23px;
 }
@@ -676,6 +688,27 @@ button {
     color: var(--muted);
 
     font-size: 13px;
+}
+
+
+/* =========================================================
+   GENERAL HEADINGS
+   ========================================================= */
+
+h1,
+h2,
+h3 {
+    color: var(--green);
+}
+
+.section-title,
+.card-title {
+    color: var(--green);
+}
+
+.gold,
+.gold-text {
+    color: var(--gold);
 }
 
 
@@ -1098,7 +1131,9 @@ button {
     padding: 6px 15px 20px;
 }
 
-.calendar-day {
+.calendar-day,
+.calendar-cell,
+.day-box {
     min-height: 67px;
 
     padding: 7px;
@@ -1149,11 +1184,13 @@ button {
 
 /* TODAY */
 
-.calendar-day.today {
+.calendar-day.today,
+.calendar-cell.today,
+.day-box.today {
     background: var(--burgundy-soft);
 
     border:
-        1px solid var(--burgundy);
+        2px solid var(--burgundy);
 }
 
 .calendar-day.today .calendar-day-number {
@@ -1355,12 +1392,9 @@ button {
 
 /* =========================================================
    STUDY / FOCUS SESSION
+   Flocus-inspired aesthetic
+   Dark Green • Gold • Cream • Burgundy
    ========================================================= */
-
-/*
-   This is the dark-green aesthetic focus area.
-   The dots are created entirely with CSS.
-*/
 
 .study-container {
     max-width: 750px;
@@ -1368,7 +1402,10 @@ button {
     margin: 0 auto;
 }
 
-.pomodoro-card {
+.pomodoro-card,
+.focus-section,
+.study-focus,
+.study-card {
     position: relative;
 
     overflow: hidden;
@@ -1398,7 +1435,10 @@ button {
 
 /* GOLD DOTTED PATTERN */
 
-.pomodoro-card::before {
+.pomodoro-card::before,
+.focus-section::before,
+.study-focus::before,
+.study-card::before {
     content: "";
 
     position: absolute;
@@ -1431,7 +1471,10 @@ button {
 
 /* DECORATIVE CIRCLES */
 
-.pomodoro-card::after {
+.pomodoro-card::after,
+.focus-section::after,
+.study-focus::after,
+.study-card::after {
     content: "";
 
     position: absolute;
@@ -1454,11 +1497,17 @@ button {
     pointer-events: none;
 }
 
-.pomodoro-card > * {
+.pomodoro-card > *,
+.focus-section > *,
+.study-focus > *,
+.study-card > * {
     position: relative;
 
     z-index: 2;
 }
+
+
+/* TIMER MODES */
 
 .pomodoro-mode-buttons {
     display: flex;
@@ -1502,6 +1551,9 @@ button {
     color: var(--green-dark);
 }
 
+
+/* TIMER */
+
 .pomodoro-time {
     color: var(--cream);
 
@@ -1526,6 +1578,9 @@ button {
 
     font-size: 12px;
 }
+
+
+/* TIMER BUTTONS */
 
 .timer-buttons {
     display: flex;
@@ -1585,7 +1640,9 @@ button {
 }
 
 
-/* STUDY STATS */
+/* =========================================================
+   STUDY STATS
+   ========================================================= */
 
 .study-stats {
     display: grid;
@@ -1841,6 +1898,8 @@ button {
 
 /* =========================================================
    RORO
+   ORIGINAL CUTE VERSION
+   NO WINGS • NO TAIL
    ========================================================= */
 
 #roroBuddy {
@@ -1852,7 +1911,7 @@ button {
     width: 150px;
     height: 190px;
 
-    z-index: 500;
+    z-index: 9999;
 
     pointer-events: none;
 }
@@ -1886,7 +1945,9 @@ button {
 }
 
 
-/* RORO SPEECH */
+/* =========================================================
+   RORO SPEECH
+   ========================================================= */
 
 .roro-speech {
     position: absolute;
@@ -1949,7 +2010,9 @@ button {
 }
 
 
-/* RORO BODY */
+/* =========================================================
+   RORO BODY
+   ========================================================= */
 
 .roro-dragon {
     position: absolute;
@@ -2002,7 +2065,9 @@ button {
 }
 
 
-/* HEAD */
+/* =========================================================
+   RORO HEAD
+   ========================================================= */
 
 .roro-head {
     position: absolute;
@@ -2025,7 +2090,9 @@ button {
 }
 
 
-/* HORNS */
+/* =========================================================
+   RORO HORNS
+   ========================================================= */
 
 .roro-horn-left,
 .roro-horn-right {
@@ -2058,7 +2125,9 @@ button {
 }
 
 
-/* EARS */
+/* =========================================================
+   RORO EARS
+   ========================================================= */
 
 .roro-ear-left,
 .roro-ear-right {
@@ -2096,7 +2165,9 @@ button {
 }
 
 
-/* EYES */
+/* =========================================================
+   RORO EYES
+   ========================================================= */
 
 .roro-eye-left,
 .roro-eye-right {
@@ -2146,7 +2217,9 @@ button {
 }
 
 
-/* SNOUT */
+/* =========================================================
+   RORO SNOUT
+   ========================================================= */
 
 .roro-snout {
     position: absolute;
@@ -2187,7 +2260,9 @@ button {
 }
 
 
-/* CHEEKS */
+/* =========================================================
+   RORO CHEEKS
+   ========================================================= */
 
 .roro-cheek-left,
 .roro-cheek-right {
@@ -2211,100 +2286,6 @@ button {
 
 .roro-cheek-right {
     right: 5px;
-}
-
-
-/* =========================================================
-   RORO WINGS
-   ========================================================= */
-
-.roro-wing {
-    position: absolute;
-
-    top: 57px;
-
-    width: 47px;
-    height: 66px;
-
-    background: var(--green);
-
-    border:
-        3px solid var(--green-dark);
-
-    z-index: 2;
-
-    transform-origin: bottom center;
-}
-
-.roro-wing-left {
-    left: -7px;
-
-    border-radius:
-        85% 20% 20% 20%;
-
-    transform: rotate(24deg);
-
-    animation:
-        roroWingLeft 2.2s ease-in-out infinite;
-}
-
-.roro-wing-right {
-    right: -7px;
-
-    border-radius:
-        20% 85% 20% 20%;
-
-    transform: rotate(-24deg);
-
-    animation:
-        roroWingRight 2.2s ease-in-out infinite;
-}
-
-
-/* WING GOLD DETAILS */
-
-.roro-wing-left::before,
-.roro-wing-left::after,
-.roro-wing-right::before,
-.roro-wing-right::after {
-    content: "";
-
-    position: absolute;
-
-    width: 29px;
-    height: 2px;
-
-    background: var(--gold);
-
-    opacity: .9;
-}
-
-.roro-wing-left::before {
-    left: 5px;
-    top: 20px;
-
-    transform: rotate(30deg);
-}
-
-.roro-wing-left::after {
-    left: 7px;
-    top: 36px;
-
-    transform: rotate(38deg);
-}
-
-.roro-wing-right::before {
-    right: 5px;
-    top: 20px;
-
-    transform: rotate(-30deg);
-}
-
-.roro-wing-right::after {
-    right: 7px;
-    top: 36px;
-
-    transform: rotate(-38deg);
 }
 
 
@@ -2341,62 +2322,8 @@ button {
 
 
 /* =========================================================
-   RORO TAIL
+   RORO ANIMATION
    ========================================================= */
-
-.roro-tail {
-    position: absolute;
-
-    right: -37px;
-    bottom: 18px;
-
-    width: 73px;
-    height: 23px;
-
-    background: var(--green-light);
-
-    border:
-        3px solid var(--green-dark);
-
-    border-radius: 50%;
-
-    transform-origin: left center;
-
-    transform: rotate(-17deg);
-
-    z-index: 1;
-
-    animation:
-        roroTailMove 3s ease-in-out infinite;
-}
-
-.roro-tail-tip {
-    position: absolute;
-
-    right: -15px;
-    top: -8px;
-
-    width: 28px;
-    height: 27px;
-
-    background: var(--gold);
-
-    border:
-        3px solid var(--green-dark);
-
-    clip-path:
-        polygon(
-            0 50%,
-            100% 0,
-            78% 50%,
-            100% 100%
-        );
-
-    transform: rotate(10deg);
-}
-
-
-/* RORO ANIMATION */
 
 @keyframes roroFloat {
     0%,
@@ -2406,39 +2333,6 @@ button {
 
     50% {
         transform: translateY(-6px);
-    }
-}
-
-@keyframes roroWingLeft {
-    0%,
-    100% {
-        transform: rotate(24deg);
-    }
-
-    50% {
-        transform: rotate(8deg);
-    }
-}
-
-@keyframes roroWingRight {
-    0%,
-    100% {
-        transform: rotate(-24deg);
-    }
-
-    50% {
-        transform: rotate(-8deg);
-    }
-}
-
-@keyframes roroTailMove {
-    0%,
-    100% {
-        transform: rotate(-17deg);
-    }
-
-    50% {
-        transform: rotate(-5deg);
     }
 }
 
@@ -2619,6 +2513,7 @@ button {
 
     .calendar-grid {
         gap: 4px;
+
         padding-left: 10px;
         padding-right: 10px;
     }
@@ -2637,7 +2532,10 @@ button {
         display: none;
     }
 
-    .pomodoro-card {
+    .pomodoro-card,
+    .focus-section,
+    .study-focus,
+    .study-card {
         padding: 28px 15px;
     }
 
@@ -2655,133 +2553,4 @@ button {
         transform-origin:
             bottom right;
     }
-}
-/* =========================================
-   ST ORAN'S PEER HUB - REPAIR PATCH
-   ========================================= */
-
-/* Make sure the app actually fills the screen */
-#app {
-    min-height: 100vh;
-}
-
-/* Navigation buttons */
-.sidebar button,
-.sidebar .nav-btn,
-nav button {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    padding: 10px 14px;
-    margin: 3px 0;
-    border: none;
-    border-radius: 8px;
-    background: transparent;
-    color: var(--cream);
-    font-family: inherit;
-    font-size: 14px;
-    text-align: left;
-    cursor: pointer;
-    transition: 0.2s ease;
-}
-
-.sidebar button:hover,
-.sidebar .nav-btn:hover,
-nav button:hover {
-    background: rgba(183, 154, 98, 0.14);
-    color: var(--gold);
-}
-
-.sidebar button.active,
-.sidebar .nav-btn.active,
-nav button.active {
-    background: var(--burgundy);
-    color: var(--white);
-}
-
-/* Page visibility */
-.page {
-    display: none;
-}
-
-.page.active {
-    display: block;
-}
-
-/* If the page uses an ID instead of .page */
-#homePage {
-    display: block;
-}
-
-/* Main content */
-.main-content,
-.main,
-.content,
-.app-content {
-    min-height: calc(100vh - 65px);
-}
-
-/* Gold details */
-h1,
-h2,
-h3 {
-    color: var(--green);
-}
-
-.section-title,
-.card-title {
-    color: var(--green);
-}
-
-.gold,
-.gold-text {
-    color: var(--gold);
-}
-
-/* Calendar day boxes */
-.calendar-day,
-.calendar-cell,
-.day-box {
-    min-height: 70px;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    background: var(--white);
-    padding: 8px;
-}
-
-.calendar-day.today,
-.calendar-cell.today,
-.day-box.today {
-    border: 2px solid var(--burgundy);
-}
-
-/* Focus/study area */
-.focus-section,
-.study-focus,
-.study-card {
-    background:
-        radial-gradient(circle at 15px 15px, rgba(183,154,98,.18) 2px, transparent 2.5px),
-        radial-gradient(circle at 45px 40px, rgba(183,154,98,.12) 2px, transparent 2.5px),
-        var(--green);
-    background-size: 60px 60px;
-    color: var(--cream);
-    border-radius: 18px;
-}
-
-/* Keep Roro visible */
-#roroBuddy {
-    position: fixed;
-    right: 25px;
-    bottom: 20px;
-    z-index: 9999;
-}
-
-#roroBuddy .roro-dragon {
-    display: block;
-    visibility: visible;
-}
-
-/* Make sure hidden class works ONLY when actually intended */
-.hidden {
-    display: none !important;
 }
