@@ -102,8 +102,6 @@ loginForm.addEventListener("submit", function(event) {
     currentUser = account;
 
 
-    // Load their information
-    loadUserData();
 
 
     // Open the dashboard
