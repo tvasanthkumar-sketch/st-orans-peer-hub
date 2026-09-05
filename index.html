@@ -3,657 +3,1978 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>St Oran's Peer Hub</title>
 
     <link rel="stylesheet" href="style.css">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
-<!-- LOGIN SCREEN -->
-<div class="login-screen" id="loginScreen">
+
+<!-- ================= LOGIN ================= -->
+
+<div id="loginScreen" class="login-screen">
+
+    <div class="login-decoration decoration-one"></div>
+    <div class="login-decoration decoration-two"></div>
 
     <div class="login-card">
 
         <div class="login-logo">
-            <div class="logo-mark">S</div>
+            <div class="logo-mark">SO</div>
+
+            <div>
+                <span class="logo-small">ST ORAN'S</span>
+                <h1>Peer Hub</h1>
+            </div>
         </div>
 
-        <p class="eyebrow">ST ORAN'S COLLEGE</p>
-
-        <h1>Welcome back.</h1>
-
-        <p class="login-subtitle">
-            Sign in to your Peer Hub account.
+        <p class="login-intro">
+            Learn together. Help each other. Grow together.
         </p>
 
         <form id="loginForm">
 
             <div class="form-group">
-                <label for="email">School email</label>
+                <label for="loginEmail">School email</label>
 
                 <input
                     type="email"
-                    id="email"
-                    placeholder="e.g. j.smith@storans.school.nz"
+                    id="loginEmail"
+                    placeholder="name@storans.school.nz"
                     required
                 >
             </div>
 
             <div class="form-group">
-                <label for="password">Password</label>
+
+                <div class="label-row">
+                    <label for="loginPassword">Password</label>
+
+                    <button
+                        type="button"
+                        class="text-button"
+                        onclick="showForgotPassword()"
+                    >
+                        Forgot password?
+                    </button>
+                </div>
 
                 <input
                     type="password"
-                    id="password"
+                    id="loginPassword"
                     placeholder="Enter your password"
                     required
                 >
-            </div>
-
-            <!-- ERROR MESSAGE -->
-            <div id="loginError" class="login-error"></div>
-
-            <div class="login-options">
-
-                <label class="remember">
-                    <input type="checkbox">
-                    <span>Remember me</span>
-                </label>
-
-                <a href="#" onclick="forgotPassword(event)">
-                    Forgot password?
-                </a>
 
             </div>
 
-            <button type="submit" class="login-button">
-                Log in
+            <div id="loginError" class="form-error"></div>
+
+            <label class="checkbox-label">
+                <input type="checkbox" id="rememberMe">
+                <span>Remember me</span>
+            </label>
+
+            <button type="submit" class="primary-button login-button">
+                Sign in
             </button>
 
         </form>
 
-        <div class="login-divider">
+        <div class="divider">
             <span>or</span>
         </div>
 
-        <button class="school-login-button" onclick="demoLogin()">
-            Continue with school account
+        <button
+            type="button"
+            class="google-button"
+            onclick="showGoogleLogin()"
+        >
+            <span class="google-icon">G</span>
+            Continue with Google
         </button>
 
         <p class="signup-text">
-            New to Peer Hub?
-            <a href="#" onclick="showSignup(event)">
-                Create an account
-            </a>
+            Don't have an account?
+            <button
+                type="button"
+                class="text-button"
+                onclick="showSignup()"
+            >
+                Create one
+            </button>
         </p>
 
-        <p class="prototype-note">
-            Student academic support platform
-        </p>
+        <div class="demo-note">
+            <strong>Prototype demo</strong>
+            <span>Use one of the demo accounts to explore the site.</span>
+        </div>
 
     </div>
 
 </div>
 
-</div>
-    <div class="app" id="mainApp">
 
-        <!-- SIDEBAR -->
-        <aside class="sidebar">
+<!-- ================= APP ================= -->
 
-            <div class="logo">
-                <div class="logo-mark">S</div>
+<div id="app" class="app hidden">
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+        <div class="sidebar-logo">
+
+            <div class="logo-mark">SO</div>
+
+            <div>
+                <span class="logo-small">ST ORAN'S</span>
+                <h2>Peer Hub</h2>
+            </div>
+
+        </div>
+
+        <nav class="main-nav">
+
+            <button
+                class="nav-item active"
+                data-page="home"
+                onclick="navigateTo('home')"
+            >
+                <span class="nav-icon">⌂</span>
+                <span>Home</span>
+            </button>
+
+            <button
+                class="nav-item"
+                data-page="calendar"
+                onclick="navigateTo('calendar')"
+            >
+                <span class="nav-icon">□</span>
+                <span>Calendar</span>
+            </button>
+
+            <button
+                class="nav-item"
+                data-page="assignments"
+                onclick="navigateTo('assignments')"
+            >
+                <span class="nav-icon">✓</span>
+                <span>Assignments</span>
+            </button>
+
+            <button
+                class="nav-item"
+                data-page="peers"
+                onclick="navigateTo('peers')"
+            >
+                <span class="nav-icon">♧</span>
+                <span>Find a Peer</span>
+            </button>
+
+            <button
+                class="nav-item"
+                data-page="resources"
+                onclick="navigateTo('resources')"
+            >
+                <span class="nav-icon">▤</span>
+                <span>Study Resources</span>
+            </button>
+
+            <button
+                class="nav-item"
+                data-page="profile"
+                onclick="navigateTo('profile')"
+            >
+                <span class="nav-icon">○</span>
+                <span>My Profile</span>
+            </button>
+
+            <button
+                class="nav-item"
+                data-page="progress"
+                onclick="navigateTo('progress')"
+            >
+                <span class="nav-icon">↗</span>
+                <span>My Progress</span>
+            </button>
+
+            <button
+                class="nav-item"
+                data-page="settings"
+                onclick="navigateTo('settings')"
+            >
+                <span class="nav-icon">⚙</span>
+                <span>Settings</span>
+            </button>
+
+        </nav>
+
+        <div class="sidebar-bottom">
+
+            <div class="points-mini-card">
+
+                <div class="points-mini-icon">✦</div>
+
                 <div>
-                    <h2>St Oran's</h2>
-                    <span>Peer Hub</span>
+                    <span>Peer Points</span>
+                    <strong id="sidebarPoints">0</strong>
                 </div>
+
             </div>
 
-            <nav class="navigation">
+            <button
+                class="signout-button"
+                onclick="signOut()"
+            >
+                <span>↪</span>
+                Sign out
+            </button>
 
-                <a href="#" class="nav-item active" data-page="home">
-                    <span>⌂</span>
-                    <span>Home</span>
-                </a>
+        </div>
 
-                <a href="#" class="nav-item" data-page="calendar">
-                    <span>□</span>
-                    <span>Calendar</span>
-                </a>
+    </aside>
 
-                <a href="#" class="nav-item" data-page="assignments">
-                    <span>✓</span>
-                    <span>Assignments</span>
-                </a>
 
-                <a href="#" class="nav-item" data-page="peers">
-                    <span>⌕</span>
-                    <span>Find a Peer</span>
-                </a>
+    <!-- MAIN CONTENT -->
 
-                <a href="#" class="nav-item" data-page="resources">
-                    <span>▤</span>
-                    <span>Study Resources</span>
-                </a>
+    <main class="main-content">
 
-                <div class="nav-divider"></div>
+        <!-- TOP BAR -->
 
-                <a href="#" class="nav-item" data-page="profile">
-                    <span>○</span>
-                    <span>My Profile</span>
-                </a>
+        <header class="topbar">
 
-                <a href="#" class="nav-item" data-page="progress">
-                    <span>↗</span>
-                    <span>My Progress</span>
-                </a>
+            <div class="mobile-brand">
 
-                <a href="#" class="nav-item" data-page="settings">
-                    <span>⚙</span>
-                    <span>Settings</span>
-                </a>
+                <div class="logo-mark">SO</div>
 
-            </nav>
+                <strong>Peer Hub</strong>
 
-            <div class="sidebar-bottom">
-                <div class="school-badge">
-                    <span>ST ORAN'S COLLEGE</span>
-                    <small>Learn • Help • Grow</small>
-                </div>
             </div>
 
-        </aside>
+            <div class="topbar-right">
 
+                <button
+                    class="icon-button"
+                    onclick="showNotifications()"
+                    aria-label="Notifications"
+                >
+                    ♧
+                    <span class="notification-dot"></span>
+                </button>
 
-        <!-- MAIN CONTENT -->
-        <main class="main-content">
+                <button
+                    class="profile-mini"
+                    onclick="navigateTo('profile')"
+                >
 
-            <!-- TOP BAR -->
-            <header class="topbar">
-
-                <div class="mobile-logo">
-                    <strong>St Oran's</strong>
-                </div>
-
-                <div class="topbar-actions">
-
-                    <button class="icon-button" title="Notifications">
-                        ♧
-                    </button>
-
-                    <div class="user-mini">
-                        <div class="avatar">M</div>
-                        <div>
-                            <strong>Maya</strong>
-                            <small>Year 8</small>
-                        </div>
+                    <div
+                        class="avatar avatar-small"
+                        id="topAvatar"
+                    >
+                        MS
                     </div>
 
+                    <div class="profile-mini-info">
+                        <strong id="topUserName">Maya</strong>
+                        <span id="topUserYear">Year 8</span>
+                    </div>
+
+                </button>
+
+            </div>
+
+        </header>
+
+
+        <!-- ================= HOME ================= -->
+
+        <section id="page-home" class="page active-page">
+
+            <div class="page-header home-header">
+
+                <div>
+
+                    <p
+                        class="eyebrow"
+                        id="homeDate"
+                    >
+                        Saturday, 5 September 2026
+                    </p>
+
+                    <h1 id="greeting">
+                        Good afternoon, Maya.
+                    </h1>
+
+                    <p>
+                        Here's what's happening with your learning today.
+                    </p>
+
                 </div>
 
-            </header>
+                <div class="daily-quote">
+
+                    <span class="quote-mark">“</span>
+
+                    <p id="dailyQuote">
+                        Small progress is still progress.
+                    </p>
+
+                </div>
+
+            </div>
 
 
-            <!-- PAGE CONTAINER -->
-            <div class="page-container">
+            <!-- STATS -->
 
-                <!-- HOME PAGE -->
-                <section class="page active-page" id="home">
+            <div class="stats-grid">
 
-                    <div class="welcome-section">
+                <div class="stat-card">
+
+                    <div class="stat-icon gold">✦</div>
+
+                    <div>
+                        <span>Peer Points</span>
+                        <strong id="homePoints">240</strong>
+                    </div>
+
+                    <small>+18 this month</small>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-icon green">✓</div>
+
+                    <div>
+                        <span>Sessions helped</span>
+                        <strong id="homeHelped">8</strong>
+                    </div>
+
+                    <small>Keep it going</small>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-icon burgundy">□</div>
+
+                    <div>
+                        <span>Upcoming</span>
+                        <strong id="homeUpcoming">4</strong>
+                    </div>
+
+                    <small>Assignments & sessions</small>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-icon blue">♧</div>
+
+                    <div>
+                        <span>Study streak</span>
+                        <strong>6 days</strong>
+                    </div>
+
+                    <small>You're on a roll</small>
+
+                </div>
+
+            </div>
+
+
+            <div class="dashboard-grid">
+
+                <!-- RECOMMENDED PEERS -->
+
+                <div class="dashboard-card recommended-card">
+
+                    <div class="card-header">
 
                         <div>
-                            <p class="eyebrow">SATURDAY, SEPTEMBER 5</p>
-                            <h1>Good afternoon, Maya.</h1>
-                            <p class="welcome-text">
-                                Ready to learn, help someone out, or both?
-                            </p>
+                            <span class="eyebrow">Recommended</span>
+                            <h2>Peers who can help</h2>
                         </div>
 
-                        <button class="primary-button" onclick="showPage('peers')">
-                            + Find a Peer
+                        <button
+                            class="text-button"
+                            onclick="navigateTo('peers')"
+                        >
+                            View all →
                         </button>
 
                     </div>
 
+                    <div
+                        id="recommendedPeers"
+                        class="peer-list"
+                    ></div>
 
-                    <!-- SEARCH -->
-                    <div class="search-box">
+                </div>
 
-                        <span class="search-icon">⌕</span>
 
-                        <input
-                            type="text"
-                            id="peerSearch"
-                            placeholder="Search for a subject or topic, e.g. expanding brackets..."
+                <!-- UPCOMING -->
+
+                <div class="dashboard-card">
+
+                    <div class="card-header">
+
+                        <div>
+                            <span class="eyebrow">Coming up</span>
+                            <h2>Your next tasks</h2>
+                        </div>
+
+                        <button
+                            class="text-button"
+                            onclick="navigateTo('assignments')"
                         >
-
-                        <button onclick="searchPeers()">Search</button>
-
-                    </div>
-
-
-                    <!-- DASHBOARD GRID -->
-                    <div class="dashboard-grid">
-
-                        <!-- CALENDAR CARD -->
-                        <div class="card calendar-card">
-
-                            <div class="card-header">
-                                <div>
-                                    <p class="card-label">YOUR WEEK</p>
-                                    <h2>September 2026</h2>
-                                </div>
-
-                                <button class="text-button" onclick="showPage('calendar')">
-                                    View calendar →
-                                </button>
-                            </div>
-
-                            <div class="mini-calendar">
-
-                                <div class="calendar-days">
-                                    <span>MON</span>
-                                    <span>TUE</span>
-                                    <span>WED</span>
-                                    <span>THU</span>
-                                    <span>FRI</span>
-                                    <span>SAT</span>
-                                    <span>SUN</span>
-                                </div>
-
-                                <div class="calendar-numbers">
-                                    <span>31</span>
-                                    <span>1</span>
-                                    <span>2</span>
-                                    <span>3</span>
-                                    <span>4</span>
-                                    <span class="today">5</span>
-                                    <span>6</span>
-
-                                    <span>7</span>
-                                    <span>8</span>
-                                    <span>9</span>
-                                    <span>10</span>
-                                    <span>11</span>
-                                    <span>12</span>
-                                    <span>13</span>
-                                </div>
-
-                            </div>
-
-                        </div>
-
-
-                        <!-- UPCOMING -->
-                        <div class="card upcoming-card">
-
-                            <div class="card-header">
-                                <div>
-                                    <p class="card-label">COMING UP</p>
-                                    <h2>Next deadlines</h2>
-                                </div>
-
-                                <button class="text-button" onclick="showPage('assignments')">
-                                    See all →
-                                </button>
-                            </div>
-
-                            <div class="assignment-list">
-
-                                <div class="assignment">
-                                    <div class="assignment-icon english">E</div>
-
-                                    <div class="assignment-info">
-                                        <strong>English Speech</strong>
-                                        <span>Due Monday</span>
-                                    </div>
-
-                                    <span class="priority high">High</span>
-                                </div>
-
-                                <div class="assignment">
-                                    <div class="assignment-icon maths">M</div>
-
-                                    <div class="assignment-info">
-                                        <strong>Algebra Practice</strong>
-                                        <span>Due Wednesday</span>
-                                    </div>
-
-                                    <span class="priority medium">Medium</span>
-                                </div>
-
-                                <div class="assignment">
-                                    <div class="assignment-icon science">S</div>
-
-                                    <div class="assignment-info">
-                                        <strong>Science Report</strong>
-                                        <span>Due Friday</span>
-                                    </div>
-
-                                    <span class="priority low">Low</span>
-                                </div>
-
-                            </div>
-
-                        </div>
-
-
-                        <!-- PEER RECOMMENDATIONS -->
-                        <div class="card peers-card">
-
-                            <div class="card-header">
-                                <div>
-                                    <p class="card-label">PEER SUPPORT</p>
-                                    <h2>Students who can help</h2>
-                                </div>
-
-                                <button class="text-button" onclick="showPage('peers')">
-                                    Find more →
-                                </button>
-                            </div>
-
-                            <div class="peer-list">
-
-                                <div class="peer">
-
-                                    <div class="avatar peer-avatar">L</div>
-
-                                    <div class="peer-info">
-                                        <strong>Lucy</strong>
-                                        <span>Maths • Algebra</span>
-                                    </div>
-
-                                    <span class="available">Available</span>
-
-                                </div>
-
-                                <div class="peer">
-
-                                    <div class="avatar peer-avatar">A</div>
-
-                                    <div class="peer-info">
-                                        <strong>Amelia</strong>
-                                        <span>Science • Biology</span>
-                                    </div>
-
-                                    <span class="available">Available</span>
-
-                                </div>
-
-                                <div class="peer">
-
-                                    <div class="avatar peer-avatar">S</div>
-
-                                    <div class="peer-info">
-                                        <strong>Sophie</strong>
-                                        <span>Spanish • Writing</span>
-                                    </div>
-
-                                    <span class="busy">Later today</span>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-
-                        <!-- PROGRESS -->
-                        <div class="card progress-card">
-
-                            <div class="card-header">
-                                <div>
-                                    <p class="card-label">YOUR PROGRESS</p>
-                                    <h2>Peer Points</h2>
-                                </div>
-
-                                <button class="text-button" onclick="showPage('progress')">
-                                    View progress →
-                                </button>
-                            </div>
-
-                            <div class="points-display">
-
-                                <div class="points-number">240</div>
-
-                                <div>
-                                    <strong>Peer Points</strong>
-                                    <span>You've helped 8 students this term.</span>
-                                </div>
-
-                            </div>
-
-                            <div class="progress-bar">
-                                <div class="progress-fill"></div>
-                            </div>
-
-                            <p class="progress-caption">
-                                60 points until your next badge
-                            </p>
-
-                        </div>
+                            View all →
+                        </button>
 
                     </div>
 
-                </section>
+                    <div
+                        id="upcomingTasks"
+                        class="task-list"
+                    ></div>
 
-
-                <!-- CALENDAR PAGE -->
-                <section class="page" id="calendar">
-
-                    <div class="page-heading">
-                        <p class="eyebrow">ORGANISE</p>
-                        <h1>Your Calendar</h1>
-                        <p>Keep assignments, tests, events and tutoring sessions in one place.</p>
-                    </div>
-
-                    <div class="large-placeholder">
-                        <span>□</span>
-                        <h2>Calendar coming together</h2>
-                        <p>Your full calendar will live here.</p>
-                    </div>
-
-                </section>
-
-
-                <!-- ASSIGNMENTS PAGE -->
-                <section class="page" id="assignments">
-
-                    <div class="page-heading">
-                        <p class="eyebrow">STAY ON TRACK</p>
-                        <h1>Assignments</h1>
-                        <p>See what's due and keep your workload under control.</p>
-                    </div>
-
-                    <div class="large-placeholder">
-                        <span>✓</span>
-                        <h2>Your assignments</h2>
-                        <p>Assignment tracking will live here.</p>
-                    </div>
-
-                </section>
-
-
-                <!-- FIND PEER PAGE -->
-                <section class="page" id="peers">
-
-                    <div class="page-heading">
-                        <p class="eyebrow">PEER SUPPORT</p>
-                        <h1>Find a Peer</h1>
-                        <p>Search for a subject, topic or skill and find someone who can help.</p>
-                    </div>
-
-                    <div class="search-box large-search">
-
-                        <span class="search-icon">⌕</span>
-
-                        <input
-                            type="text"
-                            id="mainPeerSearch"
-                            placeholder="Try 'fractions', 'biology', 'essay writing'..."
-                        >
-
-                        <button onclick="searchMainPeers()">Search</button>
-
-                    </div>
-
-                    <div id="searchResults" class="peer-results">
-
-                        <div class="empty-state">
-                            <span>⌕</span>
-                            <h2>What do you need help with?</h2>
-                            <p>Search for a topic to find students who can help.</p>
-                        </div>
-
-                    </div>
-
-                </section>
-
-
-                <!-- RESOURCES PAGE -->
-                <section class="page" id="resources">
-
-                    <div class="page-heading">
-                        <p class="eyebrow">LEARN</p>
-                        <h1>Study Resources</h1>
-                        <p>Access St Oran's existing study resources and useful learning tools.</p>
-                    </div>
-
-                    <div class="resource-grid">
-
-                        <div class="resource-card">
-                            <span>📚</span>
-                            <h3>Study Guides</h3>
-                            <p>Revision material and subject resources.</p>
-                            <button class="secondary-button">Open resources</button>
-                        </div>
-
-                        <div class="resource-card">
-                            <span>✎</span>
-                            <h3>Study Tips</h3>
-                            <p>Helpful strategies for planning and revision.</p>
-                            <button class="secondary-button">View tips</button>
-                        </div>
-
-                    </div>
-
-                </section>
-
-
-                <!-- PROFILE PAGE -->
-                <section class="page" id="profile">
-
-                    <div class="page-heading">
-                        <p class="eyebrow">YOUR SPACE</p>
-                        <h1>My Profile</h1>
-                        <p>Tell other students what you can help with.</p>
-                    </div>
-
-                    <div class="profile-card">
-
-                        <div class="profile-top">
-
-                            <div class="large-avatar">M</div>
-
-                            <div>
-                                <h2>Maya</h2>
-                                <p>Year 8</p>
-                            </div>
-
-                            <button class="secondary-button">Edit profile</button>
-
-                        </div>
-
-                        <div class="profile-section">
-
-                            <h3>I can help with</h3>
-
-                            <div class="tags">
-                                <span>Maths</span>
-                                <span>Algebra</span>
-                                <span>English</span>
-                                <span>Essay Writing</span>
-                            </div>
-
-                        </div>
-
-                        <div class="change-notice">
-                            <strong>↻ Your profile is flexible</strong>
-                            <p>
-                                You can change your subjects and availability whenever you need.
-                            </p>
-                        </div>
-
-                    </div>
-
-                </section>
-
-
-                <!-- PROGRESS PAGE -->
-                <section class="page" id="progress">
-
-                    <div class="page-heading">
-                        <p class="eyebrow">YOUR IMPACT</p>
-                        <h1>My Progress</h1>
-                        <p>See your study progress and the difference you've made helping others.</p>
-                    </div>
-
-                    <div class="stats-grid">
-
-                        <div class="stat-card">
-                            <span>Peer Points</span>
-                            <strong>240</strong>
-                        </div>
-
-                        <div class="stat-card">
-                            <span>Students Helped</span>
-                            <strong>8</strong>
-                        </div>
-
-                        <div class="stat-card">
-                            <span>Sessions Completed</span>
-                            <strong>12</strong>
-                        </div>
-
-                        <div class="stat-card">
-                            <span>Badges Earned</span>
-                            <strong>3</strong>
-                        </div>
-
-                    </div>
-
-                </section>
-
-
-                <!-- SETTINGS PAGE -->
-                <section class="page" id="settings">
-
-                    <div class="page-heading">
-                        <p class="eyebrow">PERSONALISE</p>
-                        <h1>Settings</h1>
-                        <p>Manage your preferences.</p>
-                    </div>
-
-                    <div class="large-placeholder">
-                        <span>⚙</span>
-                        <h2>Settings</h2>
-                        <p>Your account and notification settings will live here.</p>
-                    </div>
-
-                </section>
+                </div>
 
             </div>
 
-        </main>
+
+            <!-- QUICK ACTIONS -->
+
+            <div class="quick-actions-section">
+
+                <div class="section-heading">
+
+                    <div>
+                        <span class="eyebrow">Get started</span>
+                        <h2>What would you like to do?</h2>
+                    </div>
+
+                </div>
+
+                <div class="quick-actions">
+
+                    <button
+                        class="quick-action"
+                        onclick="navigateTo('peers')"
+                    >
+
+                        <span class="quick-icon">♧</span>
+
+                        <div>
+                            <strong>Find a peer</strong>
+                            <span>Get help with a topic</span>
+                        </div>
+
+                        <span>→</span>
+
+                    </button>
+
+
+                    <button
+                        class="quick-action"
+                        onclick="navigateTo('assignments')"
+                    >
+
+                        <span class="quick-icon">✓</span>
+
+                        <div>
+                            <strong>Track an assignment</strong>
+                            <span>Stay on top of your work</span>
+                        </div>
+
+                        <span>→</span>
+
+                    </button>
+
+
+                    <button
+                        class="quick-action"
+                        onclick="navigateTo('resources')"
+                    >
+
+                        <span class="quick-icon">▤</span>
+
+                        <div>
+                            <strong>Study resources</strong>
+                            <span>Find useful resources</span>
+                        </div>
+
+                        <span>→</span>
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- POINTS INFO -->
+
+            <div class="points-banner">
+
+                <div class="points-banner-icon">✦</div>
+
+                <div>
+
+                    <strong>Every helpful action counts.</strong>
+
+                    <p>
+                        Earn Peer Points by helping others,
+                        attending sessions and sharing useful resources.
+                    </p>
+
+                </div>
+
+                <button
+                    class="secondary-button"
+                    onclick="navigateTo('progress')"
+                >
+                    See my progress
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= CALENDAR ================= -->
+
+        <section id="page-calendar" class="page">
+
+            <div class="page-header">
+
+                <div>
+
+                    <span class="eyebrow">Stay organised</span>
+
+                    <h1>Calendar</h1>
+
+                    <p>
+                        Keep your assignments, sessions and school events together.
+                    </p>
+
+                </div>
+
+                <button
+                    class="primary-button"
+                    onclick="showAddEvent()"
+                >
+                    + Add event
+                </button>
+
+            </div>
+
+
+            <div class="calendar-layout">
+
+                <div class="calendar-card">
+
+                    <div class="calendar-header">
+
+                        <button
+                            class="calendar-arrow"
+                            onclick="changeMonth(-1)"
+                        >
+                            ←
+                        </button>
+
+                        <h2 id="calendarMonth">
+                            September 2026
+                        </h2>
+
+                        <button
+                            class="calendar-arrow"
+                            onclick="changeMonth(1)"
+                        >
+                            →
+                        </button>
+
+                    </div>
+
+                    <div
+                        id="calendarGrid"
+                        class="calendar-grid"
+                    ></div>
+
+                </div>
+
+
+                <div class="calendar-events-card">
+
+                    <div class="card-header">
+
+                        <div>
+
+                            <span class="eyebrow">
+                                Upcoming
+                            </span>
+
+                            <h2>
+                                Your events
+                            </h2>
+
+                        </div>
+
+                    </div>
+
+                    <div
+                        id="calendarEvents"
+                        class="event-list"
+                    ></div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= ASSIGNMENTS ================= -->
+
+        <section id="page-assignments" class="page">
+
+            <div class="page-header">
+
+                <div>
+
+                    <span class="eyebrow">
+                        Stay on track
+                    </span>
+
+                    <h1>Assignments</h1>
+
+                    <p>
+                        Keep every deadline in one place.
+                    </p>
+
+                </div>
+
+                <button
+                    class="primary-button"
+                    onclick="showAddAssignment()"
+                >
+                    + Add assignment
+                </button>
+
+            </div>
+
+
+            <div class="assignment-filters">
+
+                <button
+                    class="filter-tab active"
+                    onclick="filterAssignments('all', this)"
+                >
+                    All
+                </button>
+
+                <button
+                    class="filter-tab"
+                    onclick="filterAssignments('upcoming', this)"
+                >
+                    Upcoming
+                </button>
+
+                <button
+                    class="filter-tab"
+                    onclick="filterAssignments('complete', this)"
+                >
+                    Complete
+                </button>
+
+            </div>
+
+
+            <div
+                id="assignmentList"
+                class="assignment-list"
+            ></div>
+
+        </section>
+
+
+        <!-- ================= FIND A PEER ================= -->
+
+        <section id="page-peers" class="page">
+
+            <div class="page-header">
+
+                <div>
+
+                    <span class="eyebrow">
+                        Learn together
+                    </span>
+
+                    <h1>Find a Peer</h1>
+
+                    <p>
+                        Search for someone who knows what you need help with.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- SEARCH -->
+
+            <div class="peer-search-card">
+
+                <div class="search-main">
+
+                    <span class="search-icon">⌕</span>
+
+                    <input
+                        type="text"
+                        id="peerSearch"
+                        placeholder="Search a subject or topic, e.g. expanding brackets..."
+                        oninput="filterPeers()"
+                    >
+
+                </div>
+
+
+                <div class="peer-filters">
+
+                    <select
+                        id="subjectFilter"
+                        onchange="filterPeers()"
+                    >
+                        <option value="all">All subjects</option>
+                        <option value="Maths">Maths</option>
+                        <option value="English">English</option>
+                        <option value="Science">Science</option>
+                        <option value="Social Studies">Social Studies</option>
+                        <option value="Spanish">Spanish</option>
+                        <option value="Technology">Technology</option>
+                    </select>
+
+
+                    <select
+                        id="yearFilter"
+                        onchange="filterPeers()"
+                    >
+                        <option value="all">Any year</option>
+                        <option value="8">Year 8</option>
+                        <option value="9">Year 9</option>
+                        <option value="10">Year 10</option>
+                        <option value="11">Year 11</option>
+                        <option value="12">Year 12</option>
+                        <option value="13">Year 13</option>
+                    </select>
+
+
+                    <select
+                        id="availabilityFilter"
+                        onchange="filterPeers()"
+                    >
+                        <option value="all">Any availability</option>
+                        <option value="today">Today</option>
+                        <option value="week">This week</option>
+                        <option value="online">Online</option>
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <div class="peer-results-header">
+
+                <div>
+
+                    <span class="eyebrow">
+                        Peer matches
+                    </span>
+
+                    <h2 id="peerResultsCount">
+                        People who can help
+                    </h2>
+
+                </div>
+
+                <label class="checkbox-label">
+
+                    <input
+                        type="checkbox"
+                        id="onlineOnly"
+                        onchange="filterPeers()"
+                    >
+
+                    <span>Online sessions only</span>
+
+                </label>
+
+            </div>
+
+
+            <div
+                id="peerResults"
+                class="peer-results-grid"
+            ></div>
+
+        </section>
+
+
+        <!-- ================= RESOURCES ================= -->
+
+        <section id="page-resources" class="page">
+
+            <div class="page-header">
+
+                <div>
+
+                    <span class="eyebrow">
+                        Study smarter
+                    </span>
+
+                    <h1>Study Resources</h1>
+
+                    <p>
+                        Helpful resources for your subjects, all in one place.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="resource-search">
+
+                <span>⌕</span>
+
+                <input
+                    type="text"
+                    id="resourceSearch"
+                    placeholder="Search resources..."
+                    oninput="filterResources()"
+                >
+
+            </div>
+
+
+            <div class="resource-categories">
+
+                <button
+                    class="resource-category active"
+                    onclick="filterResourceCategory('all', this)"
+                >
+                    All
+                </button>
+
+                <button
+                    class="resource-category"
+                    onclick="filterResourceCategory('Maths', this)"
+                >
+                    Maths
+                </button>
+
+                <button
+                    class="resource-category"
+                    onclick="filterResourceCategory('English', this)"
+                >
+                    English
+                </button>
+
+                <button
+                    class="resource-category"
+                    onclick="filterResourceCategory('Science', this)"
+                >
+                    Science
+                </button>
+
+                <button
+                    class="resource-category"
+                    onclick="filterResourceCategory('Social Studies', this)"
+                >
+                    Social Studies
+                </button>
+
+            </div>
+
+
+            <div
+                id="resourceGrid"
+                class="resource-grid"
+            ></div>
+
+        </section>
+
+
+        <!-- ================= PROFILE ================= -->
+
+        <section id="page-profile" class="page">
+
+            <div class="page-header">
+
+                <div>
+
+                    <span class="eyebrow">
+                        Your profile
+                    </span>
+
+                    <h1>My Profile</h1>
+
+                    <p>
+                        Tell other students what you can help with.
+                    </p>
+
+                </div>
+
+                <button
+                    class="secondary-button"
+                    onclick="editProfile()"
+                >
+                    Edit profile
+                </button>
+
+            </div>
+
+
+            <div class="profile-layout">
+
+                <div class="profile-main-card">
+
+                    <div class="profile-cover"></div>
+
+                    <div class="profile-content">
+
+                        <div class="profile-avatar-large avatar">
+                            MS
+                        </div>
+
+                        <div class="profile-heading">
+
+                            <h2 id="profileName">
+                                Maya Smith
+                            </h2>
+
+                            <p id="profileYear">
+                                Year 8 · 8WI
+                            </p>
+
+                            <span class="profile-status">
+                                ● Available for peer tutoring
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="profile-divider"></div>
+
+
+                    <div class="profile-section">
+
+                        <h3>About me</h3>
+
+                        <p id="profileBio">
+                            I enjoy helping people understand maths
+                            and science. I am usually available after school.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="profile-side-card">
+
+                    <span class="eyebrow">
+                        I can help with
+                    </span>
+
+                    <h2>Subjects & topics</h2>
+
+                    <div
+                        id="profileSubjects"
+                        class="subject-tags"
+                    ></div>
+
+
+                    <div class="profile-divider"></div>
+
+
+                    <span class="eyebrow">
+                        Availability
+                    </span>
+
+                    <div class="availability-list">
+
+                        <div>
+                            <span>Monday</span>
+                            <strong>3:30 – 5:00 PM</strong>
+                        </div>
+
+                        <div>
+                            <span>Wednesday</span>
+                            <strong>3:30 – 5:00 PM</strong>
+                        </div>
+
+                        <div>
+                            <span>Friday</span>
+                            <strong>3:30 – 4:30 PM</strong>
+                        </div>
+
+                    </div>
+
+
+                    <p class="change-note">
+                        ✦ You can change your subjects and availability at any time.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= PROGRESS ================= -->
+
+        <section id="page-progress" class="page">
+
+            <div class="page-header">
+
+                <div>
+
+                    <span class="eyebrow">
+                        Your contribution
+                    </span>
+
+                    <h1>My Progress</h1>
+
+                    <p>
+                        See how your contribution to the Peer Hub is growing.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="progress-stats">
+
+                <div class="progress-stat">
+
+                    <span>Total Peer Points</span>
+
+                    <strong id="progressPoints">
+                        240
+                    </strong>
+
+                    <small>
+                        Keep helping others.
+                    </small>
+
+                </div>
+
+
+                <div class="progress-stat">
+
+                    <span>Sessions helped</span>
+
+                    <strong id="progressSessions">
+                        8
+                    </strong>
+
+                    <small>
+                        You're making a difference.
+                    </small>
+
+                </div>
+
+
+                <div class="progress-stat">
+
+                    <span>Resources shared</span>
+
+                    <strong>6</strong>
+
+                    <small>
+                        Knowledge grows when shared.
+                    </small>
+
+                </div>
+
+
+                <div class="progress-stat">
+
+                    <span>Badges earned</span>
+
+                    <strong id="progressBadges">
+                        3
+                    </strong>
+
+                    <small>
+                        Keep collecting.
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <div class="progress-layout">
+
+                <div class="chart-card">
+
+                    <div class="card-header">
+
+                        <div>
+
+                            <span class="eyebrow">
+                                Peer Points
+                            </span>
+
+                            <h2>
+                                Your progress
+                            </h2>
+
+                        </div>
+
+                        <span class="chart-period">
+                            Last 6 months
+                        </span>
+
+                    </div>
+
+                    <canvas
+                        id="pointsChart"
+                        width="800"
+                        height="350"
+                    ></canvas>
+
+                </div>
+
+
+                <div class="points-rules-card">
+
+                    <span class="eyebrow">
+                        How points work
+                    </span>
+
+                    <h2>
+                        Earn points by helping
+                    </h2>
+
+                    <div class="points-rule">
+
+                        <span>✦</span>
+
+                        <div>
+                            <strong>Complete a tutoring session</strong>
+                            <small>+10 Peer Points</small>
+                        </div>
+
+                    </div>
+
+
+                    <div class="points-rule">
+
+                        <span>✓</span>
+
+                        <div>
+                            <strong>Help another student</strong>
+                            <small>+5 Peer Points</small>
+                        </div>
+
+                    </div>
+
+
+                    <div class="points-rule">
+
+                        <span>▤</span>
+
+                        <div>
+                            <strong>Share a useful resource</strong>
+                            <small>+3 Peer Points</small>
+                        </div>
+
+                    </div>
+
+
+                    <div class="points-rule">
+
+                        <span>○</span>
+
+                        <div>
+                            <strong>Attend a tutoring session</strong>
+                            <small>+2 Peer Points</small>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="badges-section">
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <span class="eyebrow">
+                            Achievements
+                        </span>
+
+                        <h2>
+                            Your badges
+                        </h2>
+
+                    </div>
+
+                </div>
+
+                <div
+                    id="badgesGrid"
+                    class="badges-grid"
+                ></div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= SETTINGS ================= -->
+
+        <section id="page-settings" class="page">
+
+            <div class="page-header">
+
+                <div>
+
+                    <span class="eyebrow">
+                        Personalise your experience
+                    </span>
+
+                    <h1>Settings</h1>
+
+                    <p>
+                        Manage your Peer Hub preferences.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="settings-card">
+
+                <div class="settings-section">
+
+                    <h2>Notifications</h2>
+
+                    <div class="setting-row">
+
+                        <div>
+
+                            <strong>Session reminders</strong>
+
+                            <span>
+                                Get reminded before tutoring sessions.
+                            </span>
+
+                        </div>
+
+                        <label class="toggle">
+
+                            <input
+                                type="checkbox"
+                                checked
+                            >
+
+                            <span></span>
+
+                        </label>
+
+                    </div>
+
+
+                    <div class="setting-row">
+
+                        <div>
+
+                            <strong>Assignment reminders</strong>
+
+                            <span>
+                                Receive reminders about upcoming deadlines.
+                            </span>
+
+                        </div>
+
+                        <label class="toggle">
+
+                            <input
+                                type="checkbox"
+                                checked
+                            >
+
+                            <span></span>
+
+                        </label>
+
+                    </div>
+
+
+                    <div class="setting-row">
+
+                        <div>
+
+                            <strong>Peer requests</strong>
+
+                            <span>
+                                Get notified when someone requests your help.
+                            </span>
+
+                        </div>
+
+                        <label class="toggle">
+
+                            <input
+                                type="checkbox"
+                                checked
+                            >
+
+                            <span></span>
+
+                        </label>
+
+                    </div>
+
+                </div>
+
+
+                <div class="profile-divider"></div>
+
+
+                <div class="settings-section">
+
+                    <h2>Account</h2>
+
+                    <div class="setting-row">
+
+                        <div>
+
+                            <strong>School email</strong>
+
+                            <span id="settingsEmail">
+                                t.smith@storans.school.nz
+                            </span>
+
+                        </div>
+
+                        <span class="verified">
+                            ✓ Verified
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<!-- ================= MODALS ================= -->
+
+<!-- GOOGLE LOGIN -->
+
+<div
+    id="googleModal"
+    class="modal hidden"
+>
+
+    <div class="modal-overlay" onclick="closeModal('googleModal')"></div>
+
+    <div class="modal-card small-modal">
+
+        <button
+            class="modal-close"
+            onclick="closeModal('googleModal')"
+        >
+            ×
+        </button>
+
+        <div class="modal-icon google-modal-icon">
+            G
+        </div>
+
+        <h2>Continue with Google</h2>
+
+        <p>
+            This is a prototype, so choose a demo Google account.
+        </p>
+
+        <button
+            class="google-account"
+            onclick="googleLogin('maya')"
+        >
+
+            <div class="avatar avatar-small">
+                MS
+            </div>
+
+            <div>
+                <strong>Maya Smith</strong>
+                <span>t.smith@storans.school.nz</span>
+            </div>
+
+            <span>→</span>
+
+        </button>
+
+
+        <button
+            class="google-account"
+            onclick="googleLogin('lucy')"
+        >
+
+            <div class="avatar avatar-small">
+                LW
+            </div>
+
+            <div>
+                <strong>Lucy Worthington</strong>
+                <span>l.worthington@storans.school.nz</span>
+            </div>
+
+            <span>→</span>
+
+        </button>
 
     </div>
 
-    <script src="script.js"></script>
+</div>
+
+
+<!-- SIGNUP -->
+
+<div
+    id="signupModal"
+    class="modal hidden"
+>
+
+    <div class="modal-overlay" onclick="closeModal('signupModal')"></div>
+
+    <div class="modal-card signup-modal">
+
+        <button
+            class="modal-close"
+            onclick="closeModal('signupModal')"
+        >
+            ×
+        </button>
+
+        <div class="signup-progress">
+
+            <span class="active"></span>
+            <span></span>
+            <span></span>
+
+        </div>
+
+        <div id="signupContent">
+
+            <span class="eyebrow">
+                Create your account
+            </span>
+
+            <h2>Let's get you set up.</h2>
+
+            <p>
+                Your profile can be changed whenever you need.
+            </p>
+
+            <div class="form-group">
+
+                <label for="suFirst">
+                    First name
+                </label>
+
+                <input
+                    type="text"
+                    id="suFirst"
+                    placeholder="First name"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="suLast">
+                    Last name
+                </label>
+
+                <input
+                    type="text"
+                    id="suLast"
+                    placeholder="Last name"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="suYear">
+                    Year level
+                </label>
+
+                <select id="suYear">
+
+                    <option value="8">
+                        Year 8
+                    </option>
+
+                    <option value="9">
+                        Year 9
+                    </option>
+
+                    <option value="10">
+                        Year 10
+                    </option>
+
+                    <option value="11">
+                        Year 11
+                    </option>
+
+                    <option value="12">
+                        Year 12
+                    </option>
+
+                    <option value="13">
+                        Year 13
+                    </option>
+
+                </select>
+
+            </div>
+
+            <button
+                class="primary-button full-width"
+                onclick="signupNext(2)"
+            >
+                Continue →
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- PEER PROFILE MODAL -->
+
+<div
+    id="peerModal"
+    class="modal hidden"
+>
+
+    <div class="modal-overlay" onclick="closeModal('peerModal')"></div>
+
+    <div class="modal-card peer-modal">
+
+        <button
+            class="modal-close"
+            onclick="closeModal('peerModal')"
+        >
+            ×
+        </button>
+
+        <div id="peerModalContent"></div>
+
+    </div>
+
+</div>
+
+
+<!-- BOOKING MODAL -->
+
+<div
+    id="bookingModal"
+    class="modal hidden"
+>
+
+    <div class="modal-overlay" onclick="closeModal('bookingModal')"></div>
+
+    <div class="modal-card">
+
+        <button
+            class="modal-close"
+            onclick="closeModal('bookingModal')"
+        >
+            ×
+        </button>
+
+        <div id="bookingContent"></div>
+
+    </div>
+
+</div>
+
+
+<!-- ADD EVENT MODAL -->
+
+<div
+    id="eventModal"
+    class="modal hidden"
+>
+
+    <div class="modal-overlay" onclick="closeModal('eventModal')"></div>
+
+    <div class="modal-card">
+
+        <button
+            class="modal-close"
+            onclick="closeModal('eventModal')"
+        >
+            ×
+        </button>
+
+        <span class="eyebrow">
+            Calendar
+        </span>
+
+        <h2>Add an event</h2>
+
+        <div class="form-group">
+
+            <label>
+                Event title
+            </label>
+
+            <input
+                type="text"
+                id="eventTitle"
+                placeholder="e.g. Maths test"
+            >
+
+        </div>
+
+        <div class="form-group">
+
+            <label>
+                Date
+            </label>
+
+            <input
+                type="date"
+                id="eventDate"
+            >
+
+        </div>
+
+        <div class="form-group">
+
+            <label>
+                Type
+            </label>
+
+            <select id="eventType">
+
+                <option value="assignment">
+                    Assignment
+                </option>
+
+                <option value="test">
+                    Test
+                </option>
+
+                <option value="session">
+                    Tutoring session
+                </option>
+
+                <option value="event">
+                    School event
+                </option>
+
+                <option value="other">
+                    Other
+                </option>
+
+            </select>
+
+        </div>
+
+        <button
+            class="primary-button full-width"
+            onclick="addEvent()"
+        >
+            Add to calendar
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- ADD ASSIGNMENT MODAL -->
+
+<div
+    id="assignmentModal"
+    class="modal hidden"
+>
+
+    <div class="modal-overlay" onclick="closeModal('assignmentModal')"></div>
+
+    <div class="modal-card">
+
+        <button
+            class="modal-close"
+            onclick="closeModal('assignmentModal')"
+        >
+            ×
+        </button>
+
+        <span class="eyebrow">
+            Assignments
+        </span>
+
+        <h2>Add an assignment</h2>
+
+        <div class="form-group">
+
+            <label>
+                Subject
+            </label>
+
+            <select id="assignmentSubject">
+
+                <option>
+                    Maths
+                </option>
+
+                <option>
+                    English
+                </option>
+
+                <option>
+                    Science
+                </option>
+
+                <option>
+                    Social Studies
+                </option>
+
+                <option>
+                    Spanish
+                </option>
+
+                <option>
+                    Technology
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>
+                Assignment title
+            </label>
+
+            <input
+                type="text"
+                id="assignmentTitle"
+                placeholder="e.g. Algebra worksheet"
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>
+                Due date
+            </label>
+
+            <input
+                type="date"
+                id="assignmentDate"
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>
+                Priority
+            </label>
+
+            <select id="assignmentPriority">
+
+                <option value="low">
+                    Low
+                </option>
+
+                <option value="medium" selected>
+                    Medium
+                </option>
+
+                <option value="high">
+                    High
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <button
+            class="primary-button full-width"
+            onclick="addAssignment()"
+        >
+            Add assignment
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- FORGOT PASSWORD -->
+
+<div
+    id="forgotModal"
+    class="modal hidden"
+>
+
+    <div class="modal-overlay" onclick="closeModal('forgotModal')"></div>
+
+    <div class="modal-card small-modal">
+
+        <button
+            class="modal-close"
+            onclick="closeModal('forgotModal')"
+        >
+            ×
+        </button>
+
+        <span class="eyebrow">
+            Account help
+        </span>
+
+        <h2>Forgot your password?</h2>
+
+        <p>
+            In the real school version, this would connect
+            to the school's secure account system.
+        </p>
+
+        <button
+            class="primary-button full-width"
+            onclick="closeModal('forgotModal')"
+        >
+            Got it
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- NOTIFICATIONS -->
+
+<div
+    id="notificationModal"
+    class="modal hidden"
+>
+
+    <div class="modal-overlay" onclick="closeModal('notificationModal')"></div>
+
+    <div class="modal-card">
+
+        <button
+            class="modal-close"
+            onclick="closeModal('notificationModal')"
+        >
+            ×
+        </button>
+
+        <span class="eyebrow">
+            Notifications
+        </span>
+
+        <h2>You're all caught up.</h2>
+
+        <div class="notification-item">
+
+            <span class="notification-icon">
+                ✦
+            </span>
+
+            <div>
+
+                <strong>
+                    Peer Hub update
+                </strong>
+
+                <p>
+                    Keep helping your peers to earn Peer Points.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="notification-item">
+
+            <span class="notification-icon">
+                ✓
+            </span>
+
+            <div>
+
+                <strong>
+                    Upcoming assignment
+                </strong>
+
+                <p>
+                    Remember to check your assignment tracker.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ================= JAVASCRIPT ================= -->
+
+<script src="script.js"></script>
 
 </body>
 </html>
