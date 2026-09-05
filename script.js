@@ -1,76 +1,183 @@
-// ===============================
-// LOGIN
-// ===============================
+// ========================================
+// DEMO ACCOUNT
+// ========================================
+
+const demoAccount = {
+    email: "t.smith@storans.school.nz",
+    password: "Demo123"
+};
+
+
+// ========================================
+// LOGIN ELEMENTS
+// ========================================
 
 const loginForm = document.getElementById("loginForm");
 const loginScreen = document.getElementById("loginScreen");
 const mainApp = document.getElementById("mainApp");
+const loginError = document.getElementById("loginError");
+
+
+// ========================================
+// LOGIN
+// ========================================
 
 loginForm.addEventListener("submit", function(event) {
+
     event.preventDefault();
 
+    const email = document.getElementById("email").value
+        .trim()
+        .toLowerCase();
+
+    const password = document.getElementById("password").value;
+
+    // Clear previous error
+    loginError.textContent = "";
+    loginError.style.display = "none";
+
+
+    // Check that the email is a St Oran's email
+    if (!email.endsWith("@storans.school.nz")) {
+
+        showLoginError(
+            "Please use your St Oran's school email address."
+        );
+
+        return;
+    }
+
+
+    // Check whether the account exists
+    if (email !== demoAccount.email) {
+
+        showLoginError(
+            "We couldn't find an account with that school email."
+        );
+
+        return;
+    }
+
+
+    // Check password
+    if (password !== demoAccount.password) {
+
+        showLoginError(
+            "Incorrect password. Please try again."
+        );
+
+        return;
+    }
+
+
+    // Successful login
     loginScreen.style.display = "none";
     mainApp.style.display = "flex";
+
 });
 
 
-// Demo school account button
+// ========================================
+// SHOW LOGIN ERROR
+// ========================================
+
+function showLoginError(message) {
+
+    loginError.textContent = message;
+
+    loginError.style.display = "block";
+
+}
+
+
+// ========================================
+// DEMO SCHOOL ACCOUNT LOGIN
+// ========================================
+
 function demoLogin() {
+
     loginScreen.style.display = "none";
+
     mainApp.style.display = "flex";
+
 }
 
 
-// Forgot password
+// ========================================
+// FORGOT PASSWORD
+// ========================================
+
 function forgotPassword(event) {
+
     event.preventDefault();
 
-    alert("For this prototype, password recovery would be connected to the school's account system.");
+    alert(
+        "In the real St Oran's version, password recovery would connect to the school's account system."
+    );
+
 }
 
 
-// Sign up
+// ========================================
+// SIGN UP
+// ========================================
+
 function showSignup(event) {
+
     event.preventDefault();
 
-    alert("The sign-up and profile setup page will be added next.");
+    alert(
+        "The sign-up and profile setup page will be added next."
+    );
+
 }
 
 
-// ===============================
+// ========================================
 // PAGE NAVIGATION
-// ===============================
+// ========================================
 
 function showPage(pageId) {
 
-    // Hide every page
     const pages = document.querySelectorAll(".page");
 
     pages.forEach(function(page) {
+
         page.classList.remove("active-page");
+
     });
 
-    // Show selected page
+
     const selectedPage = document.getElementById(pageId);
 
     if (selectedPage) {
+
         selectedPage.classList.add("active-page");
+
     }
 
-    // Update sidebar
+
     const navItems = document.querySelectorAll(".nav-item");
 
     navItems.forEach(function(item) {
+
         item.classList.remove("active");
 
         if (item.dataset.page === pageId) {
+
             item.classList.add("active");
+
         }
+
     });
+
 }
 
 
-// Make sidebar navigation work
+// ========================================
+// SIDEBAR NAVIGATION
+// ========================================
+
 document.querySelectorAll(".nav-item").forEach(function(item) {
 
     item.addEventListener("click", function(event) {
@@ -86,37 +193,46 @@ document.querySelectorAll(".nav-item").forEach(function(item) {
 });
 
 
-// ===============================
-// PEER SEARCH
-// ===============================
+// ========================================
+// PEER DATA
+// ========================================
 
 const peers = [
+
     {
         name: "Lucy",
         year: "Year 13",
         subjects: ["Maths", "Algebra", "Calculus"],
         availability: "Available"
     },
+
     {
         name: "Amelia",
         year: "Year 11",
         subjects: ["Science", "Biology", "Chemistry"],
         availability: "Available"
     },
+
     {
         name: "Sophie",
         year: "Year 10",
         subjects: ["Spanish", "Writing", "English"],
         availability: "Later today"
     },
+
     {
         name: "Ella",
         year: "Year 12",
         subjects: ["English", "Essay Writing", "History"],
         availability: "Available"
     }
+
 ];
 
+
+// ========================================
+// DASHBOARD PEER SEARCH
+// ========================================
 
 function searchPeers() {
 
@@ -131,9 +247,15 @@ function searchPeers() {
         showPage("peers");
 
         searchMainPeers();
+
     }
+
 }
 
+
+// ========================================
+// MAIN PEER SEARCH
+// ========================================
 
 function searchMainPeers() {
 
@@ -141,7 +263,9 @@ function searchMainPeers() {
 
     const searchTerm = input.value.toLowerCase().trim();
 
-    const resultsContainer = document.getElementById("searchResults");
+    const resultsContainer =
+        document.getElementById("searchResults");
+
 
     if (searchTerm === "") {
 
@@ -154,6 +278,7 @@ function searchMainPeers() {
         `;
 
         return;
+
     }
 
 
@@ -161,8 +286,10 @@ function searchMainPeers() {
 
         return peer.subjects.some(function(subject) {
 
-            return subject.toLowerCase().includes(searchTerm) ||
-                   searchTerm.includes(subject.toLowerCase());
+            return (
+                subject.toLowerCase().includes(searchTerm) ||
+                searchTerm.includes(subject.toLowerCase())
+            );
 
         });
 
@@ -180,6 +307,7 @@ function searchMainPeers() {
         `;
 
         return;
+
     }
 
 
@@ -199,20 +327,33 @@ function searchMainPeers() {
                     <p>${peer.year}</p>
 
                     <div class="tags">
+
                         ${peer.subjects.map(function(subject) {
+
                             return `<span>${subject}</span>`;
+
                         }).join("")}
+
                     </div>
 
                 </div>
 
                 <div class="peer-result-right">
 
-                    <span class="${peer.availability === "Available" ? "available" : "busy"}">
+                    <span class="${
+                        peer.availability === "Available"
+                            ? "available"
+                            : "busy"
+                    }">
+
                         ${peer.availability}
+
                     </span>
 
-                    <button class="primary-button">
+                    <button
+                        class="primary-button"
+                        onclick="viewPeer('${peer.name}')"
+                    >
                         View profile
                     </button>
 
@@ -222,5 +363,19 @@ function searchMainPeers() {
         `;
 
     }).join("");
+
+}
+
+
+// ========================================
+// VIEW PEER
+// ========================================
+
+function viewPeer(name) {
+
+    alert(
+        "Peer profile for " + name +
+        " will open here. Booking a session will be available soon."
+    );
 
 }
