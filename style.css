@@ -2605,3 +2605,430 @@ p {
     }
 
 }
+/* =========================================================
+   BURGUNDY ACCENTS + CUTER RORO
+   ST ORAN'S PEER HUB
+   ========================================================= */
+
+
+/* =========================================================
+   BURGUNDY ACCENTS
+   ========================================================= */
+
+:root {
+    --burgundy: #7a2638;
+    --burgundy-dark: #5f1d2c;
+    --burgundy-light: #a64b5d;
+    --burgundy-soft: #f4e5e8;
+}
+
+
+/* Main buttons */
+
+.primary-button {
+    background: var(--burgundy) !important;
+}
+
+.primary-button:hover {
+    background: var(--burgundy-dark) !important;
+}
+
+
+/* Active navigation */
+
+.nav-item.active {
+    color: var(--burgundy) !important;
+    background: var(--burgundy-soft) !important;
+}
+
+
+/* Small accent text */
+
+.peer-availability {
+    color: var(--burgundy) !important;
+}
+
+
+/* Subject tags */
+
+.subject-tag {
+    background: var(--burgundy-soft) !important;
+    color: var(--burgundy) !important;
+}
+
+
+/* Progress bar */
+
+#homeProgressFill {
+    background: var(--burgundy) !important;
+}
+
+
+/* Progress chart */
+
+.progress-card,
+.progress-stat,
+.stat-card {
+    border-color: rgba(122, 38, 56, 0.12);
+}
+
+
+/* Calendar today */
+
+.calendar-cell.today {
+    border-color: var(--burgundy) !important;
+    color: var(--burgundy) !important;
+}
+
+
+/* Assignment priority */
+
+.priority.high {
+    color: var(--burgundy) !important;
+}
+
+
+/* Profile / avatar accents */
+
+.avatar {
+    background: var(--burgundy) !important;
+}
+
+
+/* Search focus */
+
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: var(--burgundy) !important;
+    box-shadow: 0 0 0 3px rgba(122, 38, 56, 0.10) !important;
+}
+
+
+/* Links */
+
+a {
+    color: var(--burgundy);
+}
+
+
+/* =========================================================
+   CUTER RORO
+   ========================================================= */
+
+#roroBuddy {
+    position: fixed;
+    right: 28px;
+    bottom: 25px;
+
+    width: 82px;
+    height: 82px;
+
+    z-index: 1000;
+
+    cursor: pointer;
+
+    /* cute little float */
+    animation: roroFloat 3.5s ease-in-out infinite;
+
+    transition:
+        transform 0.25s ease,
+        filter 0.25s ease;
+}
+
+
+/* If Roro has an image inside */
+
+#roroBuddy img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: contain;
+
+    display: block;
+
+    filter:
+        drop-shadow(0 8px 8px rgba(0, 0, 0, 0.15));
+}
+
+
+/* Hover */
+
+#roroBuddy:hover {
+    transform: scale(1.1) rotate(-3deg);
+}
+
+
+/* =========================================================
+   RORO TAIL
+   ========================================================= */
+
+/*
+   This creates a little curved tail behind Roro.
+   It doesn't affect the rest of the page.
+*/
+
+#roroBuddy::after {
+    content: "";
+
+    position: absolute;
+
+    width: 32px;
+    height: 45px;
+
+    right: -18px;
+    bottom: 5px;
+
+    border: 8px solid var(--burgundy);
+
+    border-left: 0;
+    border-bottom-color: transparent;
+
+    border-radius:
+        0 70% 70% 0;
+
+    transform:
+        rotate(-18deg);
+
+    z-index: -1;
+
+    opacity: 0.95;
+}
+
+
+/* Little tail tip */
+
+#roroBuddy::before {
+    content: "";
+
+    position: absolute;
+
+    width: 13px;
+    height: 13px;
+
+    right: -23px;
+    bottom: 42px;
+
+    background: var(--burgundy);
+
+    transform: rotate(45deg);
+
+    border-radius: 3px;
+
+    z-index: -1;
+}
+
+
+/* =========================================================
+   RORO SPEECH BUBBLE
+   ========================================================= */
+
+#roroSpeech {
+    position: absolute;
+
+    right: 70px;
+    bottom: 65px;
+
+    min-width: 150px;
+    max-width: 220px;
+
+    padding: 10px 14px;
+
+    background: #fffaf7;
+
+    color: #3d3030;
+
+    border: 2px solid var(--burgundy);
+
+    border-radius: 18px 18px 4px 18px;
+
+    box-shadow:
+        0 8px 25px rgba(0, 0, 0, 0.10);
+
+    font-size: 13px;
+    line-height: 1.4;
+
+    opacity: 0;
+
+    pointer-events: none;
+
+    transform:
+        translateY(8px)
+        scale(0.95);
+
+    transition:
+        opacity 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+/*
+   Show speech when Roro talks
+*/
+
+#roroBuddy.roro-talking #roroSpeech {
+    opacity: 1;
+
+    transform:
+        translateY(0)
+        scale(1);
+}
+
+
+/* =========================================================
+   RORO ANIMATIONS
+   ========================================================= */
+
+@keyframes roroFloat {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-7px);
+    }
+}
+
+
+#roroBuddy.roro-bounce {
+    animation:
+        roroBounce 0.7s ease;
+}
+
+
+@keyframes roroBounce {
+
+    0% {
+        transform: translateY(0) scale(1);
+    }
+
+    35% {
+        transform: translateY(-14px) scale(1.05);
+    }
+
+    65% {
+        transform: translateY(2px) scale(0.98);
+    }
+
+    100% {
+        transform: translateY(0) scale(1);
+    }
+}
+
+
+/* Happy interaction */
+
+#roroBuddy.roro-happy {
+    animation:
+        roroHappy 0.9s ease;
+}
+
+
+@keyframes roroHappy {
+
+    0% {
+        transform: rotate(0) scale(1);
+    }
+
+    25% {
+        transform: rotate(-8deg) scale(1.08);
+    }
+
+    50% {
+        transform: rotate(8deg) scale(1.12);
+    }
+
+    75% {
+        transform: rotate(-5deg) scale(1.08);
+    }
+
+    100% {
+        transform: rotate(0) scale(1);
+    }
+}
+
+
+/* Celebration */
+
+#roroBuddy.roro-celebrate {
+    animation:
+        roroCelebrate 1.6s ease;
+}
+
+
+@keyframes roroCelebrate {
+
+    0% {
+        transform: scale(1) rotate(0);
+    }
+
+    20% {
+        transform: scale(1.18) rotate(-8deg);
+    }
+
+    40% {
+        transform: scale(1.12) rotate(8deg);
+    }
+
+    60% {
+        transform: scale(1.2) rotate(-6deg);
+    }
+
+    80% {
+        transform: scale(1.12) rotate(5deg);
+    }
+
+    100% {
+        transform: scale(1) rotate(0);
+    }
+}
+
+
+/* =========================================================
+   BURGUNDY CARD DETAILS
+   ========================================================= */
+
+.peer-card:hover,
+.assignment-card:hover {
+    border-color: rgba(122, 38, 56, 0.25) !important;
+}
+
+
+/* Small decorative lines */
+
+.section-title::after {
+    background: var(--burgundy) !important;
+}
+
+
+/* Buttons around the app */
+
+button:hover {
+    border-color: var(--burgundy);
+}
+
+
+/* =========================================================
+   MOBILE RORO
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+    #roroBuddy {
+        right: 15px;
+        bottom: 15px;
+
+        width: 68px;
+        height: 68px;
+    }
+
+    #roroSpeech {
+        right: 55px;
+        bottom: 55px;
+
+        max-width: 180px;
+    }
+
+}
