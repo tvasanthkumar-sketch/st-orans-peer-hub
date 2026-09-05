@@ -1,174 +1,275 @@
-/* =========================================================
+/* =====================================================
    ST ORAN'S PEER HUB
    JAVASCRIPT
-   ========================================================= */
+===================================================== */
 
 
-/* =========================================================
-   DEMO DATA
-   ========================================================= */
+/* =====================================================
+   DEMO ACCOUNTS
+===================================================== */
 
-const users = {
+const demoAccounts = {
 
-    maya: {
-        firstName: "Maya",
-        lastName: "Smith",
-        fullName: "Maya Smith",
-        email: "t.smith@storans.school.nz",
+    "t.smith@storans.school.nz": {
+
         password: "Demo123",
+
+        name: "Maya",
+
         year: "Year 8",
-        className: "8WI",
-        initials: "MS",
+
         points: 240,
+
         helped: 8,
+
         sessions: 12,
+
         badges: 3,
-        bio: "I enjoy helping people understand maths and science. I am usually available after school.",
+
         subjects: [
             "Maths",
             "Algebra",
-            "Science",
-            "Graphs"
-        ]
+            "English",
+            "Essay Writing"
+        ],
+
+        preferences:
+            "Online or in-person • After school",
+
+        history: [
+            60,
+            90,
+            110,
+            145,
+            170,
+            205,
+            240
+        ],
+
+        assignments: [
+
+            {
+                name: "English Speech",
+                dateOffset: 1,
+                priority: "High",
+                icon: "E"
+            },
+
+            {
+                name: "Algebra Practice",
+                dateOffset: 3,
+                priority: "Medium",
+                icon: "M"
+            },
+
+            {
+                name: "Science Report",
+                dateOffset: 5,
+                priority: "Low",
+                icon: "S"
+            }
+
+        ],
+
+        studyStreak: 6,
+
+        totalFocusMinutes: 150
+
     },
 
-    lucy: {
-        firstName: "Lucy",
-        lastName: "Worthington",
-        fullName: "Lucy Worthington",
-        email: "l.worthington@storans.school.nz",
+
+    "l.worthington@storans.school.nz": {
+
         password: "Lucy123",
+
+        name: "Lucy",
+
         year: "Year 13",
-        className: "13LW",
-        initials: "LW",
+
         points: 520,
+
         helped: 21,
+
         sessions: 28,
+
         badges: 6,
-        bio: "I love helping younger students with English, study skills and essay writing.",
+
         subjects: [
             "English",
-            "Essay writing",
-            "Study skills",
-            "Literacy"
-        ]
+            "Essay Writing",
+            "Study Skills"
+        ],
+
+        preferences:
+            "In person • Lunch and after school",
+
+        history: [
+            310,
+            345,
+            380,
+            420,
+            455,
+            490,
+            520
+        ],
+
+        assignments: [
+
+            {
+                name: "Calculus Assessment",
+                dateOffset: 2,
+                priority: "High",
+                icon: "C"
+            },
+
+            {
+                name: "English Essay",
+                dateOffset: 6,
+                priority: "Medium",
+                icon: "E"
+            }
+
+        ],
+
+        studyStreak: 14,
+
+        totalFocusMinutes: 420
+
     }
 
 };
 
 
+/* =====================================================
+   PEERS
+===================================================== */
+
 const peers = [
 
     {
-        id: 1,
         name: "Lucy Worthington",
         initials: "LW",
         year: "Year 13",
-        subjects: ["English", "Essay writing", "Study skills"],
-        topics: [
-            "Essay writing",
-            "Paragraph structure",
-            "Analysing texts",
-            "Study skills"
+        subjects: [
+            "English",
+            "Essay Writing",
+            "Study Skills"
         ],
-        bio: "I love helping students become more confident with English and essay writing.",
-        availability: "Today",
+        availability: "Available now",
         online: true,
+        topics: [
+            "essay writing",
+            "paragraph structure",
+            "analysing texts",
+            "study skills"
+        ],
         rating: "4.9",
         sessions: 28
     },
 
+
     {
-        id: 2,
         name: "Aria Patel",
         initials: "AP",
         year: "Year 10",
-        subjects: ["Maths", "Algebra", "Geometry"],
+        subjects: [
+            "Maths",
+            "Algebra",
+            "Geometry"
+        ],
+        availability: "Available now",
+        online: true,
         topics: [
-            "Expanding brackets",
-            "Factorising",
-            "Linear equations",
+            "expanding brackets",
+            "factorising",
+            "linear equations",
             "Pythagoras"
         ],
-        bio: "Happy to help with algebra, geometry and anything maths-related.",
-        availability: "Today",
-        online: true,
         rating: "4.8",
         sessions: 17
     },
 
+
     {
-        id: 3,
         name: "Sofia Chen",
         initials: "SC",
         year: "Year 11",
-        subjects: ["Science", "Biology", "Chemistry"],
-        topics: [
-            "Cells",
-            "Chemical reactions",
-            "Genetics",
-            "Lab reports"
+        subjects: [
+            "Science",
+            "Biology",
+            "Chemistry"
         ],
-        bio: "I can help make tricky science concepts easier to understand.",
-        availability: "This week",
-        online: false,
+        availability: "Later today",
+        online: true,
+        topics: [
+            "cells",
+            "genetics",
+            "chemical reactions",
+            "lab reports"
+        ],
         rating: "4.9",
         sessions: 22
     },
 
+
     {
-        id: 4,
         name: "Ella Thompson",
         initials: "ET",
         year: "Year 9",
-        subjects: ["Spanish", "Vocabulary"],
+        subjects: [
+            "Spanish",
+            "Vocabulary"
+        ],
+        availability: "Later today",
+        online: true,
         topics: [
             "Spanish vocabulary",
-            "Basic grammar",
-            "Speaking",
-            "Writing"
+            "basic grammar",
+            "speaking",
+            "writing"
         ],
-        bio: "I enjoy helping with Spanish vocabulary and speaking practice.",
-        availability: "This week",
-        online: true,
         rating: "4.7",
         sessions: 11
     },
 
+
     {
-        id: 5,
         name: "Noah Williams",
         initials: "NW",
         year: "Year 12",
-        subjects: ["Social Studies", "History"],
-        topics: [
-            "Case studies",
-            "Essay structure",
-            "Research",
-            "Source analysis"
+        subjects: [
+            "Social Studies",
+            "History"
         ],
-        bio: "Happy to help with Social Studies research and case studies.",
-        availability: "Today",
+        availability: "Available now",
         online: false,
+        topics: [
+            "case studies",
+            "essay structure",
+            "research",
+            "source analysis"
+        ],
         rating: "4.8",
         sessions: 19
     },
 
+
     {
-        id: 6,
         name: "Amelia Kumar",
         initials: "AK",
         year: "Year 10",
-        subjects: ["Technology", "Design"],
-        topics: [
-            "Design thinking",
-            "Prototyping",
-            "Laser cutting",
-            "Product design"
+        subjects: [
+            "Technology",
+            "Design"
         ],
-        bio: "I can help with design processes, prototyping and technology projects.",
-        availability: "This week",
+        availability: "Available now",
         online: true,
+        topics: [
+            "design thinking",
+            "prototyping",
+            "laser cutting",
+            "product design"
+        ],
         rating: "4.9",
         sessions: 15
     }
@@ -176,464 +277,544 @@ const peers = [
 ];
 
 
-const assignments = [
-
-    {
-        id: 1,
-        subject: "Maths",
-        title: "Algebra practice",
-        due: "2026-09-08",
-        priority: "high",
-        complete: false
-    },
-
-    {
-        id: 2,
-        subject: "Science",
-        title: "Water cycle report",
-        due: "2026-09-11",
-        priority: "medium",
-        complete: false
-    },
-
-    {
-        id: 3,
-        subject: "English",
-        title: "Heroes and villains speech",
-        due: "2026-09-15",
-        priority: "high",
-        complete: false
-    },
-
-    {
-        id: 4,
-        subject: "Social Studies",
-        title: "Disaster case study",
-        due: "2026-09-18",
-        priority: "medium",
-        complete: false
-    },
-
-    {
-        id: 5,
-        subject: "Spanish",
-        title: "Vocabulary revision",
-        due: "2026-09-05",
-        priority: "low",
-        complete: true
-    }
-
-];
-
-
-const resources = [
-
-    {
-        subject: "Maths",
-        title: "Algebra essentials",
-        description: "A quick guide to equations, expanding brackets and factorising.",
-        type: "Study guide"
-    },
-
-    {
-        subject: "Maths",
-        title: "Pythagoras practice",
-        description: "Practice questions for right-angled triangles.",
-        type: "Practice"
-    },
-
-    {
-        subject: "English",
-        title: "Essay structure",
-        description: "A simple framework for planning strong analytical paragraphs.",
-        type: "Study guide"
-    },
-
-    {
-        subject: "Science",
-        title: "Science investigation guide",
-        description: "Planning variables, writing hypotheses and analysing results.",
-        type: "Guide"
-    },
-
-    {
-        subject: "Social Studies",
-        title: "Case study checklist",
-        description: "Everything you need to include in a strong case study.",
-        type: "Checklist"
-    },
-
-    {
-        subject: "Spanish",
-        title: "Spanish vocabulary",
-        description: "Useful vocabulary for common Year 8 topics.",
-        type: "Vocabulary"
-    }
-
-];
-
+/* =====================================================
+   QUOTES
+===================================================== */
 
 const quotes = [
 
     "Small progress is still progress.",
-    "You do not have to know everything to start.",
-    "Consistency beats intensity.",
-    "A difficult topic becomes easier one question at a time.",
-    "Learning is not about being the smartest person in the room.",
-    "The best students are not afraid to ask questions.",
-    "Your future self will thank you for studying today.",
-    "Helping someone else is one of the best ways to learn.",
-    "Mistakes are evidence that you are actually trying.",
-    "Keep going. Your understanding is catching up."
+    "Start before you feel ready.",
+    "A little planning goes a long way.",
+    "Learning is better together.",
+    "Look how far you've come.",
+    "Everyone has something they can teach.",
+    "Your future self will thank you for starting today.",
+    "Mistakes are proof that you're learning."
 
 ];
 
 
 const pageQuotes = {
 
-    home: [
-        "Small progress is still progress.",
-        "Consistency beats intensity.",
-        "You do not have to know everything to start."
-    ],
+    home: "Small progress is still progress.",
 
-    calendar: [
-        "A little organisation saves a lot of stress.",
-        "Future you deserves an organised calendar.",
-        "One deadline at a time."
-    ],
+    calendar: "A little planning goes a long way.",
 
-    assignments: [
-        "Done is better than forgotten.",
-        "Start before the deadline becomes a crisis.",
-        "Small tasks become big wins when completed."
-    ],
+    assignments: "Start before you feel ready.",
 
-    peers: [
-        "Everyone knows something you do not.",
-        "Learning together makes difficult things easier.",
-        "Asking for help is part of learning."
-    ],
+    peers: "Learning is better together.",
 
-    resources: [
-        "The right resource can change everything.",
-        "Learn it. Practise it. Understand it.",
-        "Knowledge grows when it is shared."
-    ],
+    resources: "Your future self will thank you for starting today.",
 
-    profile: [
-        "Your strengths can become someone else's starting point.",
-        "You can always learn something new.",
-        "Everyone has something worth teaching."
-    ],
+    profile: "Everyone has something they can teach.",
 
-    progress: [
-        "Progress is easier to see when you look back.",
-        "Every helpful action counts.",
-        "Keep building."
-    ],
+    progress: "Look how far you've come.",
 
-    settings: [
-        "Make the system work for you.",
-        "Small adjustments can make a big difference.",
-        "Stay organised, stay flexible."
+    settings: "Small changes can make a big difference.",
 
-    ]
+    study: "One focused session is enough to make today count."
 
 };
 
 
-/* =========================================================
-   APP STATE
-   ========================================================= */
+/* =====================================================
+   STATE
+===================================================== */
 
 let currentUser = null;
+
+let currentEmail = null;
+
+let signupDraft = {};
+
 let currentPage = "home";
 
 let calendarDate = new Date();
 
 let currentAssignmentFilter = "all";
 
-let currentResourceCategory = "all";
-
-let selectedPeer = null;
-
-let signupStep = 1;
-
-let signupDraft = {};
+let newAccountEmail = null;
 
 let calendarEvents = [];
 
-let currentPointsHistory = [
-    105,
-    128,
-    154,
-    181,
-    210,
-    240
-];
+let buddyHidden = false;
 
 
-/* =========================================================
-   START APP
-   ========================================================= */
+/* =====================================================
+   POMODORO
+===================================================== */
+
+let pomodoro = {
+
+    mode: "focus",
+
+    seconds: 25 * 60,
+
+    running: false,
+
+    interval: null,
+
+    round: 1,
+
+    completedRounds: 0
+
+};
+
+
+/* =====================================================
+   ELEMENTS
+===================================================== */
+
+const loginForm =
+    document.getElementById("loginForm");
+
+const loginScreen =
+    document.getElementById("loginScreen");
+
+const mainApp =
+    document.getElementById("mainApp");
+
+const loginError =
+    document.getElementById("loginError");
+
+
+/* =====================================================
+   START
+===================================================== */
 
 document.addEventListener("DOMContentLoaded", () => {
 
-    setupLogin();
+    setupNavigation();
 
     renderDate();
+
+    renderMiniCalendar();
+
+    showBuddyMessage(
+        "Ready when you are! ✦"
+    );
 
 });
 
 
-/* =========================================================
+/* =====================================================
    LOGIN
-   ========================================================= */
+===================================================== */
 
-function setupLogin() {
+loginForm.addEventListener("submit", event => {
 
-    const loginForm = document.getElementById("loginForm");
+    event.preventDefault();
 
-    if (!loginForm) {
-        return;
-    }
+    loginError.style.display = "none";
 
-    loginForm.addEventListener("submit", function(event) {
 
-        event.preventDefault();
-
-        const email =
-            document.getElementById("loginEmail").value
+    const email =
+        document
+            .getElementById("email")
+            .value
             .trim()
             .toLowerCase();
 
-        const password =
-            document.getElementById("loginPassword").value;
 
-        const error =
-            document.getElementById("loginError");
-
-        let foundUser = null;
-
-        Object.values(users).forEach(user => {
-
-            if (
-                user.email.toLowerCase() === email &&
-                user.password === password
-            ) {
-                foundUser = user;
-            }
-
-        });
+    const password =
+        document.getElementById("password").value;
 
 
-        if (!foundUser) {
-
-            error.textContent =
-                "That email or password doesn't match a demo account.";
-
-            return;
-        }
+    const account =
+        getAccounts()[email];
 
 
-        error.textContent = "";
+    if (!email.endsWith("@storans.school.nz")) {
 
-        login(foundUser);
+        return showLoginError(
+            "Please use your St Oran's school email address."
+        );
 
-    });
+    }
+
+
+    if (!account) {
+
+        return showLoginError(
+            "We couldn't find an account with that school email."
+        );
+
+    }
+
+
+    if (password !== account.password) {
+
+        return showLoginError(
+            "Incorrect password. Please try again."
+        );
+
+    }
+
+
+    login(account, email);
+
+});
+
+
+function showLoginError(message) {
+
+    loginError.textContent = message;
+
+    loginError.style.display = "block";
 
 }
 
 
-/* =========================================================
-   LOGIN USER
-   ========================================================= */
+/* =====================================================
+   ACCOUNTS
+===================================================== */
 
-function login(user) {
+function getAccounts() {
 
-    currentUser = {
-        ...user
+    const saved =
+        JSON.parse(
+            localStorage.getItem("peerHubAccounts") || "{}"
+        );
+
+
+    return {
+        ...demoAccounts,
+        ...saved
     };
 
-    document
-        .getElementById("loginScreen")
-        .classList.add("hidden");
+}
 
-    document
-        .getElementById("app")
-        .classList.remove("hidden");
+
+function savePrototypeAccount(email, account) {
+
+    const saved =
+        JSON.parse(
+            localStorage.getItem("peerHubAccounts") || "{}"
+        );
+
+
+    saved[email] = account;
+
+
+    localStorage.setItem(
+        "peerHubAccounts",
+        JSON.stringify(saved)
+    );
+
+}
+
+
+/* =====================================================
+   LOGIN
+===================================================== */
+
+function login(account, email) {
+
+    currentEmail = email;
+
+    currentUser =
+        JSON.parse(
+            JSON.stringify(account)
+        );
+
+
+    currentUser.email = email;
+
+
+    if (!currentUser.assignments) {
+
+        currentUser.assignments = [];
+
+    }
+
+
+    if (!currentUser.history) {
+
+        currentUser.history =
+            Array(7).fill(0);
+
+    }
+
+
+    if (
+        currentUser.studyStreak === undefined
+    ) {
+
+        currentUser.studyStreak = 0;
+
+    }
+
+
+    if (
+        currentUser.totalFocusMinutes === undefined
+    ) {
+
+        currentUser.totalFocusMinutes = 0;
+
+    }
+
+
+    if (
+        currentUser.points === undefined
+    ) {
+
+        currentUser.points = 0;
+
+    }
+
+
+    if (
+        currentUser.badges === undefined
+    ) {
+
+        currentUser.badges = 0;
+
+    }
+
+
+    if (
+        currentUser.sessions === undefined
+    ) {
+
+        currentUser.sessions = 0;
+
+    }
+
+
+    if (
+        currentUser.helped === undefined
+    ) {
+
+        currentUser.helped = 0;
+
+    }
+
+
+    if (
+        document.getElementById("rememberMe").checked
+    ) {
+
+        localStorage.setItem(
+            "peerHubEmail",
+            email
+        );
+
+    }
+
+
+    loginScreen.style.display = "none";
+
+    mainApp.style.display = "flex";
+
 
     updateUserUI();
 
-    navigateTo("home");
+    showPage("home");
 
 }
 
 
-/* =========================================================
+/* =====================================================
    GOOGLE LOGIN
-   ========================================================= */
+===================================================== */
 
-function showGoogleLogin() {
+function googleLogin() {
 
-    openModal("googleModal");
+    showModal(`
+
+        <h2>
+            Continue with Google
+        </h2>
+
+        <p>
+            This prototype simulates Google sign-in.
+            The real school version should connect to St Oran's approved Google authentication.
+        </p>
+
+        <div class="modal-actions">
+
+            <button
+                class="secondary-button"
+                onclick="closeModal()"
+            >
+                Cancel
+            </button>
+
+            <button
+                class="primary-button"
+                onclick="demoGoogleAccount()"
+            >
+                Use demo Google account
+            </button>
+
+        </div>
+
+    `);
 
 }
 
 
-function googleLogin(account) {
+function demoGoogleAccount() {
 
-    closeModal("googleModal");
+    closeModal();
 
-    if (account === "maya") {
-        login(users.maya);
-    }
-
-    if (account === "lucy") {
-        login(users.lucy);
-    }
+    login(
+        demoAccounts["t.smith@storans.school.nz"],
+        "t.smith@storans.school.nz"
+    );
 
 }
 
 
-/* =========================================================
+/* =====================================================
+   FORGOT PASSWORD
+===================================================== */
+
+function forgotPassword(event) {
+
+    event.preventDefault();
+
+
+    showModal(`
+
+        <h2>
+            Password help
+        </h2>
+
+        <p>
+            These are the demo accounts for this prototype:
+        </p>
+
+
+        <div class="login-help-box">
+
+            <strong>
+                Maya
+            </strong>
+
+            <span>
+                t.smith@storans.school.nz
+            </span>
+
+            <span>
+                Password:
+                <b>Demo123</b>
+            </span>
+
+        </div>
+
+
+        <div class="login-help-box">
+
+            <strong>
+                Lucy
+            </strong>
+
+            <span>
+                l.worthington@storans.school.nz
+            </span>
+
+            <span>
+                Password:
+                <b>Lucy123</b>
+            </span>
+
+        </div>
+
+
+        <p class="muted">
+            New prototype accounts use password
+            <strong>Study123</strong>.
+        </p>
+
+
+        <div class="modal-actions">
+
+            <button
+                class="primary-button"
+                onclick="closeModal()"
+            >
+                Close
+            </button>
+
+        </div>
+
+    `);
+
+}
+
+
+/* =====================================================
    SIGN UP
-   ========================================================= */
+===================================================== */
 
-function showSignup() {
+function showSignup(event) {
 
-    signupStep = 1;
+    event?.preventDefault();
 
     signupDraft = {};
 
-    openModal("signupModal");
-
-    renderSignupStep();
+    signupStep(1);
 
 }
 
 
-function signupNext(step) {
+function signupStep(step) {
 
-    if (signupStep === 1) {
-
-        const first =
-            document.getElementById("suFirst").value.trim();
-
-        const last =
-            document.getElementById("suLast").value.trim();
-
-        const year =
-            document.getElementById("suYear").value;
+    let html = "";
 
 
-        if (!first || !last) {
+    if (step === 1) {
 
-            alert("Please enter your first and last name.");
-
-            return;
-        }
-
-
-        signupDraft.firstName = first;
-        signupDraft.lastName = last;
-        signupDraft.year = year;
-
-    }
-
-
-    if (signupStep === 2) {
-
-        const subjects =
-            [...document.querySelectorAll(
-                "#signupSubjects input:checked"
-            )].map(input => input.value);
-
-        signupDraft.subjects = subjects;
-
-    }
-
-
-    signupStep = step;
-
-    renderSignupStep();
-
-}
-
-
-function renderSignupStep() {
-
-    const content =
-        document.getElementById("signupContent");
-
-    const progress =
-        document.querySelectorAll(
-            ".signup-progress span"
-        );
-
-
-    progress.forEach((item, index) => {
-
-        item.classList.toggle(
-            "active",
-            index < signupStep
-        );
-
-    });
-
-
-    if (signupStep === 1) {
-
-        content.innerHTML = `
+        html = `
 
             <span class="eyebrow">
-                Create your account
+                CREATE ACCOUNT
             </span>
 
-            <h2>Let's get you set up.</h2>
+            <h2>
+                Let's get you set up.
+            </h2>
 
             <p>
-                Your profile can be changed whenever you need.
+                New accounts start completely fresh.
+                No fake points, no mysterious badges, no academic accomplishments from the future.
             </p>
 
-            <div class="form-group">
-
-                <label>First name</label>
+            <div class="signup-step">
 
                 <input
-                    type="text"
                     id="suFirst"
                     placeholder="First name"
-                    value="${signupDraft.firstName || ""}"
                 >
-
-            </div>
-
-            <div class="form-group">
-
-                <label>Last name</label>
 
                 <input
-                    type="text"
                     id="suLast"
                     placeholder="Last name"
-                    value="${signupDraft.lastName || ""}"
                 >
 
-            </div>
-
-            <div class="form-group">
-
-                <label>Year level</label>
+                <input
+                    id="suEmail"
+                    type="email"
+                    placeholder="School email"
+                >
 
                 <select id="suYear">
 
-                    ${[8, 9, 10, 11, 12, 13].map(year => `
-                        <option
-                            value="${year}"
-                            ${signupDraft.year == year ? "selected" : ""}
-                        >
+                    <option value="">
+                        Year level
+                    </option>
+
+                    ${[
+                        8,
+                        9,
+                        10,
+                        11,
+                        12,
+                        13
+                    ].map(year => `
+                        <option>
                             Year ${year}
                         </option>
                     `).join("")}
@@ -642,176 +823,334 @@ function renderSignupStep() {
 
             </div>
 
-            <button
-                class="primary-button full-width"
-                onclick="signupNext(2)"
-            >
-                Continue →
-            </button>
+
+            <div class="modal-actions">
+
+                <button
+                    class="primary-button"
+                    onclick="signupNext(1)"
+                >
+                    Continue →
+                </button>
+
+            </div>
 
         `;
 
     }
 
 
-    if (signupStep === 2) {
+    if (step === 2) {
 
-        const subjectList = [
-            "Maths",
-            "English",
-            "Science",
-            "Social Studies",
-            "Spanish",
-            "Technology"
-        ];
-
-        content.innerHTML = `
+        html = `
 
             <span class="eyebrow">
-                Your strengths
+                YOUR STRENGTHS
             </span>
 
-            <h2>What can you help with?</h2>
+            <h2>
+                What can you help with?
+            </h2>
 
             <p>
-                Choose subjects you feel confident helping another student with.
+                Choose subjects or skills you feel confident with.
+                You can change these any time.
             </p>
 
-            <div
-                id="signupSubjects"
-                class="signup-subject-grid"
-            >
 
-                ${subjectList.map(subject => `
+            <div class="signup-subject-grid">
+
+                ${[
+                    "Maths",
+                    "English",
+                    "Science",
+                    "Spanish",
+                    "Social Studies",
+                    "Technology",
+                    "Algebra",
+                    "Essay Writing",
+                    "Biology",
+                    "Study Skills"
+                ].map(subject => `
+
                     <label class="subject-choice">
 
                         <input
                             type="checkbox"
+                            name="suSubject"
                             value="${subject}"
-                            ${signupDraft.subjects?.includes(subject) ? "checked" : ""}
                         >
 
-                        <span>${subject}</span>
+                        <span>
+                            ${subject}
+                        </span>
 
                     </label>
+
                 `).join("")}
 
             </div>
 
-            <button
-                class="primary-button full-width"
-                onclick="signupNext(3)"
-            >
-                Continue →
-            </button>
+
+            <div class="modal-actions">
+
+                <button
+                    class="secondary-button"
+                    onclick="signupStep(1)"
+                >
+                    Back
+                </button>
+
+                <button
+                    class="primary-button"
+                    onclick="signupNext(2)"
+                >
+                    Continue →
+                </button>
+
+            </div>
 
         `;
 
     }
 
 
-    if (signupStep === 3) {
+    if (step === 3) {
 
-        content.innerHTML = `
+        html = `
 
             <span class="eyebrow">
-                Almost there
+                AVAILABILITY
             </span>
 
-            <h2>Choose your availability.</h2>
+            <h2>
+                When can you help?
+            </h2>
 
             <p>
-                You can change this later at any time.
+                These can be changed later.
             </p>
 
-            <div class="availability-choice-list">
 
-                <label class="availability-choice">
+            <div class="signup-step">
 
+                <label>
                     <input
                         type="checkbox"
-                        checked
+                        id="prefAfter"
                     >
-
-                    <span>
-                        Monday after school
-                    </span>
-
+                    After school
                 </label>
 
-                <label class="availability-choice">
-
+                <label>
                     <input
                         type="checkbox"
-                        checked
+                        id="prefLunch"
                     >
-
-                    <span>
-                        Wednesday after school
-                    </span>
-
+                    Lunch
                 </label>
 
-                <label class="availability-choice">
-
+                <label>
                     <input
                         type="checkbox"
+                        id="prefOnline"
                     >
+                    Online tutoring
+                </label>
 
-                    <span>
-                        Friday after school
-                    </span>
-
+                <label>
+                    <input
+                        type="checkbox"
+                        id="prefInPerson"
+                    >
+                    In person
                 </label>
 
             </div>
 
-            <button
-                class="primary-button full-width"
-                onclick="finishSignup()"
-            >
-                Enter Peer Hub →
-            </button>
+
+            <div class="modal-actions">
+
+                <button
+                    class="secondary-button"
+                    onclick="signupStep(2)"
+                >
+                    Back
+                </button>
+
+                <button
+                    class="primary-button"
+                    onclick="finishSignup()"
+                >
+                    Create profile →
+                </button>
+
+            </div>
 
         `;
+
+    }
+
+
+    showModal(html);
+
+}
+
+
+function signupNext(step) {
+
+    if (step === 1) {
+
+        const first =
+            document.getElementById("suFirst").value.trim();
+
+        const last =
+            document.getElementById("suLast").value.trim();
+
+        const email =
+            document
+                .getElementById("suEmail")
+                .value
+                .trim()
+                .toLowerCase();
+
+        const year =
+            document.getElementById("suYear").value;
+
+
+        if (
+            !first ||
+            !last ||
+            !email ||
+            !year
+        ) {
+
+            return alert(
+                "Please complete all fields."
+            );
+
+        }
+
+
+        if (
+            !email.endsWith("@storans.school.nz")
+        ) {
+
+            return alert(
+                "Please use your St Oran's school email address."
+            );
+
+        }
+
+
+        if (getAccounts()[email]) {
+
+            return alert(
+                "That school email already has a prototype account."
+            );
+
+        }
+
+
+        signupDraft = {
+
+            first,
+
+            last,
+
+            email,
+
+            year
+
+        };
+
+
+        signupStep(2);
+
+    }
+
+
+    else if (step === 2) {
+
+        signupDraft.subjects =
+            [
+                ...document.querySelectorAll(
+                    'input[name="suSubject"]:checked'
+                )
+            ].map(
+                input => input.value
+            );
+
+
+        signupStep(3);
 
     }
 
 }
 
 
+/* =====================================================
+   FINISH SIGNUP
+===================================================== */
+
 function finishSignup() {
 
-    const firstName =
-        signupDraft.firstName || "New";
+    const preferences = [];
 
-    const lastName =
-        signupDraft.lastName || "Student";
 
-    const year =
-        signupDraft.year || "8";
+    if (
+        document.getElementById("prefAfter")?.checked
+    ) {
 
-    const newUser = {
+        preferences.push(
+            "After school"
+        );
 
-        firstName,
-        lastName,
+    }
 
-        fullName:
-            `${firstName} ${lastName}`,
 
-        email:
-            `${firstName.toLowerCase()}.${lastName.toLowerCase()}@storans.school.nz`,
+    if (
+        document.getElementById("prefLunch")?.checked
+    ) {
 
-        password: "Demo123",
+        preferences.push(
+            "Lunch"
+        );
+
+    }
+
+
+    if (
+        document.getElementById("prefOnline")?.checked
+    ) {
+
+        preferences.push(
+            "Online"
+        );
+
+    }
+
+
+    if (
+        document.getElementById("prefInPerson")?.checked
+    ) {
+
+        preferences.push(
+            "In person"
+        );
+
+    }
+
+
+    const account = {
+
+        password: "Study123",
+
+        name:
+            `${signupDraft.first} ${signupDraft.last}`,
 
         year:
-            `Year ${year}`,
-
-        className:
-            `${year}XX`,
-
-        initials:
-            `${firstName[0]}${lastName[0]}`.toUpperCase(),
+            signupDraft.year,
 
         points: 0,
 
@@ -821,191 +1160,172 @@ function finishSignup() {
 
         badges: 0,
 
-        bio:
-            "I am part of the St Oran's Peer Hub.",
-
         subjects:
-            signupDraft.subjects || []
+            signupDraft.subjects || [],
+
+        preferences:
+            preferences.length
+                ? preferences.join(" • ")
+                : "No preferences set yet",
+
+        history:
+            Array(7).fill(0),
+
+        assignments: [],
+
+        studyStreak: 0,
+
+        totalFocusMinutes: 0,
+
+        level: 1
 
     };
 
 
-    currentUser = newUser;
+    savePrototypeAccount(
+        signupDraft.email,
+        account
+    );
 
-    closeModal("signupModal");
 
-    document
-        .getElementById("loginScreen")
-        .classList.add("hidden");
+    newAccountEmail =
+        signupDraft.email;
 
-    document
-        .getElementById("app")
-        .classList.remove("hidden");
 
-    updateUserUI();
+    closeModal();
 
-    navigateTo("home");
+
+    showModal(`
+
+        <div class="success-icon">
+            ✓
+        </div>
+
+        <span class="eyebrow">
+            PROFILE READY
+        </span>
+
+        <h2>
+            Welcome to Peer Hub, ${signupDraft.first}. ✦
+        </h2>
+
+        <p>
+            Your journey starts at
+            <strong>0 Peer Points</strong>.
+        </p>
+
+        <div class="new-account-stats">
+
+            <span>
+                <b>0</b>
+                Points
+            </span>
+
+            <span>
+                <b>0</b>
+                Sessions
+            </span>
+
+            <span>
+                <b>0</b>
+                Badges
+            </span>
+
+        </div>
+
+        <div class="login-help-box">
+
+            <strong>
+                Your prototype password
+            </strong>
+
+            <span>
+                Study123
+            </span>
+
+        </div>
+
+        <div class="modal-actions">
+
+            <button
+                class="primary-button"
+                onclick="enterNewAccount()"
+            >
+                Enter Peer Hub →
+            </button>
+
+        </div>
+
+    `);
 
 }
 
 
-/* =========================================================
+function enterNewAccount() {
+
+    const accounts =
+        getAccounts();
+
+    login(
+        accounts[newAccountEmail],
+        newAccountEmail
+    );
+
+    closeModal();
+
+}
+
+
+/* =====================================================
    SIGN OUT
-   ========================================================= */
+===================================================== */
 
 function signOut() {
 
     currentUser = null;
 
-    document
-        .getElementById("app")
-        .classList.add("hidden");
+    currentEmail = null;
 
-    document
-        .getElementById("loginScreen")
-        .classList.remove("hidden");
+    mainApp.style.display = "none";
 
-    document
-        .getElementById("loginForm")
-        .reset();
+    loginScreen.style.display = "flex";
+
+    loginForm.reset();
+
+    stopPomodoro();
 
 }
 
 
-/* =========================================================
-   USER UI
-   ========================================================= */
-
-function updateUserUI() {
-
-    if (!currentUser) {
-        return;
-    }
-
-
-    const elements = {
-
-        topUserName:
-            document.getElementById("topUserName"),
-
-        topUserYear:
-            document.getElementById("topUserYear"),
-
-        topAvatar:
-            document.getElementById("topAvatar"),
-
-        sidebarPoints:
-            document.getElementById("sidebarPoints"),
-
-        homePoints:
-            document.getElementById("homePoints"),
-
-        homeHelped:
-            document.getElementById("homeHelped"),
-
-        profileName:
-            document.getElementById("profileName"),
-
-        profileYear:
-            document.getElementById("profileYear"),
-
-        profileBio:
-            document.getElementById("profileBio"),
-
-        settingsEmail:
-            document.getElementById("settingsEmail"),
-
-        progressPoints:
-            document.getElementById("progressPoints"),
-
-        progressSessions:
-            document.getElementById("progressSessions"),
-
-        progressBadges:
-            document.getElementById("progressBadges")
-
-    };
-
-
-    if (elements.topUserName)
-        elements.topUserName.textContent =
-            currentUser.firstName;
-
-
-    if (elements.topUserYear)
-        elements.topUserYear.textContent =
-            currentUser.year;
-
-
-    if (elements.topAvatar)
-        elements.topAvatar.textContent =
-            currentUser.initials;
-
-
-    if (elements.sidebarPoints)
-        elements.sidebarPoints.textContent =
-            currentUser.points;
-
-
-    if (elements.homePoints)
-        elements.homePoints.textContent =
-            currentUser.points;
-
-
-    if (elements.homeHelped)
-        elements.homeHelped.textContent =
-            currentUser.helped;
-
-
-    if (elements.profileName)
-        elements.profileName.textContent =
-            currentUser.fullName;
-
-
-    if (elements.profileYear)
-        elements.profileYear.textContent =
-            `${currentUser.year} · ${currentUser.className}`;
-
-
-    if (elements.profileBio)
-        elements.profileBio.textContent =
-            currentUser.bio;
-
-
-    if (elements.settingsEmail)
-        elements.settingsEmail.textContent =
-            currentUser.email;
-
-
-    if (elements.progressPoints)
-        elements.progressPoints.textContent =
-            currentUser.points;
-
-
-    if (elements.progressSessions)
-        elements.progressSessions.textContent =
-            currentUser.helped;
-
-
-    if (elements.progressBadges)
-        elements.progressBadges.textContent =
-            currentUser.badges;
-
-
-    renderProfileSubjects();
-
-    renderHome();
-
-    renderProgress();
-
-}
-
-
-/* =========================================================
+/* =====================================================
    NAVIGATION
-   ========================================================= */
+===================================================== */
 
-function navigateTo(page) {
+function setupNavigation() {
+
+    document
+        .querySelectorAll(".nav-item")
+        .forEach(item => {
+
+            item.addEventListener(
+                "click",
+                event => {
+
+                    event.preventDefault();
+
+                    showPage(
+                        item.dataset.page
+                    );
+
+                }
+            );
+
+        });
+
+}
+
+
+function showPage(page) {
 
     currentPage = page;
 
@@ -1014,29 +1334,33 @@ function navigateTo(page) {
         .querySelectorAll(".page")
         .forEach(section => {
 
-            section.classList.remove("active-page");
+            section.classList.remove(
+                "active-page"
+            );
 
         });
 
 
     const target =
-        document.getElementById(`page-${page}`);
+        document.getElementById(page);
 
 
     if (target) {
 
-        target.classList.add("active-page");
+        target.classList.add(
+            "active-page"
+        );
 
     }
 
 
     document
         .querySelectorAll(".nav-item")
-        .forEach(button => {
+        .forEach(item => {
 
-            button.classList.toggle(
+            item.classList.toggle(
                 "active",
-                button.dataset.page === page
+                item.dataset.page === page
             );
 
         });
@@ -1044,675 +1368,264 @@ function navigateTo(page) {
 
     renderPage(page);
 
+    updateBuddyForPage(page);
+
 }
 
 
-/* =========================================================
-   PAGE RENDERER
-   ========================================================= */
+/* =====================================================
+   PAGE RENDER
+===================================================== */
 
 function renderPage(page) {
 
     renderPageQuote(page);
 
 
-    switch (page) {
+    if (page === "home") {
 
-        case "home":
-            renderHome();
-            break;
+        renderHome();
 
-        case "calendar":
-            renderCalendar();
-            break;
+    }
 
-        case "assignments":
-            renderAssignments();
-            break;
 
-        case "peers":
-            renderPeers();
-            break;
+    if (page === "calendar") {
 
-        case "resources":
-            renderResources();
-            break;
+        renderCalendar();
 
-        case "profile":
-            renderProfileSubjects();
-            break;
+    }
 
-        case "progress":
-            renderProgress();
-            break;
+
+    if (page === "assignments") {
+
+        renderAssignments();
+
+    }
+
+
+    if (page === "peers") {
+
+        searchMainPeers();
+
+    }
+
+
+    if (page === "profile") {
+
+        renderProfile();
+
+    }
+
+
+    if (page === "progress") {
+
+        renderProgress();
+
+    }
+
+
+    if (page === "study") {
+
+        renderStudyPage();
 
     }
 
 }
 
 
-/* =========================================================
+/* =====================================================
+   USER UI
+===================================================== */
+
+function updateUserUI() {
+
+    if (!currentUser) return;
+
+
+    document.getElementById(
+        "topName"
+    ).textContent =
+        currentUser.name.split(" ")[0];
+
+
+    document.getElementById(
+        "topYear"
+    ).textContent =
+        currentUser.year;
+
+
+    document.getElementById(
+        "topAvatar"
+    ).textContent =
+        initials(currentUser.name);
+
+
+    document.getElementById(
+        "welcomeName"
+    ).textContent =
+        currentUser.name.split(" ")[0];
+
+
+    document.getElementById(
+        "homePoints"
+    ).textContent =
+        currentUser.points;
+
+
+    document.getElementById(
+        "homeHelped"
+    ).textContent =
+        `You've helped ${currentUser.helped} students this term.`;
+
+
+    document.getElementById(
+        "progressPoints"
+    ).textContent =
+        currentUser.points;
+
+
+    document.getElementById(
+        "progressHelped"
+    ).textContent =
+        currentUser.helped;
+
+
+    document.getElementById(
+        "progressSessions"
+    ).textContent =
+        currentUser.sessions;
+
+
+    document.getElementById(
+        "progressBadges"
+    ).textContent =
+        currentUser.badges;
+
+
+    document.getElementById(
+        "progressStreak"
+    ).textContent =
+        currentUser.studyStreak;
+
+
+    document.getElementById(
+        "studyStreak"
+    ).textContent =
+        currentUser.studyStreak;
+
+
+    document.getElementById(
+        "profileAvatar"
+    ).textContent =
+        initials(currentUser.name);
+
+
+    document.getElementById(
+        "profileName"
+    ).textContent =
+        currentUser.name;
+
+
+    document.getElementById(
+        "profileYear"
+    ).textContent =
+        `${currentUser.year}`;
+
+
+    document.getElementById(
+        "settingsEmail"
+    ).textContent =
+        currentUser.email;
+
+
+    renderProfile();
+
+    renderHome();
+
+    renderProgress();
+
+}
+
+
+/* =====================================================
    HOME
-   ========================================================= */
+===================================================== */
 
 function renderHome() {
 
-    if (!currentUser) {
-        return;
-    }
+    if (!currentUser) return;
 
 
-    const greeting =
-        document.getElementById("greeting");
+    document.getElementById(
+        "greeting"
+    ).textContent =
+        greeting();
 
 
-    const hour =
-        new Date().getHours();
+    document.getElementById(
+        "homeQuote"
+    ).textContent =
+        dailyQuote();
 
 
-    let greetingText;
+    renderMiniCalendar();
 
-
-    if (hour < 12) {
-
-        greetingText = "Good morning";
-
-    } else if (hour < 18) {
-
-        greetingText = "Good afternoon";
-
-    } else {
-
-        greetingText = "Good evening";
-
-    }
-
-
-    if (greeting) {
-
-        greeting.textContent =
-            `${greetingText}, ${currentUser.firstName}.`;
-
-    }
-
+    renderDeadlines();
 
     renderRecommendedPeers();
 
-    renderUpcomingTasks();
+
+    const percent =
+        Math.min(
+            100,
+            (currentUser.points % 100)
+        );
+
+
+    document.getElementById(
+        "homeProgressFill"
+    ).style.width =
+        `${percent}%`;
+
+
+    const level =
+        getLevel();
+
+
+    document.getElementById(
+        "homeProgressCaption"
+    ).textContent =
+        `${level.pointsIntoLevel} / 100 points until Level ${level.level + 1}.`;
 
 }
 
 
-function renderRecommendedPeers() {
+function renderDeadlines() {
 
     const container =
-        document.getElementById("recommendedPeers");
-
-    if (!container) {
-        return;
-    }
-
-
-    const recommended =
-        peers.slice(0, 3);
-
-
-    container.innerHTML =
-        recommended.map(peer => `
-
-            <div class="peer-row">
-
-                <div class="avatar avatar-small">
-                    ${peer.initials}
-                </div>
-
-                <div class="peer-row-info">
-
-                    <strong>
-                        ${peer.name}
-                    </strong>
-
-                    <span>
-                        ${peer.subjects.join(" · ")}
-                    </span>
-
-                </div>
-
-                <span class="peer-availability">
-                    ${peer.availability}
-                </span>
-
-            </div>
-
-        `).join("");
-
-}
-
-
-function renderUpcomingTasks() {
-
-    const container =
-        document.getElementById("upcomingTasks");
-
-    if (!container) {
-        return;
-    }
-
-
-    const upcoming =
-        assignments
-            .filter(item => !item.complete)
-            .slice(0, 4);
-
-
-    container.innerHTML =
-        upcoming.map(item => `
-
-            <div class="task-item">
-
-                <div class="task-subject">
-                    ${item.subject.substring(0, 2).toUpperCase()}
-                </div>
-
-                <div class="task-info">
-
-                    <strong>
-                        ${item.title}
-                    </strong>
-
-                    <span>
-                        Due ${formatDate(item.due)}
-                    </span>
-
-                </div>
-
-                <span class="priority ${item.priority}">
-                    ${capitalize(item.priority)}
-                </span>
-
-            </div>
-
-        `).join("");
-
-}
-
-
-/* =========================================================
-   DATE + GREETING
-   ========================================================= */
-
-function renderDate() {
-
-    const dateElement =
-        document.getElementById("homeDate");
-
-
-    if (!dateElement) {
-        return;
-    }
-
-
-    const today =
-        new Date();
-
-
-    dateElement.textContent =
-        today.toLocaleDateString(
-            "en-NZ",
-            {
-                weekday: "long",
-                day: "numeric",
-                month: "long",
-                year: "numeric"
-            }
-        );
-
-}
-
-
-/* =========================================================
-   QUOTES
-   ========================================================= */
-
-function dailyQuote() {
-
-    const day =
-        Math.floor(
-            Date.now() / 86400000
-        );
-
-    return quotes[day % quotes.length];
-
-}
-
-
-function renderPageQuote(page) {
-
-    const quoteElement =
-        document.getElementById("dailyQuote");
-
-
-    if (!quoteElement) {
-        return;
-    }
-
-
-    const pageList =
-        pageQuotes[page] || quotes;
-
-
-    const day =
-        Math.floor(
-            Date.now() / 86400000
+        document.getElementById(
+            "deadlineList"
         );
 
 
-    const index =
-        day % pageList.length;
+    if (!container) return;
 
 
-    quoteElement.textContent =
-        pageList[index];
-
-}
-
-
-/* =========================================================
-   CALENDAR
-   ========================================================= */
-
-function renderCalendar() {
-
-    const grid =
-        document.getElementById("calendarGrid");
-
-    const monthTitle =
-        document.getElementById("calendarMonth");
-
-
-    if (!grid || !monthTitle) {
-        return;
-    }
-
-
-    const year =
-        calendarDate.getFullYear();
-
-    const month =
-        calendarDate.getMonth();
-
-
-    monthTitle.textContent =
-        calendarDate.toLocaleDateString(
-            "en-NZ",
-            {
-                month: "long",
-                year: "numeric"
-            }
-        );
-
-
-    const firstDay =
-        new Date(year, month, 1).getDay();
-
-
-    const daysInMonth =
-        new Date(year, month + 1, 0).getDate();
-
-
-    const previousMonthDays =
-        new Date(year, month, 0).getDate();
-
-
-    let html = "";
-
-
-    const dayNames = [
-        "Sun",
-        "Mon",
-        "Tue",
-        "Wed",
-        "Thu",
-        "Fri",
-        "Sat"
-    ];
-
-
-    dayNames.forEach(day => {
-
-        html += `
-            <div class="calendar-day-name">
-                ${day}
-            </div>
-        `;
-
-    });
-
-
-    for (
-        let i = firstDay - 1;
-        i >= 0;
-        i--
+    if (
+        !currentUser.assignments ||
+        currentUser.assignments.length === 0
     ) {
-
-        html += `
-            <div class="calendar-day other-month">
-                <span class="calendar-number">
-                    ${previousMonthDays - i}
-                </span>
-            </div>
-        `;
-
-    }
-
-
-    const today =
-        new Date();
-
-
-    for (
-        let day = 1;
-        day <= daysInMonth;
-        day++
-    ) {
-
-        const isToday =
-            day === today.getDate() &&
-            month === today.getMonth() &&
-            year === today.getFullYear();
-
-
-        const hasEvent =
-            calendarEvents.some(event => {
-
-                const eventDate =
-                    new Date(event.date);
-
-                return (
-                    eventDate.getDate() === day &&
-                    eventDate.getMonth() === month &&
-                    eventDate.getFullYear() === year
-                );
-
-            });
-
-
-        html += `
-
-            <button
-                class="calendar-day ${isToday ? "today" : ""}"
-                onclick="selectCalendarDay(${day})"
-            >
-
-                <span class="calendar-number">
-                    ${day}
-                </span>
-
-                ${
-                    hasEvent
-                        ? `<div class="calendar-event-dot"></div>`
-                        : ""
-                }
-
-            </button>
-
-        `;
-
-    }
-
-
-    const totalCells =
-        Math.ceil(
-            (firstDay + daysInMonth) / 7
-        ) * 7;
-
-
-    for (
-        let day = 1;
-        day <= totalCells - firstDay - daysInMonth;
-        day++
-    ) {
-
-        html += `
-            <div class="calendar-day other-month">
-                <span class="calendar-number">
-                    ${day}
-                </span>
-            </div>
-        `;
-
-    }
-
-
-    grid.innerHTML = html;
-
-
-    renderCalendarEvents();
-
-}
-
-
-function changeMonth(amount) {
-
-    calendarDate.setMonth(
-        calendarDate.getMonth() + amount
-    );
-
-    renderCalendar();
-
-}
-
-
-function selectCalendarDay(day) {
-
-    const selected =
-        new Date(
-            calendarDate.getFullYear(),
-            calendarDate.getMonth(),
-            day
-        );
-
-
-    alert(
-        `Selected ${selected.toLocaleDateString(
-            "en-NZ",
-            {
-                weekday: "long",
-                day: "numeric",
-                month: "long"
-            }
-        )}`
-    );
-
-}
-
-
-function renderCalendarEvents() {
-
-    const container =
-        document.getElementById("calendarEvents");
-
-
-    if (!container) {
-        return;
-    }
-
-
-    const today =
-        new Date();
-
-
-    const defaultEvents = [
-
-        {
-            title: "Maths assignment",
-            date: "2026-09-08",
-            type: "Assignment"
-        },
-
-        {
-            title: "Science report",
-            date: "2026-09-11",
-            type: "Assignment"
-        },
-
-        {
-            title: "Peer tutoring session",
-            date: "2026-09-12",
-            type: "Tutoring"
-        }
-
-    ];
-
-
-    const events =
-        [...defaultEvents, ...calendarEvents];
-
-
-    container.innerHTML =
-        events
-            .slice(0, 6)
-            .map(event => `
-
-                <div class="event-item">
-
-                    <strong>
-                        ${event.title}
-                    </strong>
-
-                    <span>
-                        ${formatDate(event.date)}
-                        · ${event.type}
-                    </span>
-
-                </div>
-
-            `)
-            .join("");
-
-}
-
-
-function showAddEvent() {
-
-    const dateInput =
-        document.getElementById("eventDate");
-
-
-    if (dateInput) {
-
-        dateInput.value =
-            new Date()
-                .toISOString()
-                .split("T")[0];
-
-    }
-
-
-    openModal("eventModal");
-
-}
-
-
-function addEvent() {
-
-    const title =
-        document.getElementById("eventTitle").value.trim();
-
-    const date =
-        document.getElementById("eventDate").value;
-
-    const type =
-        document.getElementById("eventType").value;
-
-
-    if (!title || !date) {
-
-        alert("Please enter an event title and date.");
-
-        return;
-    }
-
-
-    calendarEvents.push({
-
-        title,
-
-        date,
-
-        type:
-            capitalize(type)
-
-    });
-
-
-    closeModal("eventModal");
-
-    document
-        .getElementById("eventTitle")
-        .value = "";
-
-
-    renderCalendar();
-
-}
-
-
-/* =========================================================
-   ASSIGNMENTS
-   ========================================================= */
-
-function renderAssignments() {
-
-    const container =
-        document.getElementById("assignmentList");
-
-
-    if (!container) {
-        return;
-    }
-
-
-    let filtered =
-        [...assignments];
-
-
-    if (currentAssignmentFilter === "upcoming") {
-
-        filtered =
-            filtered.filter(
-                item => !item.complete
-            );
-
-    }
-
-
-    if (currentAssignmentFilter === "complete") {
-
-        filtered =
-            filtered.filter(
-                item => item.complete
-            );
-
-    }
-
-
-    if (!filtered.length) {
 
         container.innerHTML = `
 
-            <div class="empty-state">
+            <div class="empty-small">
 
-                <div class="empty-state-icon">
+                <span>
                     ✓
-                </div>
-
-                <h3>
-                    Nothing here
-                </h3>
+                </span>
 
                 <p>
-                    This section is currently empty.
+                    No assignments yet.
                 </p>
 
             </div>
@@ -1725,27 +1638,572 @@ function renderAssignments() {
 
 
     container.innerHTML =
-        filtered.map(item => `
+        currentUser.assignments
+            .slice(0, 4)
+            .map(assignment => `
+
+                <div class="task-item">
+
+                    <div class="task-subject">
+                        ${assignment.icon}
+                    </div>
+
+                    <div class="task-info">
+
+                        <strong>
+                            ${assignment.name}
+                        </strong>
+
+                        <span>
+                            Due in ${assignment.dateOffset} day${assignment.dateOffset === 1 ? "" : "s"}
+                        </span>
+
+                    </div>
+
+                    <span class="priority ${assignment.priority.toLowerCase()}">
+                        ${assignment.priority}
+                    </span>
+
+                </div>
+
+            `)
+            .join("");
+
+}
+
+
+function renderRecommendedPeers() {
+
+    const container =
+        document.getElementById(
+            "recommendedPeers"
+        );
+
+
+    if (!container) return;
+
+
+    container.innerHTML =
+        peers.slice(0, 3)
+            .map(peer => `
+
+                <div class="peer-row">
+
+                    <div class="avatar avatar-small">
+                        ${peer.initials}
+                    </div>
+
+                    <div class="peer-row-info">
+
+                        <strong>
+                            ${peer.name}
+                        </strong>
+
+                        <span>
+                            ${peer.subjects.slice(0, 3).join(" · ")}
+                        </span>
+
+                    </div>
+
+                    <span class="peer-availability">
+                        ${peer.availability}
+                    </span>
+
+                </div>
+
+            `)
+            .join("");
+
+}
+
+
+/* =====================================================
+   DATE
+===================================================== */
+
+function renderDate() {
+
+    const now = new Date();
+
+
+    document.getElementById(
+        "todayLabel"
+    ).textContent =
+        now.toLocaleDateString(
+            "en-NZ",
+            {
+                weekday: "long",
+                day: "numeric",
+                month: "long",
+                year: "numeric"
+            }
+        );
+
+
+    document.getElementById(
+        "studyDate"
+    ).textContent =
+        now.toLocaleDateString(
+            "en-NZ",
+            {
+                weekday: "long",
+                day: "numeric",
+                month: "long"
+            }
+        );
+
+}
+
+
+function greeting() {
+
+    const hour =
+        new Date().getHours();
+
+
+    if (hour < 12)
+        return "Good morning";
+
+
+    if (hour < 18)
+        return "Good afternoon";
+
+
+    return "Good evening";
+
+}
+
+
+/* =====================================================
+   CALENDAR
+===================================================== */
+
+function renderMiniCalendar() {
+
+    const container =
+        document.getElementById(
+            "miniCalendar"
+        );
+
+
+    if (!container) return;
+
+
+    const now =
+        new Date();
+
+
+    const year =
+        now.getFullYear();
+
+    const month =
+        now.getMonth();
+
+
+    document.getElementById(
+        "monthTitle"
+    ).textContent =
+        now.toLocaleDateString(
+            "en-NZ",
+            {
+                month: "long",
+                year: "numeric"
+            }
+        );
+
+
+    const first =
+        new Date(
+            year,
+            month,
+            1
+        );
+
+
+    const days =
+        new Date(
+            year,
+            month + 1,
+            0
+        ).getDate();
+
+
+    let start =
+        first.getDay();
+
+    start =
+        start === 0
+            ? 6
+            : start - 1;
+
+
+    let html = "";
+
+
+    for (
+        let i = 0;
+        i < start;
+        i++
+    ) {
+
+        html += `
+            <span class="empty-day"></span>
+        `;
+
+    }
+
+
+    for (
+        let day = 1;
+        day <= days;
+        day++
+    ) {
+
+        const today =
+            day === now.getDate();
+
+
+        html += `
+
+            <span
+                class="${today ? "today-number" : ""}"
+            >
+                ${day}
+            </span>
+
+        `;
+
+    }
+
+
+    container.innerHTML =
+        html;
+
+}
+
+
+function renderCalendar() {
+
+    const calendar =
+        document.getElementById(
+            "fullCalendar"
+        );
+
+
+    const title =
+        document.getElementById(
+            "fullMonthTitle"
+        );
+
+
+    if (!calendar || !title)
+        return;
+
+
+    const year =
+        calendarDate.getFullYear();
+
+    const month =
+        calendarDate.getMonth();
+
+
+    title.textContent =
+        calendarDate.toLocaleDateString(
+            "en-NZ",
+            {
+                month: "long",
+                year: "numeric"
+            }
+        );
+
+
+    const firstDay =
+        new Date(
+            year,
+            month,
+            1
+        );
+
+
+    let start =
+        firstDay.getDay();
+
+
+    start =
+        start === 0
+            ? 6
+            : start - 1;
+
+
+    const days =
+        new Date(
+            year,
+            month + 1,
+            0
+        ).getDate();
+
+
+    const names = [
+        "MON",
+        "TUE",
+        "WED",
+        "THU",
+        "FRI",
+        "SAT",
+        "SUN"
+    ];
+
+
+    let html =
+        names
+            .map(
+                name =>
+                    `<div class="day-name">${name}</div>`
+            )
+            .join("");
+
+
+    for (
+        let i = 0;
+        i < start;
+        i++
+    ) {
+
+        html += `
+            <div class="calendar-empty"></div>
+        `;
+
+    }
+
+
+    const today =
+        new Date();
+
+
+    for (
+        let day = 1;
+        day <= days;
+        day++
+    ) {
+
+        const isToday =
+            day === today.getDate() &&
+            month === today.getMonth() &&
+            year === today.getFullYear();
+
+
+        html += `
 
             <div
-                class="assignment-card ${item.complete ? "complete" : ""}"
+                class="${isToday ? "current" : ""}"
             >
+
+                <strong>
+                    ${day}
+                </strong>
+
+            </div>
+
+        `;
+
+    }
+
+
+    calendar.innerHTML =
+        html;
+
+}
+
+
+function changeMonth(amount) {
+
+    calendarDate.setMonth(
+        calendarDate.getMonth() + amount
+    );
+
+
+    renderCalendar();
+
+}
+
+
+function showAddEvent() {
+
+    showModal(`
+
+        <h2>
+            Add calendar event
+        </h2>
+
+        <p>
+            Calendar events are saved for this prototype session.
+        </p>
+
+        <div class="signup-step">
+
+            <input
+                id="eventName"
+                placeholder="Event name"
+            >
+
+            <input
+                id="eventDate"
+                type="date"
+            >
+
+        </div>
+
+        <div class="modal-actions">
+
+            <button
+                class="secondary-button"
+                onclick="closeModal()"
+            >
+                Cancel
+            </button>
+
+            <button
+                class="primary-button"
+                onclick="addEvent()"
+            >
+                Add event
+            </button>
+
+        </div>
+
+    `);
+
+}
+
+
+function addEvent() {
+
+    const name =
+        document.getElementById(
+            "eventName"
+        ).value.trim();
+
+
+    const date =
+        document.getElementById(
+            "eventDate"
+        ).value;
+
+
+    if (!name || !date) {
+
+        return alert(
+            "Please enter an event name and date."
+        );
+
+    }
+
+
+    calendarEvents.push({
+        name,
+        date
+    });
+
+
+    closeModal();
+
+    alert(
+        "Event added to your calendar."
+    );
+
+}
+
+
+/* =====================================================
+   ASSIGNMENTS
+===================================================== */
+
+function renderAssignments() {
+
+    const container =
+        document.getElementById(
+            "assignmentPageList"
+        );
+
+
+    if (!container) return;
+
+
+    let list =
+        [...currentUser.assignments];
+
+
+    if (
+        currentAssignmentFilter === "upcoming"
+    ) {
+
+        list =
+            list.filter(
+                item => !item.complete
+            );
+
+    }
+
+
+    if (
+        currentAssignmentFilter === "complete"
+    ) {
+
+        list =
+            list.filter(
+                item => item.complete
+            );
+
+    }
+
+
+    if (!list.length) {
+
+        container.innerHTML = `
+
+            <div class="empty-state">
+
+                <div class="empty-state-icon">
+                    ✓
+                </div>
+
+                <h3>
+                    Nothing here yet
+                </h3>
+
+                <p>
+                    Add an assignment when you have one.
+                </p>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    container.innerHTML =
+        list.map((item, index) => `
+
+            <div class="assignment-card">
 
                 <button
                     class="assignment-check"
-                    onclick="toggleAssignment(${item.id})"
+                    onclick="toggleAssignment(${index})"
                 >
-                    ✓
+                    ${item.complete ? "✓" : ""}
                 </button>
 
                 <div class="assignment-info">
 
                     <strong>
-                        ${item.title}
+                        ${item.name}
                     </strong>
 
                     <span>
-                        ${item.subject}
+                        ${item.complete ? "Complete" : "In progress"}
                     </span>
 
                 </div>
@@ -1753,17 +2211,20 @@ function renderAssignments() {
                 <div class="assignment-date">
 
                     <strong>
-                        ${formatDate(item.due)}
+                        ${item.dateOffset}
+                        day${item.dateOffset === 1 ? "" : "s"}
                     </strong>
 
                     <span>
-                        ${getDueLabel(item.due)}
+                        remaining
                     </span>
 
                 </div>
 
-                <span class="priority ${item.priority}">
-                    ${capitalize(item.priority)}
+                <span
+                    class="priority ${item.priority.toLowerCase()}"
+                >
+                    ${item.priority}
                 </span>
 
             </div>
@@ -1781,16 +2242,12 @@ function filterAssignments(filter, button) {
 
     document
         .querySelectorAll(".filter-tab")
-        .forEach(tab => {
-
-            tab.classList.remove("active");
-
-        });
+        .forEach(tab =>
+            tab.classList.remove("active")
+        );
 
 
-    if (button) {
-        button.classList.add("active");
-    }
+    button.classList.add("active");
 
 
     renderAssignments();
@@ -1798,17 +2255,10 @@ function filterAssignments(filter, button) {
 }
 
 
-function toggleAssignment(id) {
+function toggleAssignment(index) {
 
     const assignment =
-        assignments.find(
-            item => item.id === id
-        );
-
-
-    if (!assignment) {
-        return;
-    }
+        currentUser.assignments[index];
 
 
     assignment.complete =
@@ -1822,6 +2272,8 @@ function toggleAssignment(id) {
     }
 
 
+    saveCurrentUser();
+
     renderAssignments();
 
     renderHome();
@@ -1831,46 +2283,87 @@ function toggleAssignment(id) {
 
 function showAddAssignment() {
 
-    const dateInput =
-        document.getElementById("assignmentDate");
+    showModal(`
+
+        <h2>
+            Add assignment
+        </h2>
+
+        <p>
+            Add something you need to keep track of.
+        </p>
+
+        <div class="signup-step">
+
+            <input
+                id="assignmentName"
+                placeholder="e.g. Algebra practice"
+            >
+
+            <input
+                id="assignmentDays"
+                type="number"
+                min="0"
+                placeholder="Days until due"
+            >
+
+            <select id="assignmentPriority">
+
+                <option>
+                    High
+                </option>
+
+                <option selected>
+                    Medium
+                </option>
+
+                <option>
+                    Low
+                </option>
+
+            </select>
+
+        </div>
 
 
-    if (dateInput) {
+        <div class="modal-actions">
 
-        const date =
-            new Date();
+            <button
+                class="secondary-button"
+                onclick="closeModal()"
+            >
+                Cancel
+            </button>
 
-        date.setDate(
-            date.getDate() + 7
-        );
+            <button
+                class="primary-button"
+                onclick="addAssignment()"
+            >
+                Add assignment
+            </button>
 
-        dateInput.value =
-            date.toISOString().split("T")[0];
+        </div>
 
-    }
-
-
-    openModal("assignmentModal");
+    `);
 
 }
 
 
 function addAssignment() {
 
-    const subject =
+    const name =
         document.getElementById(
-            "assignmentSubject"
-        ).value;
-
-    const title =
-        document.getElementById(
-            "assignmentTitle"
+            "assignmentName"
         ).value.trim();
 
-    const due =
-        document.getElementById(
-            "assignmentDate"
-        ).value;
+
+    const days =
+        Number(
+            document.getElementById(
+                "assignmentDays"
+            ).value
+        );
+
 
     const priority =
         document.getElementById(
@@ -1878,39 +2371,34 @@ function addAssignment() {
         ).value;
 
 
-    if (!title || !due) {
+    if (!name || Number.isNaN(days)) {
 
-        alert("Please enter an assignment title and due date.");
+        return alert(
+            "Please complete the assignment details."
+        );
 
-        return;
     }
 
 
-    assignments.push({
+    currentUser.assignments.push({
 
-        id:
-            Date.now(),
+        name,
 
-        subject,
-
-        title,
-
-        due,
+        dateOffset: days,
 
         priority,
 
-        complete:
-            false
+        icon:
+            name.charAt(0).toUpperCase(),
+
+        complete: false
 
     });
 
 
-    closeModal("assignmentModal");
+    saveCurrentUser();
 
-    document
-        .getElementById("assignmentTitle")
-        .value = "";
-
+    closeModal();
 
     renderAssignments();
 
@@ -1919,148 +2407,117 @@ function addAssignment() {
 }
 
 
-/* =========================================================
-   FIND PEERS
-   ========================================================= */
+/* =====================================================
+   PEERS
+===================================================== */
 
-function renderPeers() {
-
-    filterPeers();
-
-}
-
-
-function filterPeers() {
+function searchMainPeers() {
 
     const search =
         (
             document.getElementById(
-                "peerSearch"
+                "mainPeerSearch"
             )?.value || ""
         )
-        .trim()
-        .toLowerCase();
+        .toLowerCase()
+        .trim();
 
 
     const subject =
         document.getElementById(
             "subjectFilter"
-        )?.value || "all";
+        )?.value || "";
 
 
     const year =
         document.getElementById(
             "yearFilter"
-        )?.value || "all";
+        )?.value || "";
 
 
     const availability =
         document.getElementById(
             "availabilityFilter"
-        )?.value || "all";
+        )?.value || "";
 
 
-    const onlineOnly =
+    const online =
         document.getElementById(
-            "onlineOnly"
+            "onlineFilter"
         )?.checked || false;
 
 
-    const filtered =
+    const results =
         peers.filter(peer => {
 
-            const searchableText =
+            const searchable =
                 [
                     peer.name,
                     peer.year,
                     ...peer.subjects,
-                    ...peer.topics,
-                    peer.bio
+                    ...peer.topics
                 ]
                 .join(" ")
                 .toLowerCase();
 
 
-            const matchesSearch =
+            const searchMatch =
                 !search ||
-                searchableText.includes(search);
+                searchable.includes(search);
 
 
-            const matchesSubject =
-                subject === "all" ||
+            const subjectMatch =
+                !subject ||
                 peer.subjects.includes(subject);
 
 
-            const peerYear =
-                peer.year.replace(
-                    "Year ",
-                    ""
+            const yearMatch =
+                !year ||
+                peer.year === year;
+
+
+            const availabilityMatch =
+                !availability ||
+                (
+                    availability === "Online"
+                    ? peer.online
+                    : peer.availability === availability
                 );
 
 
-            const matchesYear =
-                year === "all" ||
-                peerYear === year;
-
-
-            const matchesAvailability =
-                availability === "all" ||
-                (
-                    availability === "today" &&
-                    peer.availability === "Today"
-                ) ||
-                (
-                    availability === "week" &&
-                    peer.availability === "This week"
-                ) ||
-                (
-                    availability === "online" &&
-                    peer.online
-                );
-
-
-            const matchesOnline =
-                !onlineOnly ||
+            const onlineMatch =
+                !online ||
                 peer.online;
 
 
             return (
-                matchesSearch &&
-                matchesSubject &&
-                matchesYear &&
-                matchesAvailability &&
-                matchesOnline
+                searchMatch &&
+                subjectMatch &&
+                yearMatch &&
+                availabilityMatch &&
+                onlineMatch
             );
 
         });
 
 
+    renderPeerResults(results);
+
+}
+
+
+function renderPeerResults(results) {
+
     const container =
         document.getElementById(
-            "peerResults"
+            "searchResults"
         );
 
 
-    const count =
-        document.getElementById(
-            "peerResultsCount"
-        );
+    if (!container) return;
 
 
-    if (!container) {
-        return;
-    }
-
-
-    if (count) {
-
-        count.textContent =
-            `${filtered.length} peer${filtered.length === 1 ? "" : "s"} found`;
-
-    }
-
-
-    if (!filtered.length) {
+    if (!results.length) {
 
         container.innerHTML = `
 
@@ -2075,7 +2532,7 @@ function filterPeers() {
                 </h3>
 
                 <p>
-                    Try another subject, topic or filter.
+                    Try another topic or filter.
                 </p>
 
             </div>
@@ -2083,31 +2540,49 @@ function filterPeers() {
         `;
 
         return;
+
     }
 
 
     container.innerHTML =
-        filtered.map(peer => `
+        results.map((peer, index) => `
 
-            <div class="peer-card">
+            <div class="peer-result-card">
 
-                <div class="peer-card-top">
+                <div class="avatar">
+                    ${peer.initials}
+                </div>
 
-                    <div class="avatar avatar-small">
-                        ${peer.initials}
+                <div class="peer-result-info">
+
+                    <h3>
+                        ${peer.name}
+                    </h3>
+
+                    <p>
+                        ${peer.year}
+                    </p>
+
+                    <div class="subject-tags">
+
+                        ${peer.subjects.map(subject => `
+
+                            <span class="subject-tag">
+                                ${subject}
+                            </span>
+
+                        `).join("")}
+
                     </div>
 
-                    <div class="peer-card-info">
+                    <small>
+                        ★ ${peer.rating}
+                        · ${peer.sessions} sessions
+                    </small>
 
-                        <h3>
-                            ${peer.name}
-                        </h3>
+                </div>
 
-                        <p>
-                            ${peer.year}
-                        </p>
-
-                    </div>
+                <div class="peer-result-right">
 
                     ${
                         peer.online
@@ -2115,34 +2590,9 @@ function filterPeers() {
                             : ""
                     }
 
-                </div>
-
-
-                <p class="peer-card-bio">
-                    ${peer.bio}
-                </p>
-
-
-                <div class="subject-tags">
-
-                    ${peer.subjects.map(subject => `
-                        <span class="subject-tag">
-                            ${subject}
-                        </span>
-                    `).join("")}
-
-                </div>
-
-
-                <div class="peer-card-bottom">
-
-                    <span>
-                        ★ ${peer.rating} · ${peer.sessions} sessions
-                    </span>
-
                     <button
                         class="primary-button"
-                        onclick="viewPeer(${peer.id})"
+                        onclick="viewPeer(${index})"
                     >
                         View profile
                     </button>
@@ -2156,156 +2606,97 @@ function filterPeers() {
 }
 
 
-/* =========================================================
-   PEER PROFILE
-   ========================================================= */
+function viewPeer(index) {
 
-function viewPeer(id) {
-
-    selectedPeer =
-        peers.find(
-            peer => peer.id === id
-        );
+    const peer =
+        peers[index];
 
 
-    if (!selectedPeer) {
-        return;
-    }
+    showModal(`
 
+        <div class="peer-profile-modal">
 
-    const content =
-        document.getElementById(
-            "peerModalContent"
-        );
-
-
-    content.innerHTML = `
-
-        <div class="peer-profile-modal-header">
-
-            <div class="avatar">
-                ${selectedPeer.initials}
+            <div class="avatar large-modal-avatar">
+                ${peer.initials}
             </div>
 
-            <div>
+            <span class="eyebrow">
+                ${peer.year}
+            </span>
 
-                <h2>
-                    ${selectedPeer.name}
-                </h2>
+            <h2>
+                ${peer.name}
+            </h2>
+
+            <p>
+                ★ ${peer.rating}
+                · ${peer.sessions} sessions
+            </p>
+
+
+            <div class="modal-section">
+
+                <h3>
+                    Can help with
+                </h3>
+
+                <div class="subject-tags">
+
+                    ${peer.topics.map(topic => `
+
+                        <span class="subject-tag">
+                            ${topic}
+                        </span>
+
+                    `).join("")}
+
+                </div>
+
+            </div>
+
+
+            <div class="modal-section">
+
+                <h3>
+                    Availability
+                </h3>
 
                 <p>
-                    ${selectedPeer.year}
-                    · ★ ${selectedPeer.rating}
+                    ${peer.availability}
+                    ${peer.online ? " · Online available" : ""}
                 </p>
 
             </div>
 
-        </div>
-
-
-        <div class="modal-section">
-
-            <h3>
-                About
-            </h3>
-
-            <p>
-                ${selectedPeer.bio}
-            </p>
-
-        </div>
-
-
-        <div class="modal-section">
-
-            <h3>
-                Can help with
-            </h3>
-
-            <div class="subject-tags">
-
-                ${selectedPeer.topics.map(topic => `
-                    <span class="subject-tag">
-                        ${topic}
-                    </span>
-                `).join("")}
-
-            </div>
-
-        </div>
-
-
-        <div class="modal-section">
-
-            <h3>
-                Availability
-            </h3>
-
-            <p>
-                ${selectedPeer.availability}
-                ${selectedPeer.online ? " · Online available" : ""}
-            </p>
-
-        </div>
-
-
-        <div class="modal-section">
 
             <button
                 class="primary-button full-width"
-                onclick="showBooking(${selectedPeer.id})"
+                onclick="showBooking('${peer.name}')"
             >
                 Book a session
             </button>
 
         </div>
 
-    `;
-
-
-    openModal("peerModal");
+    `);
 
 }
 
 
-/* =========================================================
-   BOOKING
-   ========================================================= */
+function showBooking(name) {
 
-function showBooking(peerId) {
-
-    selectedPeer =
-        peers.find(
-            peer => peer.id === peerId
-        );
-
-
-    if (!selectedPeer) {
-        return;
-    }
-
-
-    closeModal("peerModal");
-
-
-    const content =
-        document.getElementById(
-            "bookingContent"
-        );
-
-
-    content.innerHTML = `
+    showModal(`
 
         <span class="eyebrow">
-            Book a session
+            BOOK A SESSION
         </span>
 
         <h2>
-            Study with ${selectedPeer.name}
+            Study with ${name}
         </h2>
 
         <p>
-            Choose a time that works for you.
+            Choose a session time.
         </p>
 
 
@@ -2313,287 +2704,183 @@ function showBooking(peerId) {
 
             <button
                 class="booking-option"
-                onclick="confirmBooking('Monday', '3:30 PM')"
+                onclick="confirmBooking('${name}', 'Monday · 3:30 PM')"
             >
-
-                <div>
-
-                    <strong>
-                        Monday · 3:30 PM
-                    </strong>
-
-                    <span>
-                        30 minute session
-                    </span>
-
-                </div>
-
-                <span>
-                    →
-                </span>
-
+                Monday · 3:30 PM
+                <span>30 min →</span>
             </button>
-
 
             <button
                 class="booking-option"
-                onclick="confirmBooking('Wednesday', '4:00 PM')"
+                onclick="confirmBooking('${name}', 'Wednesday · 4:00 PM')"
             >
-
-                <div>
-
-                    <strong>
-                        Wednesday · 4:00 PM
-                    </strong>
-
-                    <span>
-                        30 minute session
-                    </span>
-
-                </div>
-
-                <span>
-                    →
-                </span>
-
+                Wednesday · 4:00 PM
+                <span>30 min →</span>
             </button>
-
 
             <button
                 class="booking-option"
-                onclick="confirmBooking('Friday', '3:30 PM')"
+                onclick="confirmBooking('${name}', 'Friday · 3:30 PM')"
             >
-
-                <div>
-
-                    <strong>
-                        Friday · 3:30 PM
-                    </strong>
-
-                    <span>
-                        30 minute session
-                    </span>
-
-                </div>
-
-                <span>
-                    →
-                </span>
-
+                Friday · 3:30 PM
+                <span>30 min →</span>
             </button>
 
         </div>
 
 
-        <div class="modal-section">
+        <button
+            class="secondary-button full-width"
+            onclick="startOnlineSession('${name}')"
+        >
+            Book online tutoring
+        </button>
 
-            <button
-                class="secondary-button full-width"
-                onclick="startOnlineSession()"
-            >
-                Book online tutoring
-            </button>
-
-        </div>
-
-    `;
-
-
-    openModal("bookingModal");
+    `);
 
 }
 
 
-function confirmBooking(day, time) {
-
-    closeModal("bookingModal");
-
+function confirmBooking(name, time) {
 
     addPoints(2);
 
+    closeModal();
 
-    alert(
-        `Session booked with ${selectedPeer.name} for ${day} at ${time}.`
+    showBuddyMessage(
+        `Session booked! 🎓`
     );
 
+
+    showModal(`
+
+        <div class="success-icon">
+            ✓
+        </div>
+
+        <h2>
+            Session booked!
+        </h2>
+
+        <p>
+            Your session with
+            <strong>${name}</strong>
+            is booked for
+            <strong>${time}</strong>.
+        </p>
+
+        <div class="modal-actions">
+
+            <button
+                class="primary-button"
+                onclick="closeModal()"
+            >
+                Done
+            </button>
+
+        </div>
+
+    `);
+
 }
 
 
-function startOnlineSession() {
+function startOnlineSession(name) {
 
-    closeModal("bookingModal");
+    showModal(`
 
+        <span class="eyebrow">
+            ONLINE TUTORING
+        </span>
 
-    alert(
-        `Online tutoring with ${selectedPeer.name} would open here in the full version.`
-    );
+        <h2>
+            ${name}'s online room
+        </h2>
 
-}
+        <div class="online-screen">
 
+            <div>
 
-/* =========================================================
-   RESOURCES
-   ========================================================= */
-
-function renderResources() {
-
-    filterResources();
-
-}
-
-
-function filterResources() {
-
-    const search =
-        (
-            document.getElementById(
-                "resourceSearch"
-            )?.value || ""
-        )
-        .trim()
-        .toLowerCase();
-
-
-    const filtered =
-        resources.filter(resource => {
-
-            const matchesCategory =
-                currentResourceCategory === "all" ||
-                resource.subject === currentResourceCategory;
-
-
-            const searchable =
-                [
-                    resource.subject,
-                    resource.title,
-                    resource.description,
-                    resource.type
-                ]
-                .join(" ")
-                .toLowerCase();
-
-
-            const matchesSearch =
-                !search ||
-                searchable.includes(search);
-
-
-            return (
-                matchesCategory &&
-                matchesSearch
-            );
-
-        });
-
-
-    const container =
-        document.getElementById(
-            "resourceGrid"
-        );
-
-
-    if (!container) {
-        return;
-    }
-
-
-    container.innerHTML =
-        filtered.map(resource => `
-
-            <div class="resource-card">
-
-                <div class="resource-icon">
-                    ▤
+                <div class="online-avatar">
+                    ${initials(name)}
                 </div>
-
-                <span class="eyebrow">
-                    ${resource.subject}
-                </span>
-
-                <h3>
-                    ${resource.title}
-                </h3>
 
                 <p>
-                    ${resource.description}
+                    Video tutoring room
                 </p>
 
-                <div class="resource-card-footer">
-
-                    <span>
-                        ${resource.type}
-                    </span>
-
-                    <button
-                        class="text-button"
-                        onclick="openResource('${resource.title.replace(/'/g, "\\'")}')"
-                    >
-                        Open →
-                    </button>
-
-                </div>
+                <small>
+                    This is a prototype preview.
+                </small>
 
             </div>
 
-        `).join("");
+        </div>
+
+        <div class="modal-actions">
+
+            <button
+                class="primary-button"
+                onclick="closeModal()"
+            >
+                Leave room
+            </button>
+
+        </div>
+
+    `);
 
 }
 
 
-function filterResourceCategory(category, button) {
+/* =====================================================
+   RESOURCES
+===================================================== */
 
-    currentResourceCategory =
-        category;
+function resourceNotice(name) {
 
+    showModal(`
 
-    document
-        .querySelectorAll(".resource-category")
-        .forEach(item => {
+        <span class="eyebrow">
+            ${name.toUpperCase()}
+        </span>
 
-            item.classList.remove("active");
+        <h2>
+            School resources
+        </h2>
 
-        });
+        <p>
+            In the full version, this section would connect directly to St Oran's existing learning resources.
+        </p>
 
+        <div class="modal-actions">
 
-    if (button) {
+            <button
+                class="primary-button"
+                onclick="closeModal()"
+            >
+                Close
+            </button>
 
-        button.classList.add("active");
+        </div>
 
-    }
-
-
-    renderResources();
+    `);
 
 }
 
 
-function openResource(title) {
-
-    alert(
-        `"${title}" would open from the school's resource library in the full version.`
-    );
-
-}
-
-
-/* =========================================================
+/* =====================================================
    PROFILE
-   ========================================================= */
+===================================================== */
 
-function renderProfileSubjects() {
+function renderProfile() {
 
-    const container =
-        document.getElementById(
-            "profileSubjects"
-        );
+    if (!currentUser) return;
 
 
-    if (!container || !currentUser) {
-        return;
-    }
-
-
-    container.innerHTML =
+    document.getElementById(
+        "profileTags"
+    ).innerHTML =
         currentUser.subjects.length
             ? currentUser.subjects.map(subject => `
                 <span class="subject-tag">
@@ -2606,126 +2893,538 @@ function renderProfileSubjects() {
                 </span>
             `;
 
+
+    document.getElementById(
+        "profilePreferences"
+    ).textContent =
+        currentUser.preferences;
+
 }
 
 
 function editProfile() {
 
-    alert(
-        "Profile editing would connect to your school account in the full version."
+    showModal(`
+
+        <h2>
+            Edit profile
+        </h2>
+
+        <p>
+            Profile editing will connect to the school account in the full version.
+        </p>
+
+        <div class="modal-actions">
+
+            <button
+                class="primary-button"
+                onclick="closeModal()"
+            >
+                Close
+            </button>
+
+        </div>
+
+    `);
+
+}
+
+
+/* =====================================================
+   POMODORO
+===================================================== */
+
+function renderStudyPage() {
+
+    updatePomodoroDisplay();
+
+    updateBuddyForPage("study");
+
+}
+
+
+function setPomodoroMode(mode) {
+
+    stopPomodoro();
+
+
+    pomodoro.mode =
+        mode;
+
+
+    pomodoro.seconds =
+        mode === "focus"
+            ? 25 * 60
+            : 5 * 60;
+
+
+    document
+        .getElementById("focusTab")
+        .classList.toggle(
+            "active",
+            mode === "focus"
+        );
+
+
+    document
+        .getElementById("breakTab")
+        .classList.toggle(
+            "active",
+            mode === "break"
+        );
+
+
+    updatePomodoroDisplay();
+
+}
+
+
+function togglePomodoro() {
+
+    if (pomodoro.running) {
+
+        pausePomodoro();
+
+    } else {
+
+        startPomodoro();
+
+    }
+
+}
+
+
+function startPomodoro() {
+
+    pomodoro.running = true;
+
+
+    document.getElementById(
+        "pomodoroButton"
+    ).textContent =
+        "Pause";
+
+
+    showBuddyMessage(
+        pomodoro.mode === "focus"
+            ? "Let's focus. You've got this! ✦"
+            : "Tiny break. Breathe. Stretch. ✦"
+    );
+
+
+    pomodoro.interval =
+        setInterval(
+            pomodoroTick,
+            1000
+        );
+
+}
+
+
+function pausePomodoro() {
+
+    pomodoro.running = false;
+
+
+    clearInterval(
+        pomodoro.interval
+    );
+
+
+    document.getElementById(
+        "pomodoroButton"
+    ).textContent =
+        "Resume";
+
+
+    showBuddyMessage(
+        "Paused. Your work isn't going anywhere. ✦"
     );
 
 }
 
 
-/* =========================================================
-   PROGRESS
-   ========================================================= */
+function stopPomodoro() {
 
-function renderProgress() {
+    pomodoro.running = false;
 
-    if (!currentUser) {
-        return;
+
+    clearInterval(
+        pomodoro.interval
+    );
+
+
+    pomodoro.interval = null;
+
+}
+
+
+function pomodoroTick() {
+
+    pomodoro.seconds--;
+
+
+    updatePomodoroDisplay();
+
+
+    if (
+        pomodoro.seconds <= 0
+    ) {
+
+        finishPomodoro();
+
+    }
+
+}
+
+
+function finishPomodoro() {
+
+    stopPomodoro();
+
+
+    if (
+        pomodoro.mode === "focus"
+    ) {
+
+        currentUser.points += 5;
+
+        currentUser.studyStreak += 1;
+
+        currentUser.totalFocusMinutes += 25;
+
+        currentUser.sessions += 1;
+
+
+        pomodoro.completedRounds++;
+
+
+        checkBadges();
+
+
+        saveCurrentUser();
+
+
+        celebrateBuddy();
+
+
+        showModal(`
+
+            <div class="celebration">
+
+                <div class="celebration-star">
+                    ✦
+                </div>
+
+                <span class="eyebrow">
+                    FOCUS ROUND COMPLETE
+                </span>
+
+                <h2>
+                    You did it! 🎉
+                </h2>
+
+                <p>
+                    25 minutes completed.
+                    You've earned
+                    <strong>+5 Peer Points</strong>.
+                </p>
+
+                <div class="earned-points">
+                    +5
+                </div>
+
+                <button
+                    class="primary-button full-width"
+                    onclick="closeModal(); setPomodoroMode('break'); startPomodoro();"
+                >
+                    Start 5 minute break
+                </button>
+
+            </div>
+
+        `);
+
     }
 
 
-    const chart =
-        document.getElementById(
-            "pointsChart"
+    else {
+
+        showBuddyMessage(
+            "Break complete. Ready for another round? ✦"
         );
 
 
-    if (!chart) {
-        return;
+        setPomodoroMode("focus");
+
     }
 
 
+    updateUserUI();
+
+}
+
+
+function resetPomodoro() {
+
+    stopPomodoro();
+
+
+    pomodoro.seconds =
+        pomodoro.mode === "focus"
+            ? 25 * 60
+            : 5 * 60;
+
+
+    document.getElementById(
+        "pomodoroButton"
+    ).textContent =
+        pomodoro.mode === "focus"
+            ? "Start focus"
+            : "Start break";
+
+
+    updatePomodoroDisplay();
+
+}
+
+
+function updatePomodoroDisplay() {
+
+    const minutes =
+        Math.floor(
+            pomodoro.seconds / 60
+        );
+
+
+    const seconds =
+        pomodoro.seconds % 60;
+
+
+    document.getElementById(
+        "pomodoroDisplay"
+    ).textContent =
+        `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+
+
+    document.getElementById(
+        "pomodoroMode"
+    ).textContent =
+        pomodoro.mode === "focus"
+            ? "FOCUS SESSION"
+            : "SHORT BREAK";
+
+
+    document.getElementById(
+        "pomodoroRound"
+    ).textContent =
+        `Round ${pomodoro.round} of 4`;
+
+}
+
+
+/* =====================================================
+   GAMIFICATION
+===================================================== */
+
+function getLevel() {
+
+    const level =
+        Math.floor(
+            currentUser.points / 100
+        ) + 1;
+
+
+    const pointsIntoLevel =
+        currentUser.points % 100;
+
+
+    return {
+        level,
+        pointsIntoLevel
+    };
+
+}
+
+
+function checkBadges() {
+
+    const possibleBadges = [
+
+        {
+            condition:
+                currentUser.totalFocusMinutes >= 25,
+            name: "First Focus"
+        },
+
+        {
+            condition:
+                currentUser.totalFocusMinutes >= 125,
+            name: "Study Starter"
+        },
+
+        {
+            condition:
+                currentUser.helped >= 1,
+            name: "Peer Helper"
+        },
+
+        {
+            condition:
+                currentUser.studyStreak >= 5,
+            name: "On a Roll"
+        },
+
+        {
+            condition:
+                currentUser.points >= 500,
+            name: "Peer Champion"
+        }
+
+    ];
+
+
+    const earned =
+        possibleBadges.filter(
+            badge => badge.condition
+        ).length;
+
+
+    currentUser.badges =
+        Math.max(
+            currentUser.badges,
+            earned
+        );
+
+}
+
+
+function renderProgress() {
+
+    if (!currentUser) return;
+
+
+    const level =
+        getLevel();
+
+
+    document.getElementById(
+        "progressLevel"
+    ).textContent =
+        level.level;
+
+
+    document.getElementById(
+        "levelPercent"
+    ).textContent =
+        `${level.pointsIntoLevel}%`;
+
+
+    document.getElementById(
+        "levelProgressFill"
+    ).style.width =
+        `${level.pointsIntoLevel}%`;
+
+
+    document.getElementById(
+        "levelCaption"
+    ).textContent =
+        `${level.pointsIntoLevel} / 100 points until Level ${level.level + 1}.`;
+
+
+    drawProgressChart();
+
+    renderBadges();
+
+}
+
+
+function drawProgressChart() {
+
+    const canvas =
+        document.getElementById(
+            "progressChart"
+        );
+
+
+    if (!canvas) return;
+
+
     const ctx =
-        chart.getContext("2d");
+        canvas.getContext("2d");
 
 
     const width =
-        chart.width;
+        canvas.width =
+            canvas.clientWidth * 2;
+
 
     const height =
-        chart.height;
+        canvas.height =
+            canvas.clientHeight * 2;
+
+
+    ctx.scale(2, 2);
+
+
+    const w =
+        canvas.clientWidth;
+
+    const h =
+        canvas.clientHeight;
 
 
     ctx.clearRect(
         0,
         0,
-        width,
-        height
+        w,
+        h
     );
 
 
     const values =
-        [...currentPointsHistory];
+        currentUser.history.length
+            ? currentUser.history
+            : [0, 0, 0, 0, 0, 0, 0];
 
 
     const max =
         Math.max(
+            100,
             ...values
-        ) + 30;
-
-
-    const min =
-        Math.max(
-            0,
-            Math.min(...values) - 30
         );
 
 
-    const padding = {
+    const padding = 35;
 
-        left: 55,
-
-        right: 25,
-
-        top: 25,
-
-        bottom: 45
-
-    };
-
-
-    const graphWidth =
-        width -
-        padding.left -
-        padding.right;
-
-
-    const graphHeight =
-        height -
-        padding.top -
-        padding.bottom;
-
-
-    /* GRID */
 
     ctx.strokeStyle =
-        "#e6e2d9";
+        "#e5ddd0";
 
     ctx.lineWidth =
         1;
 
 
-    for (let i = 0; i <= 4; i++) {
+    for (
+        let i = 0;
+        i < 4;
+        i++
+    ) {
 
         const y =
-            padding.top +
-            graphHeight * (i / 4);
+            padding +
+            ((h - padding * 2) / 3) * i;
 
 
         ctx.beginPath();
 
         ctx.moveTo(
-            padding.left,
+            padding,
             y
         );
 
         ctx.lineTo(
-            width - padding.right,
+            w - padding,
             y
         );
 
@@ -2734,99 +3433,67 @@ function renderProgress() {
     }
 
 
-    /* Y LABELS */
+    const points =
+        values.map(
+            (value, index) => {
 
-    ctx.fillStyle =
-        "#85847e";
-
-    ctx.font =
-        "12px DM Sans";
-
-
-    for (let i = 0; i <= 4; i++) {
-
-        const value =
-            Math.round(
-                max -
-                (max - min) *
-                (i / 4)
-            );
+                const x =
+                    padding +
+                    (
+                        (w - padding * 2) /
+                        (values.length - 1)
+                    ) *
+                    index;
 
 
-        const y =
-            padding.top +
-            graphHeight * (i / 4);
+                const y =
+                    h -
+                    padding -
+                    (
+                        value / max
+                    ) *
+                    (
+                        h - padding * 2
+                    );
 
 
-        ctx.fillText(
-            value,
-            10,
-            y + 4
+                return {
+                    x,
+                    y
+                };
+
+            }
         );
 
-    }
-
-
-    /* POINTS */
-
-    const points =
-        values.map((value, index) => {
-
-            const x =
-                padding.left +
-                graphWidth *
-                (
-                    index /
-                    (values.length - 1)
-                );
-
-
-            const y =
-                padding.top +
-                graphHeight *
-                (
-                    1 -
-                    (value - min) /
-                    (max - min)
-                );
-
-
-            return {
-                x,
-                y,
-                value
-            };
-
-        });
-
-
-    /* LINE */
 
     ctx.beginPath();
 
-    points.forEach((point, index) => {
 
-        if (index === 0) {
+    points.forEach(
+        (point, index) => {
 
-            ctx.moveTo(
-                point.x,
-                point.y
-            );
+            if (index === 0) {
 
-        } else {
+                ctx.moveTo(
+                    point.x,
+                    point.y
+                );
 
-            ctx.lineTo(
-                point.x,
-                point.y
-            );
+            } else {
+
+                ctx.lineTo(
+                    point.x,
+                    point.y
+                );
+
+            }
 
         }
-
-    });
+    );
 
 
     ctx.strokeStyle =
-        "#173c32";
+        "#234b38";
 
     ctx.lineWidth =
         3;
@@ -2834,93 +3501,38 @@ function renderProgress() {
     ctx.stroke();
 
 
-    /* AREA */
+    points.forEach(
+        point => {
 
-    ctx.lineTo(
-        points[points.length - 1].x,
-        height - padding.bottom
+            ctx.beginPath();
+
+            ctx.arc(
+                point.x,
+                point.y,
+                4,
+                0,
+                Math.PI * 2
+            );
+
+            ctx.fillStyle =
+                "#fffdf8";
+
+            ctx.fill();
+
+            ctx.strokeStyle =
+                "#234b38";
+
+            ctx.stroke();
+
+        }
     );
-
-    ctx.lineTo(
-        points[0].x,
-        height - padding.bottom
-    );
-
-    ctx.closePath();
-
-
-    ctx.fillStyle =
-        "rgba(23, 60, 50, 0.08)";
-
-    ctx.fill();
-
-
-    /* DOTS */
-
-    points.forEach(point => {
-
-        ctx.beginPath();
-
-        ctx.arc(
-            point.x,
-            point.y,
-            5,
-            0,
-            Math.PI * 2
-        );
-
-
-        ctx.fillStyle =
-            "#ffffff";
-
-        ctx.fill();
-
-
-        ctx.strokeStyle =
-            "#173c32";
-
-        ctx.lineWidth =
-            2;
-
-        ctx.stroke();
-
-    });
-
-
-    /* MONTH LABELS */
-
-    const months = [
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep"
-    ];
-
-
-    ctx.fillStyle =
-        "#85847e";
-
-    ctx.font =
-        "12px DM Sans";
-
-
-    points.forEach((point, index) => {
-
-        ctx.fillText(
-            months[index],
-            point.x - 10,
-            height - 18
-        );
-
-    });
-
-
-    renderBadges();
 
 }
 
+
+/* =====================================================
+   BADGES
+===================================================== */
 
 function renderBadges() {
 
@@ -2930,35 +3542,49 @@ function renderBadges() {
         );
 
 
-    if (!container) {
-        return;
-    }
+    if (!container) return;
 
 
     const badges = [
 
         {
-            icon: "✦",
-            title: "First Step",
-            description: "Joined the Peer Hub"
+            icon: "🌱",
+            title: "First Focus",
+            description: "Complete your first focus round",
+            unlocked:
+                currentUser.totalFocusMinutes >= 25
         },
 
         {
-            icon: "✓",
-            title: "Helpful",
-            description: "Completed 5 sessions"
+            icon: "📚",
+            title: "Study Starter",
+            description: "Complete 5 focus rounds",
+            unlocked:
+                currentUser.totalFocusMinutes >= 125
         },
 
         {
-            icon: "♧",
-            title: "Peer Mentor",
-            description: "Helped 8 students"
+            icon: "🤝",
+            title: "Peer Helper",
+            description: "Help your first student",
+            unlocked:
+                currentUser.helped >= 1
         },
 
         {
-            icon: "▤",
-            title: "Resourceful",
-            description: "Shared 5 resources"
+            icon: "🔥",
+            title: "On a Roll",
+            description: "Reach a 5 round study streak",
+            unlocked:
+                currentUser.studyStreak >= 5
+        },
+
+        {
+            icon: "⭐",
+            title: "Peer Champion",
+            description: "Reach 500 Peer Points",
+            unlocked:
+                currentUser.points >= 500
         }
 
     ];
@@ -2967,7 +3593,9 @@ function renderBadges() {
     container.innerHTML =
         badges.map(badge => `
 
-            <div class="badge-card">
+            <div
+                class="badge-card ${badge.unlocked ? "unlocked" : "locked"}"
+            >
 
                 <div class="badge-icon">
                     ${badge.icon}
@@ -2981,6 +3609,14 @@ function renderBadges() {
                     ${badge.description}
                 </p>
 
+                <small>
+                    ${
+                        badge.unlocked
+                            ? "✓ Unlocked"
+                            : "Locked"
+                    }
+                </small>
+
             </div>
 
         `).join("");
@@ -2988,82 +3624,301 @@ function renderBadges() {
 }
 
 
-/* =========================================================
+/* =====================================================
    POINTS
-   ========================================================= */
+===================================================== */
 
 function addPoints(amount) {
 
-    if (!currentUser) {
-        return;
-    }
+    if (!currentUser) return;
 
 
     currentUser.points += amount;
 
 
-    currentPointsHistory[
-        currentPointsHistory.length - 1
-    ] = currentUser.points;
+    const history =
+        currentUser.history;
 
+
+    history[history.length - 1] =
+        currentUser.points;
+
+
+    checkBadges();
+
+    saveCurrentUser();
 
     updateUserUI();
 
 }
 
 
-/* =========================================================
-   NOTIFICATIONS
-   ========================================================= */
+/* =====================================================
+   SAVE USER
+===================================================== */
 
-function showNotifications() {
+function saveCurrentUser() {
 
-    openModal("notificationModal");
+    if (!currentUser || !currentEmail)
+        return;
+
+
+    savePrototypeAccount(
+        currentEmail,
+        currentUser
+    );
 
 }
 
 
-function showForgotPassword() {
+/* =====================================================
+   STUDY BUDDY
+===================================================== */
 
-    openModal("forgotModal");
+function updateBuddyForPage(page) {
+
+    const messages = {
+
+        home:
+            "What are we getting done today? ✦",
+
+        calendar:
+            "Future you will appreciate this. 📅",
+
+        assignments:
+            "One task at a time. You've got this!",
+
+        peers:
+            "Everyone knows something you don't. 🤝",
+
+        resources:
+            "Let's find something useful! 📚",
+
+        study:
+            "Shhh... focus mode. 🤫",
+
+        profile:
+            "You have things worth teaching! ✦",
+
+        progress:
+            "Look at your progress! 📈",
+
+        settings:
+            "Making everything work nicely. ⚙"
+
+    };
+
+
+    showBuddyMessage(
+        messages[page] ||
+        "Ready when you are! ✦"
+    );
 
 }
 
 
-/* =========================================================
-   MODAL HELPERS
-   ========================================================= */
+function showBuddyMessage(message) {
 
-function openModal(id) {
-
-    const modal =
-        document.getElementById(id);
+    const bubble =
+        document.getElementById(
+            "buddyMood"
+        );
 
 
-    if (modal) {
+    const studyBubble =
+        document.getElementById(
+            "studyBuddyMessage"
+        );
 
-        modal.classList.remove("hidden");
 
-        document.body.style.overflow =
-            "hidden";
+    if (bubble)
+        bubble.textContent =
+            message;
+
+
+    if (studyBubble)
+        studyBubble.textContent =
+            message;
+
+}
+
+
+function celebrateBuddy() {
+
+    const buddy =
+        document.getElementById(
+            "studyBuddy"
+        );
+
+
+    buddy.classList.add(
+        "buddy-celebrate"
+    );
+
+
+    showBuddyMessage(
+        "YOU DID IT! 🎉 +5"
+    );
+
+
+    setTimeout(
+        () => {
+
+            buddy.classList.remove(
+                "buddy-celebrate"
+            );
+
+        },
+        1800
+    );
+
+}
+
+
+function toggleBuddy() {
+
+    buddyHidden =
+        !buddyHidden;
+
+
+    document
+        .getElementById(
+            "studyBuddy"
+        )
+        .classList.toggle(
+            "buddy-hidden",
+            buddyHidden
+        );
+
+
+    document.getElementById(
+        "buddyToggle"
+    ).checked =
+        !buddyHidden;
+
+}
+
+
+function setBuddyVisibility() {
+
+    const visible =
+        document.getElementById(
+            "buddyToggle"
+        ).checked;
+
+
+    buddyHidden =
+        !visible;
+
+
+    document
+        .getElementById(
+            "studyBuddy"
+        )
+        .classList.toggle(
+            "buddy-hidden",
+            buddyHidden
+        );
+
+}
+
+
+/* =====================================================
+   LITTLE MOUSE FOLLOW
+===================================================== */
+
+document.addEventListener(
+    "mousemove",
+    event => {
+
+        const buddy =
+            document.getElementById(
+                "studyBuddy"
+            );
+
+
+        if (
+            !buddy ||
+            buddyHidden
+        ) return;
+
+
+        const x =
+            (
+                event.clientX /
+                window.innerWidth
+            ) - 0.5;
+
+
+        const y =
+            (
+                event.clientY /
+                window.innerHeight
+            ) - 0.5;
+
+
+        buddy.style.setProperty(
+            "--buddy-x",
+            `${x * 8}px`
+        );
+
+
+        buddy.style.setProperty(
+            "--buddy-y",
+            `${y * 5}px`
+        );
 
     }
+);
+
+
+/* =====================================================
+   MODALS
+===================================================== */
+
+function showModal(content) {
+
+    document.getElementById(
+        "modalContent"
+    ).innerHTML =
+        content;
+
+
+    document.getElementById(
+        "modal"
+    ).classList.add(
+        "open"
+    );
+
+
+    document.body.style.overflow =
+        "hidden";
 
 }
 
 
-function closeModal(id) {
+function closeModal() {
 
-    const modal =
-        document.getElementById(id);
+    document.getElementById(
+        "modal"
+    ).classList.remove(
+        "open"
+    );
 
 
-    if (modal) {
+    document.body.style.overflow =
+        "";
 
-        modal.classList.add("hidden");
+}
 
-        document.body.style.overflow =
-            "";
+
+function closeModalOutside(event) {
+
+    if (
+        event.target.id === "modal"
+    ) {
+
+        closeModal();
 
     }
 
@@ -3074,136 +3929,145 @@ document.addEventListener(
     "keydown",
     event => {
 
-        if (event.key !== "Escape") {
-            return;
+        if (
+            event.key === "Escape"
+        ) {
+
+            closeModal();
+
         }
-
-
-        document
-            .querySelectorAll(".modal")
-            .forEach(modal => {
-
-                modal.classList.add("hidden");
-
-            });
-
-
-        document.body.style.overflow =
-            "";
 
     }
 );
 
 
-/* =========================================================
+/* =====================================================
+   NOTIFICATIONS
+===================================================== */
+
+function showNotifications() {
+
+    showModal(`
+
+        <span class="eyebrow">
+            NOTIFICATIONS
+        </span>
+
+        <h2>
+            You're all caught up.
+        </h2>
+
+        <p>
+            Session reminders, assignment reminders and Peer Hub updates will appear here in the full version.
+        </p>
+
+        <div class="notification-item">
+            ✦ St Roroans is ready to study with you.
+        </div>
+
+        <div class="notification-item">
+            📚 Keep an eye on your upcoming assignments.
+        </div>
+
+        <div class="modal-actions">
+
+            <button
+                class="primary-button"
+                onclick="closeModal()"
+            >
+                Done
+            </button>
+
+        </div>
+
+    `);
+
+}
+
+
+/* =====================================================
    HELPERS
-   ========================================================= */
+===================================================== */
 
-function formatDate(dateString) {
+function initials(name) {
 
-    const date =
-        new Date(
-            `${dateString}T00:00:00`
-        );
-
-
-    return date.toLocaleDateString(
-        "en-NZ",
-        {
-            day: "numeric",
-            month: "short"
-        }
-    );
+    return name
+        .split(" ")
+        .map(
+            part => part[0]
+        )
+        .join("")
+        .slice(0, 2)
+        .toUpperCase();
 
 }
 
 
-function getDueLabel(dateString) {
+function dailyQuote() {
 
-    const due =
-        new Date(
-            `${dateString}T00:00:00`
+    const day =
+        Math.floor(
+            Date.now() / 86400000
         );
 
 
-    const today =
-        new Date();
-
-
-    today.setHours(
-        0,
-        0,
-        0,
-        0
-    );
-
-
-    const difference =
-        Math.ceil(
-            (
-                due - today
-            ) /
-            86400000
-        );
-
-
-    if (difference < 0) {
-
-        return "Overdue";
-
-    }
-
-
-    if (difference === 0) {
-
-        return "Due today";
-
-    }
-
-
-    if (difference === 1) {
-
-        return "Due tomorrow";
-
-    }
-
-
-    return `${difference} days left`;
+    return quotes[
+        day % quotes.length
+    ];
 
 }
 
 
-function capitalize(text) {
+function renderPageQuote(page) {
 
-    if (!text) {
-        return "";
-    }
+    document
+        .querySelectorAll(".pageQuote")
+        .forEach(
+            element => {
 
+                element.textContent =
+                    pageQuotes[page] ||
+                    quotes[0];
 
-    return (
-        text.charAt(0).toUpperCase() +
-        text.slice(1)
-    );
+            }
+        );
 
 }
 
 
-/* =========================================================
-   INITIAL DATA
-   ========================================================= */
+function resourceNotice(title) {
 
-calendarEvents = [
+    showModal(`
 
-    {
-        title: "Maths assignment",
-        date: "2026-09-08",
-        type: "Assignment"
-    },
+        <h2>
+            ${title}
+        </h2>
 
-    {
-        title: "Science report",
-        date: "2026-09-11",
-        type: "Assignment"
-    }
+        <p>
+            These resources would connect to the St Oran's learning platform in the full version.
+        </p>
 
-];
+        <div class="modal-actions">
+
+            <button
+                class="primary-button"
+                onclick="closeModal()"
+            >
+                Close
+            </button>
+
+        </div>
+
+    `);
+
+}
+
+
+/* =====================================================
+   AUTO SAVE + REMEMBERED ACCOUNT
+===================================================== */
+
+window.addEventListener(
+    "beforeunload",
+    saveCurrentUser
+);
