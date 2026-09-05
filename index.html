@@ -1,1 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>St Oran's Peer Hub</title>
 
+    <link rel="stylesheet" href="style.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="app">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+
+            <div class="logo">
+                <div class="logo-mark">S</div>
+                <div>
+                    <h2>St Oran's</h2>
+                    <span>Peer Hub</span>
+                </div>
+            </div>
+
+            <nav class="navigation">
+
+                <a href="#" class="nav-item active" data-page="home">
+                    <span>⌂</span>
+                    <span>Home</span>
+                </a>
+
+                <a href="#" class="nav-item" data-page="calendar">
+                    <span>□</span>
+                    <span>Calendar</span>
+                </a>
+
+                <a href="#" class="nav-item" data-page="assignments">
+                    <span>✓</span>
+                    <span>Assignments</span>
+                </a>
+
+                <a href="#" class="nav-item" data-page="peers">
+                    <span>⌕</span>
+                    <span>Find a Peer</span>
+                </a>
+
+                <a href="#" class="nav-item" data-page="resources">
+                    <span>▤</span>
+                    <span>Study Resources</span>
+                </a>
+
+                <div class="nav-divider"></div>
+
+                <a href="#" class="nav-item" data-page="profile">
+                    <span>○</span>
+                    <span>My Profile</span>
+                </a>
+
+                <a href="#" class="nav-item" data-page="progress">
+                    <span>↗</span>
+                    <span>My Progress</span>
+                </a>
+
+                <a href="#" class="nav-item" data-page="settings">
+                    <span>⚙</span>
+                    <span>Settings</span>
+                </a>
+
+            </nav>
+
+            <div class="sidebar-bottom">
+                <div class="school-badge">
+                    <span>ST ORAN'S COLLEGE</span>
+                    <small>Learn • Help • Grow</small>
+                </div>
+            </div>
+
+        </aside>
+
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+
+            <!-- TOP BAR -->
+            <header class="topbar">
+
+                <div class="mobile-logo">
+                    <strong>St Oran's</strong>
+                </div>
+
+                <div class="topbar-actions">
+
+                    <button class="icon-button" title="Notifications">
+                        ♧
+                    </button>
+
+                    <div class="user-mini">
+                        <div class="avatar">M</div>
+                        <div>
+                            <strong>Maya</strong>
+                            <small>Year 8</small>
+                        </div>
+                    </div>
+
+                </div>
+
+            </header>
+
+
+            <!-- PAGE CONTAINER -->
+            <div class="page-container">
+
+                <!-- HOME PAGE -->
+                <section class="page active-page" id="home">
+
+                    <div class="welcome-section">
+
+                        <div>
+                            <p class="eyebrow">SATURDAY, SEPTEMBER 5</p>
+                            <h1>Good afternoon, Maya.</h1>
+                            <p class="welcome-text">
+                                Ready to learn, help someone out, or both?
+                            </p>
+                        </div>
+
+                        <button class="primary-button" onclick="showPage('peers')">
+                            + Find a Peer
+                        </button>
+
+                    </div>
+
+
+                    <!-- SEARCH -->
+                    <div class="search-box">
+
+                        <span class="search-icon">⌕</span>
+
+                        <input
+                            type="text"
+                            id="peerSearch"
+                            placeholder="Search for a subject or topic, e.g. expanding brackets..."
+                        >
+
+                        <button onclick="searchPeers()">Search</button>
+
+                    </div>
+
+
+                    <!-- DASHBOARD GRID -->
+                    <div class="dashboard-grid">
+
+                        <!-- CALENDAR CARD -->
+                        <div class="card calendar-card">
+
+                            <div class="card-header">
+                                <div>
+                                    <p class="card-label">YOUR WEEK</p>
+                                    <h2>September 2026</h2>
+                                </div>
+
+                                <button class="text-button" onclick="showPage('calendar')">
+                                    View calendar →
+                                </button>
+                            </div>
+
+                            <div class="mini-calendar">
+
+                                <div class="calendar-days">
+                                    <span>MON</span>
+                                    <span>TUE</span>
+                                    <span>WED</span>
+                                    <span>THU</span>
+                                    <span>FRI</span>
+                                    <span>SAT</span>
+                                    <span>SUN</span>
+                                </div>
+
+                                <div class="calendar-numbers">
+                                    <span>31</span>
+                                    <span>1</span>
+                                    <span>2</span>
+                                    <span>3</span>
+                                    <span>4</span>
+                                    <span class="today">5</span>
+                                    <span>6</span>
+
+                                    <span>7</span>
+                                    <span>8</span>
+                                    <span>9</span>
+                                    <span>10</span>
+                                    <span>11</span>
+                                    <span>12</span>
+                                    <span>13</span>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- UPCOMING -->
+                        <div class="card upcoming-card">
+
+                            <div class="card-header">
+                                <div>
+                                    <p class="card-label">COMING UP</p>
+                                    <h2>Next deadlines</h2>
+                                </div>
+
+                                <button class="text-button" onclick="showPage('assignments')">
+                                    See all →
+                                </button>
+                            </div>
+
+                            <div class="assignment-list">
+
+                                <div class="assignment">
+                                    <div class="assignment-icon english">E</div>
+
+                                    <div class="assignment-info">
+                                        <strong>English Speech</strong>
+                                        <span>Due Monday</span>
+                                    </div>
+
+                                    <span class="priority high">High</span>
+                                </div>
+
+                                <div class="assignment">
+                                    <div class="assignment-icon maths">M</div>
+
+                                    <div class="assignment-info">
+                                        <strong>Algebra Practice</strong>
+                                        <span>Due Wednesday</span>
+                                    </div>
+
+                                    <span class="priority medium">Medium</span>
+                                </div>
+
+                                <div class="assignment">
+                                    <div class="assignment-icon science">S</div>
+
+                                    <div class="assignment-info">
+                                        <strong>Science Report</strong>
+                                        <span>Due Friday</span>
+                                    </div>
+
+                                    <span class="priority low">Low</span>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- PEER RECOMMENDATIONS -->
+                        <div class="card peers-card">
+
+                            <div class="card-header">
+                                <div>
+                                    <p class="card-label">PEER SUPPORT</p>
+                                    <h2>Students who can help</h2>
+                                </div>
+
+                                <button class="text-button" onclick="showPage('peers')">
+                                    Find more →
+                                </button>
+                            </div>
+
+                            <div class="peer-list">
+
+                                <div class="peer">
+
+                                    <div class="avatar peer-avatar">L</div>
+
+                                    <div class="peer-info">
+                                        <strong>Lucy</strong>
+                                        <span>Maths • Algebra</span>
+                                    </div>
+
+                                    <span class="available">Available</span>
+
+                                </div>
+
+                                <div class="peer">
+
+                                    <div class="avatar peer-avatar">A</div>
+
+                                    <div class="peer-info">
+                                        <strong>Amelia</strong>
+                                        <span>Science • Biology</span>
+                                    </div>
+
+                                    <span class="available">Available</span>
+
+                                </div>
+
+                                <div class="peer">
+
+                                    <div class="avatar peer-avatar">S</div>
+
+                                    <div class="peer-info">
+                                        <strong>Sophie</strong>
+                                        <span>Spanish • Writing</span>
+                                    </div>
+
+                                    <span class="busy">Later today</span>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- PROGRESS -->
+                        <div class="card progress-card">
+
+                            <div class="card-header">
+                                <div>
+                                    <p class="card-label">YOUR PROGRESS</p>
+                                    <h2>Peer Points</h2>
+                                </div>
+
+                                <button class="text-button" onclick="showPage('progress')">
+                                    View progress →
+                                </button>
+                            </div>
+
+                            <div class="points-display">
+
+                                <div class="points-number">240</div>
+
+                                <div>
+                                    <strong>Peer Points</strong>
+                                    <span>You've helped 8 students this term.</span>
+                                </div>
+
+                            </div>
+
+                            <div class="progress-bar">
+                                <div class="progress-fill"></div>
+                            </div>
+
+                            <p class="progress-caption">
+                                60 points until your next badge
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- CALENDAR PAGE -->
+                <section class="page" id="calendar">
+
+                    <div class="page-heading">
+                        <p class="eyebrow">ORGANISE</p>
+                        <h1>Your Calendar</h1>
+                        <p>Keep assignments, tests, events and tutoring sessions in one place.</p>
+                    </div>
+
+                    <div class="large-placeholder">
+                        <span>□</span>
+                        <h2>Calendar coming together</h2>
+                        <p>Your full calendar will live here.</p>
+                    </div>
+
+                </section>
+
+
+                <!-- ASSIGNMENTS PAGE -->
+                <section class="page" id="assignments">
+
+                    <div class="page-heading">
+                        <p class="eyebrow">STAY ON TRACK</p>
+                        <h1>Assignments</h1>
+                        <p>See what's due and keep your workload under control.</p>
+                    </div>
+
+                    <div class="large-placeholder">
+                        <span>✓</span>
+                        <h2>Your assignments</h2>
+                        <p>Assignment tracking will live here.</p>
+                    </div>
+
+                </section>
+
+
+                <!-- FIND PEER PAGE -->
+                <section class="page" id="peers">
+
+                    <div class="page-heading">
+                        <p class="eyebrow">PEER SUPPORT</p>
+                        <h1>Find a Peer</h1>
+                        <p>Search for a subject, topic or skill and find someone who can help.</p>
+                    </div>
+
+                    <div class="search-box large-search">
+
+                        <span class="search-icon">⌕</span>
+
+                        <input
+                            type="text"
+                            id="mainPeerSearch"
+                            placeholder="Try 'fractions', 'biology', 'essay writing'..."
+                        >
+
+                        <button onclick="searchMainPeers()">Search</button>
+
+                    </div>
+
+                    <div id="searchResults" class="peer-results">
+
+                        <div class="empty-state">
+                            <span>⌕</span>
+                            <h2>What do you need help with?</h2>
+                            <p>Search for a topic to find students who can help.</p>
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- RESOURCES PAGE -->
+                <section class="page" id="resources">
+
+                    <div class="page-heading">
+                        <p class="eyebrow">LEARN</p>
+                        <h1>Study Resources</h1>
+                        <p>Access St Oran's existing study resources and useful learning tools.</p>
+                    </div>
+
+                    <div class="resource-grid">
+
+                        <div class="resource-card">
+                            <span>📚</span>
+                            <h3>Study Guides</h3>
+                            <p>Revision material and subject resources.</p>
+                            <button class="secondary-button">Open resources</button>
+                        </div>
+
+                        <div class="resource-card">
+                            <span>✎</span>
+                            <h3>Study Tips</h3>
+                            <p>Helpful strategies for planning and revision.</p>
+                            <button class="secondary-button">View tips</button>
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- PROFILE PAGE -->
+                <section class="page" id="profile">
+
+                    <div class="page-heading">
+                        <p class="eyebrow">YOUR SPACE</p>
+                        <h1>My Profile</h1>
+                        <p>Tell other students what you can help with.</p>
+                    </div>
+
+                    <div class="profile-card">
+
+                        <div class="profile-top">
+
+                            <div class="large-avatar">M</div>
+
+                            <div>
+                                <h2>Maya</h2>
+                                <p>Year 8</p>
+                            </div>
+
+                            <button class="secondary-button">Edit profile</button>
+
+                        </div>
+
+                        <div class="profile-section">
+
+                            <h3>I can help with</h3>
+
+                            <div class="tags">
+                                <span>Maths</span>
+                                <span>Algebra</span>
+                                <span>English</span>
+                                <span>Essay Writing</span>
+                            </div>
+
+                        </div>
+
+                        <div class="change-notice">
+                            <strong>↻ Your profile is flexible</strong>
+                            <p>
+                                You can change your subjects and availability whenever you need.
+                            </p>
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- PROGRESS PAGE -->
+                <section class="page" id="progress">
+
+                    <div class="page-heading">
+                        <p class="eyebrow">YOUR IMPACT</p>
+                        <h1>My Progress</h1>
+                        <p>See your study progress and the difference you've made helping others.</p>
+                    </div>
+
+                    <div class="stats-grid">
+
+                        <div class="stat-card">
+                            <span>Peer Points</span>
+                            <strong>240</strong>
+                        </div>
+
+                        <div class="stat-card">
+                            <span>Students Helped</span>
+                            <strong>8</strong>
+                        </div>
+
+                        <div class="stat-card">
+                            <span>Sessions Completed</span>
+                            <strong>12</strong>
+                        </div>
+
+                        <div class="stat-card">
+                            <span>Badges Earned</span>
+                            <strong>3</strong>
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- SETTINGS PAGE -->
+                <section class="page" id="settings">
+
+                    <div class="page-heading">
+                        <p class="eyebrow">PERSONALISE</p>
+                        <h1>Settings</h1>
+                        <p>Manage your preferences.</p>
+                    </div>
+
+                    <div class="large-placeholder">
+                        <span>⚙</span>
+                        <h2>Settings</h2>
+                        <p>Your account and notification settings will live here.</p>
+                    </div>
+
+                </section>
+
+            </div>
+
+        </main>
+
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
