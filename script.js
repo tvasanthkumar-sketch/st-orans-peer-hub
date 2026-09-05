@@ -1,4122 +1,1587 @@
 /* =========================================================
    ST ORAN'S PEER HUB
-   JAVASCRIPT
+   Main JavaScript
    ========================================================= */
 
-
-/* =========================================================
+/* =========================
    STORAGE
-   ========================================================= */
+========================= */
 
 const STORAGE_KEY = "stOransPeerHubUsers";
 const CURRENT_USER_KEY = "stOransPeerHubCurrentUser";
+const ASSIGNMENTS_KEY = "stOransPeerHubAssignments_";
 
 
-/* =========================================================
+/* =========================
    DEMO USERS
-   ========================================================= */
+========================= */
 
 const demoUsers = {
-
-    maya: {
+    "t.smith@storans.school.nz": {
         firstName: "Maya",
         lastName: "Smith",
         fullName: "Maya Smith",
         email: "t.smith@storans.school.nz",
-        password: "Demo123",
+        password: "maya123",
         year: "Year 8",
-        className: "8WI",
+        className: "8XX",
         initials: "MS",
-
-        points: 240,
+        points: 420,
         helped: 8,
         sessions: 12,
-        badges: 3,
-
-        studySessions: 4,
-        studyMinutes: 100,
-        streak: 3,
-
-        bio: "I enjoy helping people understand maths and science.",
-
-        subjects: [
-            "Maths",
-            "Algebra",
-            "Science",
-            "Graphs"
-        ],
-
+        badges: 4,
+        studySessions: 18,
+        studyMinutes: 540,
+        streak: 6,
+        bio: "I love helping people with maths and science!",
+        subjects: ["Maths", "Science"],
         progressHistory: [
-            80,
-            105,
-            130,
-            165,
-            205,
-            240
+            { date: "2026-08-25", points: 280 },
+            { date: "2026-08-27", points: 320 },
+            { date: "2026-08-30", points: 360 },
+            { date: "2026-09-02", points: 390 },
+            { date: "2026-09-06", points: 420 }
         ]
-
     },
 
-
-    lucy: {
+    "l.worthington@storans.school.nz": {
         firstName: "Lucy",
         lastName: "Worthington",
         fullName: "Lucy Worthington",
         email: "l.worthington@storans.school.nz",
-        password: "Lucy123",
-        year: "Year 13",
-        className: "13LW",
+        password: "lucy123",
+        year: "Year 8",
+        className: "8XX",
         initials: "LW",
-
-        points: 520,
-        helped: 21,
-        sessions: 28,
-        badges: 6,
-
-        studySessions: 18,
-        studyMinutes: 450,
-        streak: 12,
-
-        bio: "I love helping younger students with English, study skills and essay writing.",
-
-        subjects: [
-            "English",
-            "Essay writing",
-            "Study skills",
-            "Literacy"
-        ],
-
+        points: 310,
+        helped: 5,
+        sessions: 9,
+        badges: 3,
+        studySessions: 12,
+        studyMinutes: 360,
+        streak: 4,
+        bio: "Always happy to help with English and art!",
+        subjects: ["English", "Art"],
         progressHistory: [
-            280,
-            330,
-            370,
-            415,
-            465,
-            520
+            { date: "2026-08-25", points: 180 },
+            { date: "2026-08-28", points: 220 },
+            { date: "2026-09-01", points: 260 },
+            { date: "2026-09-04", points: 290 },
+            { date: "2026-09-06", points: 310 }
         ]
-
     }
-
 };
 
 
-/* =========================================================
-   LOAD / SAVE USERS
-   ========================================================= */
-
-function getStoredUsers() {
-
-    try {
-
-        const saved =
-            localStorage.getItem(
-                STORAGE_KEY
-            );
-
-        if (!saved) {
-
-            const initialUsers = {
-                maya: {
-                    ...demoUsers.maya
-                },
-
-                lucy: {
-                    ...demoUsers.lucy
-                }
-            };
-
-            localStorage.setItem(
-                STORAGE_KEY,
-                JSON.stringify(initialUsers)
-            );
-
-            return initialUsers;
-
-        }
-
-        return JSON.parse(saved);
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Could not load users:",
-            error
-        );
-
-        return {
-            maya: {
-                ...demoUsers.maya
-            },
-
-            lucy: {
-                ...demoUsers.lucy
-            }
-        };
-
-    }
-
-}
-
-
-
-let users = getStoredUsers();
-
-
-
-function saveUsers() {
-
-    try {
-
-        localStorage.setItem(
-            STORAGE_KEY,
-            JSON.stringify(users)
-        );
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Could not save users:",
-            error
-        );
-
-    }
-
-}
-
-
-
-function saveCurrentUser() {
-
-    if (!currentUser) return;
-
-
-    const email =
-        currentUser.email.toLowerCase();
-
-
-    users[email] = {
-        ...currentUser,
-        progressHistory:
-            currentUser.progressHistory
-                ? [...currentUser.progressHistory]
-                : []
-    };
-
-
-    saveUsers();
-
-    try {
-
-        localStorage.setItem(
-            CURRENT_USER_KEY,
-            email
-        );
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Could not save current user:",
-            error
-        );
-
-    }
-
-}
-
-
-
-/* =========================================================
-   PEERS
-   ========================================================= */
-
-const peers = [
-
-    {
-        id: 1,
-        name: "Lucy Worthington",
-        initials: "LW",
-        year: "Year 13",
-        subjects: [
-            "English",
-            "Essay writing",
-            "Study skills"
-        ],
-        topics: [
-            "Essay writing",
-            "Paragraph structure",
-            "Analysing texts",
-            "Study skills"
-        ],
-        bio: "I love helping students become more confident with English and essay writing.",
-        availability: "Available now",
-        online: true,
-        rating: "4.9",
-        sessions: 28
-    },
-
-
-    {
-        id: 2,
-        name: "Aria Patel",
-        initials: "AP",
-        year: "Year 10",
-        subjects: [
-            "Maths",
-            "Algebra",
-            "Geometry"
-        ],
-        topics: [
-            "Expanding brackets",
-            "Factorising",
-            "Linear equations",
-            "Pythagoras"
-        ],
-        bio: "Happy to help with algebra, geometry and anything maths-related.",
-        availability: "Available now",
-        online: true,
-        rating: "4.8",
-        sessions: 17
-    },
-
-
-    {
-        id: 3,
-        name: "Sofia Chen",
-        initials: "SC",
-        year: "Year 11",
-        subjects: [
-            "Science",
-            "Biology",
-            "Chemistry"
-        ],
-        topics: [
-            "Cells",
-            "Chemical reactions",
-            "Genetics",
-            "Lab reports"
-        ],
-        bio: "I can help make tricky science concepts easier to understand.",
-        availability: "This week",
-        online: false,
-        rating: "4.9",
-        sessions: 22
-    },
-
-
-    {
-        id: 4,
-        name: "Ella Thompson",
-        initials: "ET",
-        year: "Year 9",
-        subjects: [
-            "Spanish",
-            "Vocabulary"
-        ],
-        topics: [
-            "Spanish vocabulary",
-            "Basic grammar",
-            "Speaking",
-            "Writing"
-        ],
-        bio: "I enjoy helping with Spanish vocabulary and speaking practice.",
-        availability: "This week",
-        online: true,
-        rating: "4.7",
-        sessions: 11
-    },
-
-
-    {
-        id: 5,
-        name: "Noah Williams",
-        initials: "NW",
-        year: "Year 12",
-        subjects: [
-            "History",
-            "Social Studies"
-        ],
-        topics: [
-            "Case studies",
-            "Essay structure",
-            "Research",
-            "Source analysis"
-        ],
-        bio: "Happy to help with Social Studies research and case studies.",
-        availability: "Available now",
-        online: false,
-        rating: "4.8",
-        sessions: 19
-    },
-
-
-    {
-        id: 6,
-        name: "Amelia Kumar",
-        initials: "AK",
-        year: "Year 10",
-        subjects: [
-            "Technology",
-            "Design"
-        ],
-        topics: [
-            "Design thinking",
-            "Prototyping",
-            "Laser cutting",
-            "Product design"
-        ],
-        bio: "I can help with design processes, prototyping and technology projects.",
-        availability: "This week",
-        online: true,
-        rating: "4.9",
-        sessions: 15
-    }
-
-];
-
-
-
-/* =========================================================
+/* =========================
+   GLOBAL VARIABLES
+========================= */
+
+let currentUser = null;
+let assignments = [];
+let pomodoroInterval = null;
+let pomodoroSeconds = 25 * 60;
+let pomodoroMode = "focus";
+let studyRunning = false;
+
+
+/* =========================
    ASSIGNMENTS
-   ========================================================= */
+========================= */
 
 const defaultAssignments = [
-
     {
         id: 1,
         subject: "Maths",
-        title: "Algebra practice",
-        due: "2026-09-08",
-        priority: "high",
-        complete: false
+        title: "Algebra Practice",
+        description: "Complete the algebra practice questions.",
+        due: "2026-09-10",
+        priority: "High",
+        completed: false
     },
-
-
     {
         id: 2,
         subject: "Science",
-        title: "Water cycle report",
-        due: "2026-09-11",
-        priority: "medium",
-        complete: false
+        title: "Water Cycle Diagram",
+        description: "Finish and label your water cycle diagram.",
+        due: "2026-09-12",
+        priority: "Medium",
+        completed: false
     },
-
-
     {
         id: 3,
         subject: "English",
-        title: "Heroes and villains speech",
+        title: "Heroes and Villains Speech",
+        description: "Continue working on your speech.",
         due: "2026-09-15",
-        priority: "high",
-        complete: false
-    },
-
-
-    {
-        id: 4,
-        subject: "Social Studies",
-        title: "Disaster case study",
-        due: "2026-09-18",
-        priority: "medium",
-        complete: false
-    },
-
-
-    {
-        id: 5,
-        subject: "Spanish",
-        title: "Vocabulary revision",
-        due: "2026-09-05",
-        priority: "low",
-        complete: true
+        priority: "Medium",
+        completed: false
     }
-
 ];
 
 
-let assignments = loadAssignments();
-
-
-
-function loadAssignments() {
-
-    if (!currentUser) {
-
-        return defaultAssignments.map(
-            assignment => ({
-                ...assignment
-            })
-        );
-
-    }
-
-
-    const key =
-        `stOransPeerHubAssignments_${currentUser.email.toLowerCase()}`;
-
-
+function getStoredUsers() {
     try {
+        const saved = localStorage.getItem(STORAGE_KEY);
 
-        const saved =
-            localStorage.getItem(key);
-
-
-        if (saved) {
-
-            return JSON.parse(saved);
-
+        if (!saved) {
+            const users = { ...demoUsers };
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
+            return users;
         }
 
+        const users = JSON.parse(saved);
+
+        if (!users || typeof users !== "object") {
+            return { ...demoUsers };
+        }
+
+        return users;
+
+    } catch (error) {
+        console.error("Could not load users:", error);
+        return { ...demoUsers };
     }
-
-    catch (error) {
-
-        console.error(
-            "Could not load assignments:",
-            error
-        );
-
-    }
-
-
-    return defaultAssignments.map(
-        assignment => ({
-            ...assignment
-        })
-    );
-
 }
 
+
+function saveUsers(users) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
+}
+
+
+/* =========================
+   USER NORMALISATION
+========================= */
+
+function normaliseUsers() {
+    const users = getStoredUsers();
+    const fixedUsers = {};
+
+    Object.values(users).forEach(user => {
+        if (!user || !user.email) return;
+
+        const email = user.email.trim().toLowerCase();
+
+        fixedUsers[email] = {
+            ...user,
+            email,
+            year: user.year || "Year 8",
+            className: user.className || "8XX",
+            initials:
+                user.initials ||
+                `${user.firstName?.[0] || ""}${user.lastName?.[0] || ""}`.toUpperCase(),
+            points: Number(user.points) || 0,
+            helped: Number(user.helped) || 0,
+            sessions: Number(user.sessions) || 0,
+            badges: Number(user.badges) || 0,
+            studySessions: Number(user.studySessions) || 0,
+            studyMinutes: Number(user.studyMinutes) || 0,
+            streak: Number(user.streak) || 0,
+            subjects: Array.isArray(user.subjects) ? user.subjects : [],
+            progressHistory: Array.isArray(user.progressHistory)
+                ? user.progressHistory
+                : []
+        };
+    });
+
+    saveUsers(fixedUsers);
+
+    return fixedUsers;
+}
+
+
+/* =========================
+   ASSIGNMENTS STORAGE
+========================= */
+
+function loadAssignments() {
+    if (!currentUser) {
+        return [];
+    }
+
+    const key = ASSIGNMENTS_KEY + currentUser.email;
+
+    try {
+        const saved = localStorage.getItem(key);
+
+        if (saved) {
+            return JSON.parse(saved);
+        }
+
+        return [...defaultAssignments];
+
+    } catch (error) {
+        console.error("Could not load assignments:", error);
+        return [...defaultAssignments];
+    }
+}
 
 
 function saveAssignments() {
-
     if (!currentUser) return;
 
+    const key = ASSIGNMENTS_KEY + currentUser.email;
 
-    const key =
-        `stOransPeerHubAssignments_${currentUser.email.toLowerCase()}`;
-
-
-    try {
-
-        localStorage.setItem(
-            key,
-            JSON.stringify(assignments)
-        );
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Could not save assignments:",
-            error
-        );
-
-    }
-
+    localStorage.setItem(
+        key,
+        JSON.stringify(assignments)
+    );
 }
 
 
-
-/* =========================================================
-   RESOURCES
-   ========================================================= */
-
-const resources = [
-
-    {
-        subject: "Maths",
-        title: "Algebra essentials",
-        description: "A quick guide to equations, expanding brackets and factorising.",
-        type: "Study guide"
-    },
-
-
-    {
-        subject: "Maths",
-        title: "Pythagoras practice",
-        description: "Practice questions for right-angled triangles.",
-        type: "Practice"
-    },
-
-
-    {
-        subject: "English",
-        title: "Essay structure",
-        description: "A simple framework for planning strong analytical paragraphs.",
-        type: "Study guide"
-    },
-
-
-    {
-        subject: "Science",
-        title: "Science investigation guide",
-        description: "Planning variables, writing hypotheses and analysing results.",
-        type: "Guide"
-    },
-
-
-    {
-        subject: "Social Studies",
-        title: "Case study checklist",
-        description: "Everything you need to include in a strong case study.",
-        type: "Checklist"
-    },
-
-
-    {
-        subject: "Spanish",
-        title: "Spanish vocabulary",
-        description: "Useful vocabulary for common Year 8 topics.",
-        type: "Vocabulary"
-    }
-
-];
-
-
-
-/* =========================================================
-   QUOTES
-   ========================================================= */
-
-const quotes = [
-
-    "Small progress is still progress.",
-    "You do not have to know everything to start.",
-    "Consistency beats intensity.",
-    "A difficult topic becomes easier one question at a time.",
-    "The best students are not afraid to ask questions.",
-    "Your future self will thank you for studying today.",
-    "Helping someone else is one of the best ways to learn.",
-    "Mistakes are evidence that you are actually trying."
-
-];
-
-
-const pageQuotes = {
-
-    home: [
-        "Small progress is still progress.",
-        "Consistency beats intensity.",
-        "You do not have to know everything to start."
-    ],
-
-    calendar: [
-        "A little organisation saves a lot of stress.",
-        "Future you deserves an organised calendar.",
-        "One deadline at a time."
-    ],
-
-    assignments: [
-        "Done is better than forgotten.",
-        "Start before the deadline becomes a crisis.",
-        "Small tasks become big wins when completed."
-    ],
-
-    peers: [
-        "Everyone knows something you do not.",
-        "Learning together makes difficult things easier.",
-        "Asking for help is part of learning."
-    ],
-
-    resources: [
-        "The right resource can change everything.",
-        "Learn it. Practise it. Understand it."
-    ],
-
-    study: [
-        "One focused session is better than an hour of distracted studying.",
-        "You don't need motivation. You need a starting point.",
-        "Future you is going to be very glad you studied."
-    ],
-
-    profile: [
-        "Your strengths can become someone else's starting point.",
-        "Everyone has something worth teaching."
-    ],
-
-    progress: [
-        "Progress is easier to see when you look back.",
-        "Every helpful action counts.",
-        "Keep building."
-    ],
-
-    settings: [
-        "Make the system work for you.",
-        "Small adjustments can make a big difference."
-    ]
-
-};
-
-
-
-/* =========================================================
-   APP STATE
-   ========================================================= */
-
-let currentUser = null;
-
-let currentPage = "home";
-
-let selectedPeer = null;
-
-let calendarDate = new Date();
-
-let calendarEvents = [];
-
-let currentAssignmentFilter = "all";
-
-let pomodoroMode = "focus";
-
-let pomodoroSeconds = 25 * 60;
-
-let pomodoroTimer = null;
-
-let pomodoroRunning = false;
-
-let completedPomodoros = 0;
-
-let studyMinutesThisVisit = 0;
-
-
-
-/* =========================================================
-   START
-   ========================================================= */
+/* =========================
+   DOM READY
+========================= */
 
 document.addEventListener("DOMContentLoaded", () => {
 
     setupLogin();
-
     setupSignup();
-
     setupNavigation();
+    setupRoro();
+    setupStudyTimer();
 
     updateDate();
-
     updateClock();
 
     setInterval(updateClock, 1000);
-
-    setupRoro();
 
     restoreLogin();
 
 });
 
 
-
-/* =========================================================
-   RESTORE LOGIN
-   ========================================================= */
-
-function restoreLogin() {
-
-    let savedEmail = null;
-
-
-    try {
-
-        savedEmail =
-            localStorage.getItem(
-                CURRENT_USER_KEY
-            );
-
-    }
-
-    catch (error) {
-
-        return;
-
-    }
-
-
-    if (!savedEmail) return;
-
-
-    const user =
-        users[savedEmail];
-
-
-    if (!user) {
-
-        localStorage.removeItem(
-            CURRENT_USER_KEY
-        );
-
-        return;
-
-    }
-
-
-    login(user, true);
-
-}
-
-
-
-/* =========================================================
+/* =========================
    LOGIN
-   ========================================================= */
+========================= */
 
 function setupLogin() {
 
-    const form =
-        document.getElementById("loginForm");
+    const loginForm = document.getElementById("loginForm");
 
-    if (!form) return;
+    if (loginForm) {
+        loginForm.addEventListener("submit", event => {
+            event.preventDefault();
+            login();
+        });
+    }
 
+    const showSignup = document.getElementById("showSignup");
 
-    form.addEventListener("submit", event => {
+    if (showSignup) {
+        showSignup.addEventListener("click", event => {
+            event.preventDefault();
+            showSignupScreen();
+        });
+    }
 
-        event.preventDefault();
+    const forgotPassword = document.getElementById("forgotPassword");
 
+    if (forgotPassword) {
+        forgotPassword.addEventListener("click", event => {
+            event.preventDefault();
+            forgotPasswordFunction();
+        });
+    }
 
-        const email =
-            document
-                .getElementById("email")
-                ?.value
-                .trim()
-                .toLowerCase();
+    const googleLogin = document.getElementById("googleLogin");
 
-
-        const password =
-            document
-                .getElementById("password")
-                ?.value;
-
-
-        const error =
-            document.getElementById(
-                "loginError"
-            );
-
-
-        const foundUser =
-            Object.values(users).find(
-                user =>
-                    user.email.toLowerCase() === email &&
-                    user.password === password
-            );
+    if (googleLogin) {
+        googleLogin.addEventListener("click", () => {
+            demoGoogleLogin();
+        });
+    }
+}
 
 
-        if (!foundUser) {
+function login() {
 
-            if (error) {
+    const emailInput = document.getElementById("loginEmail");
+    const passwordInput = document.getElementById("loginPassword");
+    const rememberInput = document.getElementById("rememberMe");
+    const error = document.getElementById("loginError");
 
-                error.textContent =
-                    "That email or password doesn't match an account.";
+    if (!emailInput || !passwordInput) return;
 
-            }
+    const email = emailInput.value.trim().toLowerCase();
+    const password = passwordInput.value;
 
-            return;
+    const users = normaliseUsers();
 
-        }
+    const user = users[email];
 
+    if (!user || user.password !== password) {
 
         if (error) {
-
-            error.textContent = "";
-
+            error.textContent = "Incorrect email or password.";
+            error.classList.remove("hidden");
         }
 
+        return;
+    }
 
-        login(foundUser);
+    if (error) {
+        error.textContent = "";
+        error.classList.add("hidden");
+    }
 
-    });
+    currentUser = { ...user };
 
-}
+    assignments = loadAssignments();
 
+    saveUsers(users);
 
-
-function login(user, restored = false) {
-
-    currentUser = {
-
-        ...user,
-
-        progressHistory:
-            user.progressHistory
-                ? [...user.progressHistory]
-                : [],
-
-        subjects:
-            user.subjects
-                ? [...user.subjects]
-                : []
-
-    };
-
-
-    assignments =
-        loadAssignments();
-
-
-    try {
-
+    if (rememberInput && rememberInput.checked) {
         localStorage.setItem(
             CURRENT_USER_KEY,
-            currentUser.email.toLowerCase()
+            currentUser.email
         );
-
+    } else {
+        localStorage.removeItem(CURRENT_USER_KEY);
     }
 
-    catch (error) {
+    showMainApp();
 
-        console.error(
-            "Could not remember login:",
-            error
-        );
-
-    }
-
-
-    document
-        .getElementById("loginScreen")
-        ?.classList.add("hidden");
-
-
-    document
-        .getElementById("signupScreen")
-        ?.classList.add("hidden");
-
-
-    document
-        .getElementById("mainApp")
-        ?.classList.remove("hidden");
-
-
-    updateUserUI();
-
-    showPage("home");
-
-
-    if (!restored) {
-
-        roroSay(
-            `Welcome back, ${currentUser.firstName}! 🐉`
-        );
-
-    }
-
+    resetLoginForm();
 }
 
 
+/* =========================
+   RESTORE LOGIN
+========================= */
 
-/* =========================================================
-   GOOGLE LOGIN
-   ========================================================= */
+function restoreLogin() {
 
-function googleLogin() {
+    const savedEmail = localStorage.getItem(CURRENT_USER_KEY);
 
-    const account =
-        prompt(
-            "Prototype Google login\n\nType:\n1 = Maya\n2 = Lucy"
-        );
-
-
-    if (account === "1") {
-
-        login(users.maya);
-
+    if (!savedEmail) {
+        showLoginScreen();
+        return;
     }
 
-    else if (account === "2") {
-
-        login(users.lucy);
-
-    }
-
-    else {
-
-        alert(
-            "For this prototype, enter 1 for Maya or 2 for Lucy."
-        );
-
-    }
-
-}
-
-
-
-/* =========================================================
-   FORGOT PASSWORD
-   ========================================================= */
-
-function forgotPassword(event) {
-
-    if (event) {
-
-        event.preventDefault();
-
-    }
-
-
-    const email =
-        prompt(
-            "Enter the email address on your Peer Hub account:"
-        );
-
-
-    if (!email) return;
-
-
-    const cleanEmail =
-        email.trim().toLowerCase();
-
-
-    const user =
-        Object.values(users).find(
-            account =>
-                account.email.toLowerCase() === cleanEmail
-        );
-
+    const users = normaliseUsers();
+    const user = users[savedEmail.toLowerCase()];
 
     if (!user) {
-
-        alert(
-            "No Peer Hub account was found with that email."
-        );
-
+        localStorage.removeItem(CURRENT_USER_KEY);
+        showLoginScreen();
         return;
-
     }
 
+    currentUser = { ...user };
 
-    const newPassword =
-        prompt(
-            "Prototype password reset:\n\nEnter your new password:"
-        );
+    assignments = loadAssignments();
 
-
-    if (!newPassword) return;
-
-
-    if (newPassword.length < 6) {
-
-        alert(
-            "Your new password needs to be at least 6 characters."
-        );
-
-        return;
-
-    }
-
-
-    user.password =
-        newPassword;
-
-
-    users[user.email.toLowerCase()] =
-        user;
-
-
-    saveUsers();
-
-
-    alert(
-        "Your password has been changed. You can now log in with your new password."
-    );
-
+    showMainApp(true);
 }
 
 
-
-/* =========================================================
-   SIGNUP SCREEN
-   ========================================================= */
-
-function showSignup(event) {
-
-    if (event) {
-
-        event.preventDefault();
-
-    }
-
-
-    document
-        .getElementById("loginScreen")
-        ?.classList.add("hidden");
-
-
-    document
-        .getElementById("mainApp")
-        ?.classList.add("hidden");
-
-
-    document
-        .getElementById("signupScreen")
-        ?.classList.remove("hidden");
-
-
-    document
-        .getElementById("signupError")
-        ?.replaceChildren();
-
-}
-
-
-
-function showLogin(event) {
-
-    if (event) {
-
-        event.preventDefault();
-
-    }
-
-
-    document
-        .getElementById("signupScreen")
-        ?.classList.add("hidden");
-
-
-    document
-        .getElementById("mainApp")
-        ?.classList.add("hidden");
-
-
-    document
-        .getElementById("loginScreen")
-        ?.classList.remove("hidden");
-
-}
-
-
+/* =========================
+   SIGNUP
+========================= */
 
 function setupSignup() {
 
-    const form =
-        document.getElementById(
-            "signupForm"
-        );
+    const signupForm = document.getElementById("signupForm");
 
-
-    if (!form) return;
-
-
-    form.addEventListener(
-        "submit",
-        event => {
-
+    if (signupForm) {
+        signupForm.addEventListener("submit", event => {
             event.preventDefault();
-
-
-            const firstName =
-                document
-                    .getElementById("signupName")
-                    ?.value
-                    .trim();
-
-
-            const email =
-                document
-                    .getElementById("signupEmail")
-                    ?.value
-                    .trim()
-                    .toLowerCase();
-
-
-            const yearValue =
-                document
-                    .getElementById("signupYear")
-                    ?.value
-                    .trim();
-
-
-            const password =
-                document
-                    .getElementById("signupPassword")
-                    ?.value;
-
-
-            const confirmPassword =
-                document
-                    .getElementById("signupConfirmPassword")
-                    ?.value;
-
-
-            const error =
-                document.getElementById(
-                    "signupError"
-                );
-
-
-            if (error) {
-
-                error.textContent = "";
-
-            }
-
-
-            /* -----------------------------
-               BASIC VALIDATION
-            ----------------------------- */
-
-            if (
-                !firstName ||
-                !email ||
-                !yearValue ||
-                !password ||
-                !confirmPassword
-            ) {
-
-                if (error) {
-
-                    error.textContent =
-                        "Please fill in every field.";
-
-                }
-
-                return;
-
-            }
-
-
-            if (!email.includes("@")) {
-
-                if (error) {
-
-                    error.textContent =
-                        "Please enter a valid email address.";
-
-                }
-
-                return;
-
-            }
-
-
-            if (password.length < 6) {
-
-                if (error) {
-
-                    error.textContent =
-                        "Password must be at least 6 characters.";
-
-                }
-
-                return;
-
-            }
-
-
-            if (password !== confirmPassword) {
-
-                if (error) {
-
-                    error.textContent =
-                        "The passwords don't match.";
-
-                }
-
-                return;
-
-            }
-
-
-            if (
-                users[email]
-            ) {
-
-                if (error) {
-
-                    error.textContent =
-                        "An account with that email already exists.";
-
-                }
-
-                return;
-
-            }
-
-
-            /*
-               Generate a simple surname placeholder
-               because the current HTML only asks for
-               one name.
-            */
-
-            const lastName =
-                "Student";
-
-
-            const initials =
-                `${firstName[0]}${lastName[0]}`
-                    .toUpperCase();
-
-
-            /*
-               IMPORTANT:
-               BRAND NEW ACCOUNT STARTS COMPLETELY EMPTY.
-            */
-
-            const newUser = {
-
-                firstName,
-
-                lastName,
-
-                fullName:
-                    firstName,
-
-                email,
-
-                password,
-
-                year:
-                    `Year ${yearValue}`,
-
-                className:
-                    `${yearValue}XX`,
-
-                initials,
-
-                points: 0,
-
-                helped: 0,
-
-                sessions: 0,
-
-                badges: 0,
-
-                studySessions: 0,
-
-                studyMinutes: 0,
-
-                streak: 0,
-
-                bio:
-                    "I am part of the St Oran's Peer Hub.",
-
-                subjects: [],
-
-                progressHistory: []
-
-            };
-
-
-            users[email] =
-                newUser;
-
-
-            saveUsers();
-
-
-            currentUser = {
-
-                ...newUser,
-
-                progressHistory: [],
-
-                subjects: []
-
-            };
-
-
-            assignments =
-                defaultAssignments.map(
-                    assignment => ({
-                        ...assignment
-                    })
-                );
-
-
-            try {
-
-                localStorage.setItem(
-                    CURRENT_USER_KEY,
-                    email
-                );
-
-            }
-
-            catch (storageError) {
-
-                console.error(
-                    storageError
-                );
-
-            }
-
-
-            form.reset();
-
-
-            document
-                .getElementById("signupScreen")
-                ?.classList.add("hidden");
-
-
-            document
-                .getElementById("loginScreen")
-                ?.classList.add("hidden");
-
-
-            document
-                .getElementById("mainApp")
-                ?.classList.remove("hidden");
-
-
-            updateUserUI();
-
-            showPage("home");
-
-
-            roroSay(
-                "Welcome to Peer Hub! Let's get studying 🐉"
-            );
-
-
-            alert(
-                "Account created! 🎉\n\nYour progress starts at zero."
-            );
-
-        }
-    );
-
+            signup();
+        });
+    }
+
+    const backToLogin = document.getElementById("backToLogin");
+
+    if (backToLogin) {
+        backToLogin.addEventListener("click", event => {
+            event.preventDefault();
+            showLoginScreen();
+        });
+    }
+
+    const closeSignup = document.getElementById("closeSignup");
+
+    if (closeSignup) {
+        closeSignup.addEventListener("click", () => {
+            showLoginScreen();
+        });
+    }
 }
 
 
+function signup() {
 
-/* =========================================================
-   SIGN OUT
-   ========================================================= */
+    const firstNameInput = document.getElementById("signupName");
+    const emailInput = document.getElementById("signupEmail");
+    const passwordInput = document.getElementById("signupPassword");
+    const yearInput = document.getElementById("signupYear");
+    const error = document.getElementById("signupError");
 
-function signOut() {
+    if (!firstNameInput || !emailInput || !passwordInput) {
+        return;
+    }
 
-    stopPomodoro();
+    const firstName = firstNameInput.value.trim();
+    const email = emailInput.value.trim().toLowerCase();
+    const password = passwordInput.value;
+    const yearValue = yearInput ? yearInput.value : "Year 8";
 
-    saveCurrentUser();
+    if (!firstName || !email || !password) {
+
+        showSignupError(
+            error,
+            "Please fill in all required fields."
+        );
+
+        return;
+    }
+
+    if (password.length < 6) {
+
+        showSignupError(
+            error,
+            "Your password needs to be at least 6 characters."
+        );
+
+        return;
+    }
+
+    const users = normaliseUsers();
+
+    if (users[email]) {
+
+        showSignupError(
+            error,
+            "An account with that email already exists."
+        );
+
+        return;
+    }
+
+    const newUser = {
+        firstName,
+        lastName: "Student",
+        fullName: firstName,
+        email,
+        password,
+
+        // FIXED: no more "Year Year 8"
+        year: yearValue,
+
+        // FIXED: no more "Year 8XX"
+        className: `${yearValue.replace("Year ", "")}XX`,
+
+        initials: firstName
+            .split(" ")
+            .map(word => word[0])
+            .join("")
+            .slice(0, 2)
+            .toUpperCase(),
+
+        // New accounts start completely empty
+        points: 0,
+        helped: 0,
+        sessions: 0,
+        badges: 0,
+        studySessions: 0,
+        studyMinutes: 0,
+        streak: 0,
+
+        bio: "New Peer Hub member.",
+        subjects: [],
+        progressHistory: []
+    };
+
+    users[email] = newUser;
+
+    saveUsers(users);
+
+    currentUser = { ...newUser };
+
+    // New accounts do NOT magically have completed work
+    assignments = [];
 
     saveAssignments();
 
-
-    currentUser = null;
-
-
-    try {
-
-        localStorage.removeItem(
-            CURRENT_USER_KEY
-        );
-
-    }
-
-    catch (error) {
-
-        console.error(
-            error
-        );
-
-    }
-
-
-    document
-        .getElementById("mainApp")
-        ?.classList.add("hidden");
-
-
-    document
-        .getElementById("signupScreen")
-        ?.classList.add("hidden");
-
-
-    document
-        .getElementById("loginScreen")
-        ?.classList.remove("hidden");
-
-
-    document
-        .getElementById("loginForm")
-        ?.reset();
-
-
-    roroHide();
-
-}
-
-
-
-/* =========================================================
-   NAVIGATION
-   ========================================================= */
-
-function setupNavigation() {
-
-    document
-        .querySelectorAll(".nav-item")
-        .forEach(item => {
-
-            item.addEventListener(
-                "click",
-                event => {
-
-                    event.preventDefault();
-
-                    showPage(
-                        item.dataset.page
-                    );
-
-                }
-            );
-
-        });
-
-}
-
-
-
-function showPage(page) {
-
-    currentPage = page;
-
-
-    document
-        .querySelectorAll(".page")
-        .forEach(section => {
-
-            section.classList.remove(
-                "active-page"
-            );
-
-        });
-
-
-    const target =
-        document.getElementById(page);
-
-
-    if (target) {
-
-        target.classList.add(
-            "active-page"
-        );
-
-    }
-
-
-    document
-        .querySelectorAll(".nav-item")
-        .forEach(item => {
-
-            item.classList.toggle(
-                "active",
-                item.dataset.page === page
-            );
-
-        });
-
-
-    renderPage(page);
-
-    roroReactToPage(page);
-
-}
-
-
-
-function renderPage(page) {
-
-    renderQuote(page);
-
-
-    switch (page) {
-
-        case "home":
-            renderHome();
-            break;
-
-        case "calendar":
-            renderCalendar();
-            break;
-
-        case "assignments":
-            renderAssignments();
-            break;
-
-        case "peers":
-            renderPeers();
-            break;
-
-        case "resources":
-            break;
-
-        case "study":
-            renderStudyPage();
-            break;
-
-        case "profile":
-            renderProfile();
-            break;
-
-        case "progress":
-            renderProgress();
-            break;
-
-        case "settings":
-            renderSettings();
-            break;
-
-    }
-
-}
-
-
-
-/* =========================================================
-   USER UI
-   ========================================================= */
-
-function updateUserUI() {
-
-    if (!currentUser) return;
-
-
-    setText(
-        "topName",
-        currentUser.firstName
-    );
-
-
-    setText(
-        "topYear",
-        currentUser.year
-    );
-
-
-    setText(
-        "welcomeName",
-        currentUser.firstName
-    );
-
-
-    setText(
-        "homePoints",
-        currentUser.points
-    );
-
-
-    setText(
-        "homeHelped",
-        `You've helped ${currentUser.helped} student${currentUser.helped === 1 ? "" : "s"} this term.`
-    );
-
-
-    setText(
-        "progressPoints",
-        currentUser.points
-    );
-
-
-    setText(
-        "progressHelped",
-        currentUser.helped
-    );
-
-
-    setText(
-        "progressSessions",
-        currentUser.sessions
-    );
-
-
-    setText(
-        "progressBadges",
-        currentUser.badges
-    );
-
-
-    setText(
-        "settingsEmail",
+    localStorage.setItem(
+        CURRENT_USER_KEY,
         currentUser.email
     );
 
+    showMainApp();
 
-    setText(
-        "profileName",
-        currentUser.fullName
-    );
-
-
-    setText(
-        "profileYear",
-        `${currentUser.year} · ${currentUser.className}`
-    );
-
-
-    const avatar =
-        document.getElementById(
-            "topAvatar"
-        );
-
-
-    if (avatar) {
-
-        avatar.textContent =
-            currentUser.initials;
-
-    }
-
-
-    const profileAvatar =
-        document.getElementById(
-            "profileAvatar"
-        );
-
-
-    if (profileAvatar) {
-
-        profileAvatar.textContent =
-            currentUser.initials;
-
-    }
-
-
-    renderHomeProgress();
-
+    resetSignupForm();
 }
 
 
+/* =========================
+   SIGNUP ERROR
+========================= */
 
-/* =========================================================
-   HOME
-   ========================================================= */
+function showSignupError(errorElement, message) {
 
-function renderHome() {
+    if (!errorElement) {
+        alert(message);
+        return;
+    }
+
+    errorElement.textContent = message;
+    errorElement.classList.remove("hidden");
+}
+
+
+/* =========================
+   SCREEN SWITCHING
+========================= */
+
+function showLoginScreen() {
+
+    const loginScreen = document.getElementById("loginScreen");
+    const signupScreen = document.getElementById("signupScreen");
+    const mainApp = document.getElementById("mainApp");
+
+    if (loginScreen) {
+        loginScreen.classList.remove("hidden");
+    }
+
+    if (signupScreen) {
+        signupScreen.classList.add("hidden");
+    }
+
+    if (mainApp) {
+        mainApp.classList.add("hidden");
+    }
+
+    hideRoro();
+}
+
+
+function showSignupScreen() {
+
+    const loginScreen = document.getElementById("loginScreen");
+    const signupScreen = document.getElementById("signupScreen");
+
+    if (loginScreen) {
+        loginScreen.classList.add("hidden");
+    }
+
+    if (signupScreen) {
+        signupScreen.classList.remove("hidden");
+    }
+}
+
+
+function showMainApp() {
+
+    const loginScreen = document.getElementById("loginScreen");
+    const signupScreen = document.getElementById("signupScreen");
+    const mainApp = document.getElementById("mainApp");
+
+    if (loginScreen) {
+        loginScreen.classList.add("hidden");
+    }
+
+    if (signupScreen) {
+        signupScreen.classList.add("hidden");
+    }
+
+    if (mainApp) {
+        mainApp.classList.remove("hidden");
+    }
+
+    updateUserInterface();
+
+    renderAssignments();
+    renderCalendar();
+    renderPeers();
+    renderProgress();
+    updateStudyStats();
+
+    showRoro();
+}
+
+
+/* =========================
+   LOGOUT
+========================= */
+
+function logout() {
+
+    stopPomodoro();
+
+    if (currentUser) {
+        saveCurrentUserData();
+        saveAssignments();
+    }
+
+    currentUser = null;
+    assignments = [];
+
+    localStorage.removeItem(CURRENT_USER_KEY);
+
+    showLoginScreen();
+
+    resetLoginForm();
+}
+
+
+/* =========================
+   SAVE CURRENT USER
+========================= */
+
+function saveCurrentUserData() {
 
     if (!currentUser) return;
 
+    const users = normaliseUsers();
 
-    const hour =
-        new Date().getHours();
+    users[currentUser.email] = {
+        ...users[currentUser.email],
+        ...currentUser
+    };
 
-
-    let greeting;
-
-
-    if (hour < 12) {
-
-        greeting = "Good morning";
-
-    }
-
-    else if (hour < 18) {
-
-        greeting = "Good afternoon";
-
-    }
-
-    else {
-
-        greeting = "Good evening";
-
-    }
-
-
-    setText(
-        "greeting",
-        greeting
-    );
-
-
-    renderRecommendedPeers();
-
-    renderUpcomingAssignments();
-
-    renderMiniCalendar();
-
-    renderHomeProgress();
-
+    saveUsers(users);
 }
 
 
+/* =========================
+   UI USER DATA
+========================= */
 
-function renderRecommendedPeers() {
-
-    const container =
-        document.getElementById(
-            "recommendedPeers"
-        );
-
-
-    if (!container) return;
-
-
-    container.innerHTML =
-        peers
-            .slice(0, 3)
-            .map(peer => `
-
-                <div class="peer-row">
-
-                    <div class="avatar avatar-small">
-                        ${peer.initials}
-                    </div>
-
-                    <div class="peer-row-info">
-
-                        <strong>
-                            ${peer.name}
-                        </strong>
-
-                        <span>
-                            ${peer.subjects.join(" · ")}
-                        </span>
-
-                    </div>
-
-                    <span class="peer-availability">
-                        ${peer.availability}
-                    </span>
-
-                </div>
-
-            `)
-            .join("");
-
-}
-
-
-
-function renderUpcomingAssignments() {
-
-    const container =
-        document.getElementById(
-            "deadlineList"
-        );
-
-
-    if (!container) return;
-
-
-    const upcoming =
-        assignments
-            .filter(item => !item.complete)
-            .sort(
-                (a, b) =>
-                    new Date(a.due) -
-                    new Date(b.due)
-            )
-            .slice(0, 4);
-
-
-    container.innerHTML =
-        upcoming
-            .map(item => `
-
-                <div class="assignment-row">
-
-                    <div>
-
-                        <strong>
-                            ${item.title}
-                        </strong>
-
-                        <span>
-                            ${item.subject}
-                        </span>
-
-                    </div>
-
-                    <div>
-
-                        <strong>
-                            ${formatDate(item.due)}
-                        </strong>
-
-                        <span class="priority ${item.priority}">
-                            ${capitalize(item.priority)}
-                        </span>
-
-                    </div>
-
-                </div>
-
-            `)
-            .join("");
-
-}
-
-
-
-/* =========================================================
-   HOME PROGRESS
-   ========================================================= */
-
-function renderHomeProgress() {
+function updateUserInterface() {
 
     if (!currentUser) return;
 
+    const topName = document.getElementById("topName");
+    const topYear = document.getElementById("topYear");
+    const topAvatar = document.getElementById("topAvatar");
 
-    const points =
-        currentUser.points;
-
-
-    const progress =
-        Math.min(
-            100,
-            (points / 500) * 100
-        );
-
-
-    const fill =
-        document.getElementById(
-            "homeProgressFill"
-        );
-
-
-    if (fill) {
-
-        fill.style.width =
-            `${progress}%`;
-
+    if (topName) {
+        topName.textContent = currentUser.firstName;
     }
 
-
-    const caption =
-        document.getElementById(
-            "homeProgressCaption"
-        );
-
-
-    if (caption) {
-
-        if (points === 0) {
-
-            caption.textContent =
-                "Start helping others to earn your first Peer Points.";
-
-        }
-
-        else {
-
-            caption.textContent =
-                `${Math.max(0, 500 - points)} points until 500.`;
-
-        }
-
+    if (topYear) {
+        topYear.textContent =
+            `${currentUser.year} · ${currentUser.className}`;
     }
 
+    if (topAvatar) {
+        topAvatar.textContent = currentUser.initials;
+    }
+
+    const welcomeName = document.getElementById("welcomeName");
+
+    if (welcomeName) {
+        welcomeName.textContent = currentUser.firstName;
+    }
+
+    updateStats();
 }
 
 
+function updateStats() {
 
-/* =========================================================
-   DATE
-   ========================================================= */
+    if (!currentUser) return;
+
+    const points = document.getElementById("pointsDisplay");
+    const helped = document.getElementById("helpedDisplay");
+    const sessions = document.getElementById("sessionsDisplay");
+    const badges = document.getElementById("badgesDisplay");
+
+    if (points) points.textContent = currentUser.points || 0;
+    if (helped) helped.textContent = currentUser.helped || 0;
+    if (sessions) sessions.textContent = currentUser.sessions || 0;
+    if (badges) badges.textContent = currentUser.badges || 0;
+}
+
+
+/* =========================
+   NAVIGATION
+========================= */
+
+function setupNavigation() {
+
+    const navLinks = document.querySelectorAll("[data-page]");
+
+    navLinks.forEach(link => {
+
+        link.addEventListener("click", event => {
+
+            event.preventDefault();
+
+            if (!currentUser) return;
+
+            const pageId = link.dataset.page;
+
+            showPage(pageId);
+
+        });
+
+    });
+}
+
+
+function showPage(pageId) {
+
+    if (!currentUser) return;
+
+    document.querySelectorAll(".page").forEach(page => {
+        page.classList.remove("active-page");
+    });
+
+    const selectedPage = document.getElementById(pageId);
+
+    if (selectedPage) {
+        selectedPage.classList.add("active-page");
+    }
+
+    document.querySelectorAll("[data-page]").forEach(link => {
+        link.classList.remove("active");
+
+        if (link.dataset.page === pageId) {
+            link.classList.add("active");
+        }
+    });
+
+    if (pageId === "progressPage") {
+        renderProgress();
+    }
+
+    if (pageId === "calendarPage") {
+        renderCalendar();
+    }
+
+    if (pageId === "assignmentsPage") {
+        renderAssignments();
+    }
+
+    if (pageId === "studyPage") {
+        updateStudyStats();
+    }
+}
+
+
+/* =========================
+   DATE + CLOCK
+========================= */
 
 function updateDate() {
 
-    const today =
-        new Date();
+    const dateElement = document.getElementById("currentDate");
 
+    if (!dateElement) return;
 
-    setText(
-        "todayLabel",
-        today.toLocaleDateString(
-            "en-NZ",
-            {
-                weekday: "long",
-                day: "numeric",
-                month: "long",
-                year: "numeric"
-            }
-        )
-    );
+    const now = new Date();
 
-
-    setText(
-        "monthTitle",
-        today.toLocaleDateString(
-            "en-NZ",
-            {
-                month: "long",
-                year: "numeric"
-            }
-        )
-    );
-
+    dateElement.textContent =
+        now.toLocaleDateString("en-NZ", {
+            weekday: "long",
+            day: "numeric",
+            month: "long",
+            year: "numeric"
+        });
 }
-
 
 
 function updateClock() {
 
-    /*
-       Kept as a separate function so the study screen
-       can use the same live time later.
-    */
+    const clock = document.getElementById("clock");
 
+    if (!clock) return;
+
+    const now = new Date();
+
+    clock.textContent =
+        now.toLocaleTimeString("en-NZ", {
+            hour: "2-digit",
+            minute: "2-digit"
+        });
 }
 
 
-
-/* =========================================================
-   QUOTES
-   ========================================================= */
-
-function renderQuote(page) {
-
-    const elements =
-        document.querySelectorAll(
-            ".pageQuote"
-        );
-
-
-    const quote =
-        getDailyQuote(
-            pageQuotes[page] || quotes
-        );
-
-
-    elements.forEach(element => {
-
-        element.textContent =
-            quote;
-
-    });
-
-
-    const homeQuote =
-        document.getElementById(
-            "homeQuote"
-        );
-
-
-    if (homeQuote) {
-
-        homeQuote.textContent =
-            getDailyQuote(
-                pageQuotes.home
-            );
-
-    }
-
-}
-
-
-
-function getDailyQuote(list) {
-
-    const day =
-        Math.floor(
-            Date.now() /
-            86400000
-        );
-
-
-    return list[
-        day % list.length
-    ];
-
-}
-
-
-
-/* =========================================================
-   MINI CALENDAR
-   ========================================================= */
-
-function renderMiniCalendar() {
-
-    const container =
-        document.getElementById(
-            "miniCalendar"
-        );
-
-
-    if (!container) return;
-
-
-    const today =
-        new Date();
-
-
-    const year =
-        today.getFullYear();
-
-
-    const month =
-        today.getMonth();
-
-
-    const firstDay =
-        new Date(
-            year,
-            month,
-            1
-        );
-
-
-    let startingDay =
-        firstDay.getDay();
-
-
-    startingDay =
-        startingDay === 0
-            ? 6
-            : startingDay - 1;
-
-
-    const days =
-        new Date(
-            year,
-            month + 1,
-            0
-        ).getDate();
-
-
-    let html = "";
-
-
-    for (
-        let i = 0;
-        i < startingDay;
-        i++
-    ) {
-
-        html += `<span></span>`;
-
-    }
-
-
-    for (
-        let day = 1;
-        day <= days;
-        day++
-    ) {
-
-        const isToday =
-            day === today.getDate();
-
-
-        html += `
-
-            <span
-                class="${isToday ? "today" : ""}"
-            >
-                ${day}
-            </span>
-
-        `;
-
-    }
-
-
-    container.innerHTML =
-        html;
-
-}
-
-
-
-/* =========================================================
-   CALENDAR
-   ========================================================= */
-
-function renderCalendar() {
-
-    const container =
-        document.getElementById(
-            "fullCalendar"
-        );
-
-
-    const title =
-        document.getElementById(
-            "fullMonthTitle"
-        );
-
-
-    if (!container || !title) return;
-
-
-    title.textContent =
-        calendarDate.toLocaleDateString(
-            "en-NZ",
-            {
-                month: "long",
-                year: "numeric"
-            }
-        );
-
-
-    const year =
-        calendarDate.getFullYear();
-
-
-    const month =
-        calendarDate.getMonth();
-
-
-    const first =
-        new Date(
-            year,
-            month,
-            1
-        );
-
-
-    let startingDay =
-        first.getDay();
-
-
-    startingDay =
-        startingDay === 0
-            ? 6
-            : startingDay - 1;
-
-
-    const days =
-        new Date(
-            year,
-            month + 1,
-            0
-        ).getDate();
-
-
-    let html = "";
-
-
-    [
-        "Mon",
-        "Tue",
-        "Wed",
-        "Thu",
-        "Fri",
-        "Sat",
-        "Sun"
-    ].forEach(day => {
-
-        html += `
-            <div class="calendar-heading">
-                ${day}
-            </div>
-        `;
-
-    });
-
-
-    for (
-        let i = 0;
-        i < startingDay;
-        i++
-    ) {
-
-        html += `
-            <div class="calendar-cell empty"></div>
-        `;
-
-    }
-
-
-    const today =
-        new Date();
-
-
-    for (
-        let day = 1;
-        day <= days;
-        day++
-    ) {
-
-        const isToday =
-            day === today.getDate() &&
-            month === today.getMonth() &&
-            year === today.getFullYear();
-
-
-        const event =
-            calendarEvents.find(item => {
-
-                const date =
-                    new Date(
-                        `${item.date}T00:00:00`
-                    );
-
-
-                return (
-                    date.getDate() === day &&
-                    date.getMonth() === month &&
-                    date.getFullYear() === year
-                );
-
-            });
-
-
-        html += `
-
-            <div
-                class="calendar-cell ${isToday ? "today" : ""}"
-            >
-
-                <strong>
-                    ${day}
-                </strong>
-
-                ${
-                    event
-                        ? `<small>${event.title}</small>`
-                        : ""
-                }
-
-            </div>
-
-        `;
-
-    }
-
-
-    container.innerHTML =
-        html;
-
-}
-
-
-
-/* =========================================================
+/* =========================
    ASSIGNMENTS
-   ========================================================= */
+========================= */
 
 function renderAssignments() {
 
-    const container =
-        document.getElementById(
-            "assignmentPageList"
-        );
+    if (!currentUser) return;
 
+    const list =
+        document.getElementById("assignmentPageList");
 
-    if (!container) return;
+    if (!list) return;
 
+    list.innerHTML = "";
 
-    let list =
-        [...assignments];
+    if (assignments.length === 0) {
 
+        list.innerHTML = `
+            <div class="empty-state">
+                <h3>No assignments yet 📚</h3>
+                <p>Your assignments will appear here when they're added.</p>
+            </div>
+        `;
 
-    if (
-        currentAssignmentFilter ===
-        "upcoming"
-    ) {
-
-        list =
-            list.filter(
-                item => !item.complete
-            );
-
+        return;
     }
 
+    assignments.forEach(assignment => {
 
-    if (
-        currentAssignmentFilter ===
-        "complete"
-    ) {
+        const card = document.createElement("div");
 
-        list =
-            list.filter(
-                item => item.complete
-            );
+        card.className =
+            `assignment-card ${assignment.completed ? "completed" : ""}`;
 
-    }
-
-
-    container.innerHTML =
-        list
-            .map(item => `
-
-                <div
-                    class="assignment-card
-                    ${item.complete ? "complete" : ""}"
+        card.innerHTML = `
+            <label class="assignment-check">
+                <input
+                    type="checkbox"
+                    ${assignment.completed ? "checked" : ""}
+                    onchange="toggleAssignment(${assignment.id})"
                 >
+                <span></span>
+            </label>
 
-                    <button
-                        class="assignment-check"
-                        onclick="toggleAssignment(${item.id})"
-                    >
-                        ${item.complete ? "✓" : ""}
-                    </button>
+            <div class="assignment-info">
+                <span class="subject-tag">
+                    ${escapeHTML(assignment.subject)}
+                </span>
 
+                <h3>${escapeHTML(assignment.title)}</h3>
 
-                    <div class="assignment-info">
+                <p>${escapeHTML(assignment.description || "")}</p>
+            </div>
 
-                        <strong>
-                            ${item.title}
-                        </strong>
+            <div class="assignment-date">
+                <strong>${formatDate(assignment.due)}</strong>
+                <span class="${assignment.priority === "High" ? "high-priority" : ""}">
+                    ${escapeHTML(assignment.priority)}
+                </span>
+            </div>
+        `;
 
-                        <span>
-                            ${item.subject}
-                        </span>
-
-                    </div>
-
-
-                    <div class="assignment-date">
-
-                        <strong>
-                            ${formatDate(item.due)}
-                        </strong>
-
-                        <span>
-                            ${getDueLabel(item.due)}
-                        </span>
-
-                    </div>
-
-
-                    <span
-                        class="priority ${item.priority}"
-                    >
-                        ${capitalize(item.priority)}
-                    </span>
-
-                </div>
-
-            `)
-            .join("");
-
+        list.appendChild(card);
+    });
 }
-
 
 
 function toggleAssignment(id) {
 
     const assignment =
-        assignments.find(
-            item => item.id === id
-        );
-
+        assignments.find(item => item.id === id);
 
     if (!assignment) return;
 
+    assignment.completed = !assignment.completed;
 
-    assignment.complete =
-        !assignment.complete;
-
-
-    if (assignment.complete) {
-
-        addPoints(2);
-
-        roroSay(
-            "Assignment completed! That's progress. 🐉"
+    if (assignment.completed) {
+        currentUser.points += 10;
+    } else {
+        currentUser.points = Math.max(
+            0,
+            currentUser.points - 10
         );
-
     }
 
-
+    saveCurrentUserData();
     saveAssignments();
 
     renderAssignments();
-
-    renderHome();
-
+    updateStats();
+    renderProgress();
 }
 
 
+/* =========================
+   CALENDAR
+========================= */
 
-/* =========================================================
+function renderCalendar() {
+
+    const calendar =
+        document.getElementById("fullCalendar");
+
+    if (!calendar) return;
+
+    const now = new Date();
+
+    const year = now.getFullYear();
+    const month = now.getMonth();
+
+    const firstDay =
+        new Date(year, month, 1).getDay();
+
+    const daysInMonth =
+        new Date(year, month + 1, 0).getDate();
+
+    calendar.innerHTML = "";
+
+    for (let i = 0; i < firstDay; i++) {
+
+        const empty = document.createElement("div");
+
+        empty.className = "calendar-cell empty";
+
+        calendar.appendChild(empty);
+    }
+
+    for (let day = 1; day <= daysInMonth; day++) {
+
+        const cell = document.createElement("div");
+
+        cell.className = "calendar-cell";
+
+        const isToday =
+            day === now.getDate();
+
+        if (isToday) {
+            cell.classList.add("today");
+        }
+
+        const dateString =
+            `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+
+        const dayAssignments =
+            assignments.filter(a => a.due === dateString);
+
+        cell.innerHTML = `
+            <span class="calendar-day-number">${day}</span>
+            ${dayAssignments
+                .map(a => `
+                    <div class="calendar-assignment">
+                        ${escapeHTML(a.title)}
+                    </div>
+                `)
+                .join("")}
+        `;
+
+        calendar.appendChild(cell);
+    }
+}
+
+
+/* =========================
    PEERS
-   ========================================================= */
+========================= */
 
 function renderPeers() {
 
-    searchMainPeers();
+    const results =
+        document.getElementById("peerResults");
 
-}
+    if (!results) return;
 
+    const users = normaliseUsers();
 
-
-function searchPeers() {
-
-    showPage("peers");
-
-
-    const homeSearch =
-        document.getElementById(
-            "peerSearch"
-        );
-
-
-    const mainSearch =
-        document.getElementById(
-            "mainPeerSearch"
-        );
-
-
-    if (
-        homeSearch &&
-        mainSearch
-    ) {
-
-        mainSearch.value =
-            homeSearch.value;
-
-    }
-
-
-    searchMainPeers();
-
-}
-
-
-
-function searchMainPeers() {
-
-    const search =
-        (
-            document.getElementById(
-                "mainPeerSearch"
-            )?.value || ""
-        )
-        .trim()
-        .toLowerCase();
-
-
-    const subject =
-        document.getElementById(
-            "subjectFilter"
-        )?.value || "";
-
-
-    const year =
-        document.getElementById(
-            "yearFilter"
-        )?.value || "";
-
-
-    const availability =
-        document.getElementById(
-            "availabilityFilter"
-        )?.value || "";
-
-
-    const onlineOnly =
-        document.getElementById(
-            "onlineFilter"
-        )?.checked || false;
-
-
-    const filtered =
-        peers.filter(peer => {
-
-            const searchable =
-                [
-                    peer.name,
-                    peer.year,
-                    ...peer.subjects,
-                    ...peer.topics,
-                    peer.bio
-                ]
-                .join(" ")
-                .toLowerCase();
-
-
-            const searchMatch =
-                !search ||
-                searchable.includes(search);
-
-
-            const subjectMatch =
-                !subject ||
-                peer.subjects.includes(
-                    subject
-                );
-
-
-            const yearMatch =
-                !year ||
-                peer.year === year;
-
-
-            const availabilityMatch =
-                !availability ||
-                (
-                    availability ===
-                    "Available now" &&
-                    peer.availability ===
-                    "Available now"
-                ) ||
-                (
-                    availability ===
-                    "Later today" &&
-                    peer.availability ===
-                    "This week"
-                ) ||
-                (
-                    availability ===
-                    "Online" &&
-                    peer.online
-                );
-
-
-            const onlineMatch =
-                !onlineOnly ||
-                peer.online;
-
-
-            return (
-                searchMatch &&
-                subjectMatch &&
-                yearMatch &&
-                availabilityMatch &&
-                onlineMatch
+    const peers =
+        Object.values(users)
+            .filter(user =>
+                currentUser &&
+                user.email !== currentUser.email
             );
 
-        });
+    results.innerHTML = "";
 
+    if (peers.length === 0) {
 
-    renderPeerResults(
-        filtered
-    );
-
-}
-
-
-
-function renderPeerResults(list) {
-
-    const container =
-        document.getElementById(
-            "searchResults"
-        );
-
-
-    if (!container) return;
-
-
-    if (!list.length) {
-
-        container.innerHTML = `
-
+        results.innerHTML = `
             <div class="empty-state">
-
-                <h3>
-                    No peers found
-                </h3>
-
-                <p>
-                    Try another subject or topic.
-                </p>
-
+                <h3>No peers found</h3>
+                <p>There aren't any other students registered yet.</p>
             </div>
-
         `;
 
         return;
-
     }
 
+    peers.forEach(peer => {
 
-    container.innerHTML =
-        list
-            .map(peer => `
+        const card = document.createElement("div");
 
-                <div class="peer-card">
+        card.className = "peer-card";
 
-                    <div class="peer-card-top">
+        card.innerHTML = `
+            <div class="peer-avatar">
+                ${escapeHTML(peer.initials)}
+            </div>
 
-                        <div class="avatar">
-                            ${peer.initials}
-                        </div>
+            <div class="peer-info">
+                <h3>${escapeHTML(peer.fullName)}</h3>
 
-                        <div>
+                <p>
+                    ${escapeHTML(peer.year)}
+                    ·
+                    ${escapeHTML(peer.className)}
+                </p>
 
-                            <h3>
-                                ${peer.name}
-                            </h3>
+                <p>${escapeHTML(peer.bio || "")}</p>
 
-                            <p>
-                                ${peer.year}
-                            </p>
-
-                        </div>
-
-                    </div>
-
-
-                    <p>
-                        ${peer.bio}
-                    </p>
-
-
-                    <div class="subject-tags">
-
-                        ${peer.subjects.map(subject => `
-
-                            <span class="subject-tag">
-                                ${subject}
-                            </span>
-
-                        `).join("")}
-
-                    </div>
-
-
-                    <div class="peer-card-bottom">
-
-                        <span>
-                            ★ ${peer.rating}
-                            · ${peer.sessions} sessions
-                        </span>
-
-
-                        <button
-                            class="primary-button"
-                            onclick="viewPeer(${peer.id})"
-                        >
-                            View profile
-                        </button>
-
-                    </div>
-
+                <div class="subject-tags">
+                    ${
+                        peer.subjects.length
+                            ? peer.subjects.map(subject =>
+                                `<span class="subject-tag">
+                                    ${escapeHTML(subject)}
+                                </span>`
+                            ).join("")
+                            : `<span class="muted">No subjects added yet</span>`
+                    }
                 </div>
+            </div>
 
-            `)
-            .join("");
-
-}
-
-
-
-/* =========================================================
-   PEER PROFILE
-   ========================================================= */
-
-function viewPeer(id) {
-
-    selectedPeer =
-        peers.find(
-            peer => peer.id === id
-        );
-
-
-    if (!selectedPeer) return;
-
-
-    const onlineText =
-        selectedPeer.online
-            ? " · Online"
-            : "";
-
-
-    const message =
-        `
-        ${selectedPeer.name}
-        · ${selectedPeer.year}
-
-        \n\n
-        ${selectedPeer.bio}
-
-        \n\n
-        Can help with:
-        ${selectedPeer.topics.join(", ")}
-
-        \n\n
-        ${selectedPeer.availability}${onlineText}
-
-        \n\n
-        Book a session from the prototype?
+            <div class="peer-availability">
+                Available
+            </div>
         `;
 
-
-    const result =
-        confirm(message);
-
-
-    if (result) {
-
-        bookPeer();
-
-    }
-
+        results.appendChild(card);
+    });
 }
 
 
+/* =========================
+   PROGRESS
+========================= */
 
-function bookPeer() {
-
-    if (!selectedPeer) return;
-
-
-    addPoints(2);
-
-    currentUser.sessions += 1;
-
-
-    saveCurrentUser();
-
-    updateUserUI();
-
-
-    roroSay(
-        `Session booked! Roro approves. 🐉`
-    );
-
-
-    alert(
-        `Prototype booking confirmed with ${selectedPeer.name}.`
-    );
-
-}
-
-
-
-/* =========================================================
-   RESOURCES
-   ========================================================= */
-
-function resourceNotice(type) {
-
-    alert(
-        `${type} would connect to the school's resource library in the full version.`
-    );
-
-}
-
-
-
-/* =========================================================
-   STUDY SESSION
-   ========================================================= */
-
-function renderStudyPage() {
+function renderProgress() {
 
     if (!currentUser) return;
 
+    const points =
+        document.getElementById("progressPoints");
 
-    setText(
-        "studySessionsToday",
-        currentUser.studySessions
-    );
+    const sessions =
+        document.getElementById("progressSessions");
 
+    const minutes =
+        document.getElementById("progressMinutes");
 
-    setText(
-        "studyMinutesToday",
-        currentUser.studyMinutes
-    );
+    const streak =
+        document.getElementById("progressStreak");
 
+    if (points) {
+        points.textContent = currentUser.points || 0;
+    }
 
-    setText(
-        "studyStreak",
-        currentUser.streak
-    );
+    if (sessions) {
+        sessions.textContent =
+            currentUser.studySessions || 0;
+    }
 
+    if (minutes) {
+        minutes.textContent =
+            currentUser.studyMinutes || 0;
+    }
 
-    updatePomodoroDisplay();
+    if (streak) {
+        streak.textContent =
+            currentUser.streak || 0;
+    }
 
+    renderProgressChart();
 }
 
 
+function renderProgressChart() {
 
-function setPomodoroMode(mode) {
+    const canvas =
+        document.getElementById("progressChart");
 
-    stopPomodoro();
+    if (!canvas || !currentUser) return;
 
+    const ctx = canvas.getContext("2d");
 
-    pomodoroMode =
-        mode;
+    const history =
+        currentUser.progressHistory || [];
 
-
-    if (mode === "focus") {
-
-        pomodoroSeconds =
-            25 * 60;
-
-    }
-
-
-    if (mode === "short") {
-
-        pomodoroSeconds =
-            5 * 60;
-
-    }
-
-
-    if (mode === "long") {
-
-        pomodoroSeconds =
-            15 * 60;
-
-    }
-
-
-    document
-        .querySelectorAll(
-            ".pomodoro-mode-button"
-        )
-        .forEach(button => {
-
-            button.classList.remove(
-                "active"
-            );
-
-        });
-
-
-    if (mode === "focus") {
-
-        document
-            .getElementById(
-                "focusModeButton"
-            )
-            ?.classList.add("active");
-
-    }
-
-
-    if (mode === "short") {
-
-        document
-            .getElementById(
-                "shortBreakButton"
-            )
-            ?.classList.add("active");
-
-    }
-
-
-    if (mode === "long") {
-
-        document
-            .getElementById(
-                "longBreakButton"
-            )
-            ?.classList.add("active");
-
-    }
-
-
-    updatePomodoroDisplay();
-
-
-    const status =
-        mode === "focus"
-            ? "Ready to focus."
-            : "Time for a little break.";
-
-
-    setText(
-        "pomodoroStatus",
-        status
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
     );
 
+    if (history.length < 2) {
+
+        ctx.font = "16px Arial";
+        ctx.textAlign = "center";
+
+        ctx.fillText(
+            "Complete activities to build your progress chart.",
+            canvas.width / 2,
+            canvas.height / 2
+        );
+
+        return;
+    }
+
+    const padding = 40;
+
+    const maxPoints =
+        Math.max(
+            ...history.map(item => item.points),
+            100
+        );
+
+    const chartWidth =
+        canvas.width - padding * 2;
+
+    const chartHeight =
+        canvas.height - padding * 2;
+
+    ctx.beginPath();
+
+    history.forEach((item, index) => {
+
+        const x =
+            padding +
+            (index / (history.length - 1)) *
+            chartWidth;
+
+        const y =
+            canvas.height -
+            padding -
+            (item.points / maxPoints) *
+            chartHeight;
+
+        if (index === 0) {
+            ctx.moveTo(x, y);
+        } else {
+            ctx.lineTo(x, y);
+        }
+    });
+
+    ctx.stroke();
+
+    history.forEach((item, index) => {
+
+        const x =
+            padding +
+            (index / (history.length - 1)) *
+            chartWidth;
+
+        const y =
+            canvas.height -
+            padding -
+            (item.points / maxPoints) *
+            chartHeight;
+
+        ctx.beginPath();
+        ctx.arc(x, y, 4, 0, Math.PI * 2);
+        ctx.fill();
+    });
 }
 
+
+/* =========================
+   STUDY TIMER
+========================= */
+
+function setupStudyTimer() {
+
+    const startButton =
+        document.getElementById("pomodoroStart");
+
+    const resetButton =
+        document.getElementById("pomodoroReset");
+
+    if (startButton) {
+        startButton.addEventListener(
+            "click",
+            togglePomodoro
+        );
+    }
+
+    if (resetButton) {
+        resetButton.addEventListener(
+            "click",
+            resetPomodoro
+        );
+    }
+
+    updatePomodoroDisplay();
+}
 
 
 function togglePomodoro() {
 
-    if (pomodoroRunning) {
-
+    if (studyRunning) {
         pausePomodoro();
-
-    }
-
-    else {
-
+    } else {
         startPomodoro();
-
     }
-
 }
-
 
 
 function startPomodoro() {
 
-    if (pomodoroRunning) return;
+    if (pomodoroInterval) return;
 
+    studyRunning = true;
 
-    pomodoroRunning =
-        true;
+    updatePomodoroButton();
 
-
-    const button =
-        document.getElementById(
-            "pomodoroStartButton"
-        );
-
-
-    if (button) {
-
-        button.textContent =
-            "Pause";
-
-    }
-
-
-    setText(
-        "pomodoroStatus",
-        pomodoroMode === "focus"
-            ? "Focus mode is running."
-            : "Enjoy your break."
-    );
-
-
-    roroSay(
-        pomodoroMode === "focus"
-            ? "Focus time! I'll keep watch. 👀🐉"
-            : "Break time! Stretch those legs."
-    );
-
-
-    pomodoroTimer =
+    pomodoroInterval =
         setInterval(() => {
 
             pomodoroSeconds--;
 
             updatePomodoroDisplay();
 
-
-            if (
-                pomodoroSeconds <= 0
-            ) {
+            if (pomodoroSeconds <= 0) {
 
                 finishPomodoro();
-
             }
 
         }, 1000);
-
 }
-
 
 
 function pausePomodoro() {
 
-    pomodoroRunning =
-        false;
+    clearInterval(pomodoroInterval);
 
+    pomodoroInterval = null;
 
-    clearInterval(
-        pomodoroTimer
-    );
+    studyRunning = false;
 
-
-    pomodoroTimer =
-        null;
-
-
-    const button =
-        document.getElementById(
-            "pomodoroStartButton"
-        );
-
-
-    if (button) {
-
-        button.textContent =
-            "Resume";
-
-    }
-
-
-    setText(
-        "pomodoroStatus",
-        "Paused. Your brain has been temporarily released from duty."
-    );
-
-
-    roroSay(
-        "Paused? Fair. Even dragons need breaks. 🐉"
-    );
-
+    updatePomodoroButton();
 }
-
 
 
 function stopPomodoro() {
 
-    clearInterval(
-        pomodoroTimer
-    );
+    clearInterval(pomodoroInterval);
 
+    pomodoroInterval = null;
 
-    pomodoroTimer =
-        null;
+    studyRunning = false;
 
-
-    pomodoroRunning =
-        false;
-
+    updatePomodoroButton();
 }
-
 
 
 function resetPomodoro() {
 
-    stopPomodoro();
+    pausePomodoro();
 
+    pomodoroMode = "focus";
+    pomodoroSeconds = 25 * 60;
+
+    updatePomodoroDisplay();
+}
+
+
+function finishPomodoro() {
+
+    clearInterval(pomodoroInterval);
+
+    pomodoroInterval = null;
+
+    studyRunning = false;
+
+    if (currentUser && pomodoroMode === "focus") {
+
+        currentUser.studySessions =
+            (currentUser.studySessions || 0) + 1;
+
+        currentUser.studyMinutes =
+            (currentUser.studyMinutes || 0) + 25;
+
+        currentUser.points =
+            (currentUser.points || 0) + 10;
+
+        saveCurrentUserData();
+
+        updateStats();
+        updateStudyStats();
+        renderProgress();
+    }
 
     if (pomodoroMode === "focus") {
 
-        pomodoroSeconds =
-            25 * 60;
+        pomodoroMode = "break";
+        pomodoroSeconds = 5 * 60;
 
+    } else {
+
+        pomodoroMode = "focus";
+        pomodoroSeconds = 25 * 60;
     }
-
-    else if (
-        pomodoroMode === "short"
-    ) {
-
-        pomodoroSeconds =
-            5 * 60;
-
-    }
-
-    else {
-
-        pomodoroSeconds =
-            15 * 60;
-
-    }
-
-
-    const button =
-        document.getElementById(
-            "pomodoroStartButton"
-        );
-
-
-    if (button) {
-
-        button.textContent =
-            "Start focus";
-
-    }
-
-
-    setText(
-        "pomodoroStatus",
-        "Ready when you are."
-    );
-
 
     updatePomodoroDisplay();
-
+    updatePomodoroButton();
 }
-
-
-
-function skipPomodoro() {
-
-    stopPomodoro();
-
-    finishPomodoro(true);
-
-}
-
-
-
-function finishPomodoro(skipped = false) {
-
-    stopPomodoro();
-
-
-    const wasFocus =
-        pomodoroMode === "focus";
-
-
-    if (
-        wasFocus &&
-        !skipped
-    ) {
-
-        completedPomodoros++;
-
-
-        currentUser.studySessions += 1;
-
-        currentUser.studyMinutes += 25;
-
-        studyMinutesThisVisit += 25;
-
-
-        addPoints(5);
-
-
-        if (
-            currentUser.streak === 0
-        ) {
-
-            currentUser.streak = 1;
-
-        }
-
-
-        saveCurrentUser();
-
-
-        updateUserUI();
-
-
-        setText(
-            "studySessionsToday",
-            currentUser.studySessions
-        );
-
-
-        setText(
-            "studyMinutesToday",
-            currentUser.studyMinutes
-        );
-
-
-        setText(
-            "studyStreak",
-            currentUser.streak
-        );
-
-
-        roroCelebrate();
-
-
-        alert(
-            "Pomodoro complete! +5 Peer Points 🎉"
-        );
-
-    }
-
-
-    if (wasFocus) {
-
-        setPomodoroMode("short");
-
-        setText(
-            "pomodoroStatus",
-            "Focus complete. Take your break."
-        );
-
-    }
-
-    else {
-
-        setPomodoroMode("focus");
-
-        setText(
-            "pomodoroStatus",
-            "Break finished. Ready to focus again."
-        );
-
-    }
-
-
-    renderStudyPage();
-
-}
-
 
 
 function updatePomodoroDisplay() {
 
-    const minutes =
-        Math.floor(
-            pomodoroSeconds / 60
-        );
+    const time =
+        document.getElementById("pomodoroTime");
 
+    const status =
+        document.getElementById("pomodoroStatus");
 
-    const seconds =
-        pomodoroSeconds % 60;
+    if (time) {
 
+        const minutes =
+            Math.floor(pomodoroSeconds / 60);
 
-    setText(
-        "pomodoroTime",
-        `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`
-    );
+        const seconds =
+            pomodoroSeconds % 60;
 
+        time.textContent =
+            `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+    }
+
+    if (status) {
+
+        status.textContent =
+            pomodoroMode === "focus"
+                ? "Focus time"
+                : "Break time";
+    }
 }
 
 
+function updatePomodoroButton() {
 
-/* =========================================================
+    const button =
+        document.getElementById("pomodoroStart");
+
+    if (!button) return;
+
+    button.textContent =
+        studyRunning
+            ? "Pause"
+            : "Start";
+}
+
+
+function updateStudyStats() {
+
+    if (!currentUser) return;
+
+    const sessions =
+        document.getElementById("studySessions");
+
+    const minutes =
+        document.getElementById("studyMinutes");
+
+    const streak =
+        document.getElementById("studyStreak");
+
+    if (sessions) {
+        sessions.textContent =
+            currentUser.studySessions || 0;
+    }
+
+    if (minutes) {
+        minutes.textContent =
+            currentUser.studyMinutes || 0;
+    }
+
+    if (streak) {
+        streak.textContent =
+            currentUser.streak || 0;
+    }
+}
+
+
+/* =========================
    RORO
-   ========================================================= */
+========================= */
 
 function setupRoro() {
 
-    const roro =
-        document.getElementById(
-            "roroBuddy"
-        );
+    const buddy =
+        document.getElementById("roroBuddy");
 
+    if (!buddy) return;
 
-    if (!roro) return;
+    buddy.addEventListener("click", () => {
 
+        const speech =
+            document.getElementById("roroSpeech");
 
-    roro.classList.add(
-        "roro-visible"
-    );
+        if (!speech) return;
 
-
-    setTimeout(() => {
-
-        roroSay(
-            "Hi! I'm Roro 🐉"
-        );
-
-    }, 1200);
-
-
-    setInterval(() => {
-
-        if (
-            Math.random() < 0.35
-        ) {
-
-            roro.classList.add(
-                "roro-bounce"
-            );
-
-
-            setTimeout(() => {
-
-                roro.classList.remove(
-                    "roro-bounce"
-                );
-
-            }, 700);
-
-        }
-
-    }, 5000);
-
-}
-
-
-
-function roroReactToPage(page) {
-
-    const messages = {
-
-        home:
-            "Ready to make today count? 🐉",
-
-        calendar:
-            "Look at you being organised. I'm impressed.",
-
-        assignments:
-            "Let's defeat those deadlines.",
-
-        peers:
-            "Everyone knows something useful!",
-
-        resources:
-            "Knowledge hoard activated. 📚",
-
-        study:
-            "Study mode! I shall guard the vibes.",
-
-        profile:
-            "Your skills can help someone else.",
-
-        progress:
-            "Look how far you've come! 🐉",
-
-        settings:
-            "A tidy system makes a tidy brain."
-
-    };
-
-
-    if (
-        messages[page]
-    ) {
-
-        roroSay(
-            messages[page]
-        );
-
-    }
-
-}
-
-
-
-function roroSay(message) {
-
-    const speech =
-        document.getElementById(
-            "roroSpeech"
-        );
-
-
-    if (!speech) return;
-
-
-    speech.textContent =
-        message;
-
-
-    const roro =
-        document.getElementById(
-            "roroBuddy"
-        );
-
-
-    if (!roro) return;
-
-
-    roro.classList.add(
-        "roro-talking"
-    );
-
-
-    clearTimeout(
-        window.roroSpeechTimeout
-    );
-
-
-    window.roroSpeechTimeout =
-        setTimeout(() => {
-
-            roro.classList.remove(
-                "roro-talking"
-            );
-
-        }, 900);
-
-}
-
-
-
-function roroInteract() {
-
-    const messages = [
-
-        "You clicked me. I live here now. 🐉",
-
-        "Your study buddy has arrived.",
-
-        "Tiny dragon. Massive academic expectations.",
-
-        "One question at a time. You've got this.",
-
-        "I believe in you. Unfortunately, I cannot do your homework."
-
-    ];
-
-
-    const message =
-        messages[
-            Math.floor(
-                Math.random() *
-                messages.length
-            )
-        ];
-
-
-    roroSay(
-        message
-    );
-
-
-    const roro =
-        document.getElementById(
-            "roroBuddy"
-        );
-
-
-    if (roro) {
-
-        roro.classList.add(
-            "roro-happy"
-        );
-
-
-        setTimeout(() => {
-
-            roro.classList.remove(
-                "roro-happy"
-            );
-
-        }, 900);
-
-    }
-
-}
-
-
-
-function roroCelebrate() {
-
-    const roro =
-        document.getElementById(
-            "roroBuddy"
-        );
-
-
-    if (!roro) return;
-
-
-    roroSay(
-        "YOU DID IT! 🎉🐉 +5 POINTS"
-    );
-
-
-    roro.classList.add(
-        "roro-celebrate"
-    );
-
-
-    setTimeout(() => {
-
-        roro.classList.remove(
-            "roro-celebrate"
-        );
-
-    }, 1600);
-
-}
-
-
-
-function roroHide() {
-
-    const roro =
-        document.getElementById(
-            "roroBuddy"
-        );
-
-
-    if (roro) {
-
-        roro.classList.remove(
-            "roro-visible"
-        );
-
-    }
-
-}
-
-
-
-/* =========================================================
-   PROFILE
-   ========================================================= */
-
-function renderProfile() {
-
-    if (!currentUser) return;
-
-
-    const tags =
-        document.getElementById(
-            "profileTags"
-        );
-
-
-    if (tags) {
-
-        if (
-            currentUser.subjects.length
-        ) {
-
-            tags.innerHTML =
-                currentUser.subjects
-                    .map(subject => `
-
-                        <span class="subject-tag">
-                            ${subject}
-                        </span>
-
-                    `)
-                    .join("");
-
-        }
-
-        else {
-
-            tags.innerHTML = `
-
-                <span class="subject-tag">
-                    No subjects added yet
-                </span>
-
-            `;
-
-        }
-
-    }
-
-
-    setText(
-        "profilePreferences",
-        currentUser.subjects.length
-            ? "Your profile can be changed whenever your strengths or interests change."
-            : "Add subjects you feel confident helping others with."
-    );
-
-}
-
-
-
-function editProfile() {
-
-    alert(
-        "Profile editing would connect to the student's school account in the full version."
-    );
-
-}
-
-
-
-/* =========================================================
-   PROGRESS
-   ========================================================= */
-
-function renderProgress() {
-
-    if (!currentUser) return;
-
-
-    updateUserUI();
-
-
-    const canvas =
-        document.getElementById(
-            "progressChart"
-        );
-
-
-    if (!canvas) return;
-
-
-    const ctx =
-        canvas.getContext("2d");
-
-
-    const width =
-        canvas.width =
-            canvas.clientWidth || 700;
-
-
-    const height =
-        canvas.height =
-            300;
-
-
-    ctx.clearRect(
-        0,
-        0,
-        width,
-        height
-    );
-
-
-    /*
-       BRAND NEW USERS:
-       There is no graph until they actually
-       have progress.
-    */
-
-    if (
-        !currentUser.progressHistory ||
-        currentUser.progressHistory.length === 0
-    ) {
-
-        ctx.fillStyle =
-            "#85847e";
-
-        ctx.font =
-            "16px DM Sans";
-
-        ctx.textAlign =
-            "center";
-
-
-        ctx.fillText(
-            "Your progress will appear here once you start earning Peer Points.",
-            width / 2,
-            height / 2
-        );
-
-
-        ctx.textAlign =
-            "left";
-
-
-        return;
-
-    }
-
-
-    const values =
-        currentUser.progressHistory;
-
-
-    if (
-        values.length === 1
-    ) {
-
-        ctx.fillStyle =
-            "#85847e";
-
-        ctx.font =
-            "16px DM Sans";
-
-        ctx.textAlign =
-            "center";
-
-
-        ctx.fillText(
-            `You've earned ${values[0]} Peer Points so far.`,
-            width / 2,
-            height / 2
-        );
-
-
-        ctx.textAlign =
-            "left";
-
-
-        return;
-
-    }
-
-
-    const max =
-        Math.max(
-            ...values
-        );
-
-
-    const min =
-        Math.min(
-            ...values
-        );
-
-
-    const range =
-        Math.max(
-            1,
-            max - min
-        );
-
-
-    const padding = {
-
-        left: 55,
-
-        right: 25,
-
-        top: 30,
-
-        bottom: 40
-
-    };
-
-
-    const graphWidth =
-        width -
-        padding.left -
-        padding.right;
-
-
-    const graphHeight =
-        height -
-        padding.top -
-        padding.bottom;
-
-
-    ctx.strokeStyle =
-        "#e4e0d7";
-
-    ctx.lineWidth =
-        1;
-
-
-    for (
-        let i = 0;
-        i <= 4;
-        i++
-    ) {
-
-        const y =
-            padding.top +
-            (
-                graphHeight *
-                i /
-                4
-            );
-
-
-        ctx.beginPath();
-
-        ctx.moveTo(
-            padding.left,
-            y
-        );
-
-        ctx.lineTo(
-            width - padding.right,
-            y
-        );
-
-        ctx.stroke();
-
-    }
-
-
-    const points =
-        values.map(
-            (value, index) => {
-
-                const x =
-                    padding.left +
-                    graphWidth *
-                    (
-                        index /
-                        (
-                            values.length -
-                            1
-                        )
-                    );
-
-
-                const y =
-                    padding.top +
-                    graphHeight *
-                    (
-                        1 -
-                        (
-                            value -
-                            min
-                        ) /
-                        range
-                    );
-
-
-                return {
-                    x,
-                    y,
-                    value
-                };
-
-            }
-        );
-
-
-    ctx.beginPath();
-
-
-    points.forEach(
-        (point, index) => {
-
-            if (index === 0) {
-
-                ctx.moveTo(
-                    point.x,
-                    point.y
-                );
-
-            }
-
-            else {
-
-                ctx.lineTo(
-                    point.x,
-                    point.y
-                );
-
-            }
-
-        }
-    );
-
-
-    ctx.strokeStyle =
-        "#173c32";
-
-    ctx.lineWidth =
-        3;
-
-    ctx.stroke();
-
-
-    points.forEach(point => {
-
-        ctx.beginPath();
-
-
-        ctx.arc(
-            point.x,
-            point.y,
-            5,
-            0,
-            Math.PI * 2
-        );
-
-
-        ctx.fillStyle =
-            "#ffffff";
-
-        ctx.fill();
-
-
-        ctx.strokeStyle =
-            "#173c32";
-
-        ctx.lineWidth =
-            2;
-
-        ctx.stroke();
+        speech.classList.toggle("roro-talking");
 
     });
-
-
-    ctx.fillStyle =
-        "#85847e";
-
-    ctx.font =
-        "12px DM Sans";
-
-
-    points.forEach(
-        (point, index) => {
-
-            ctx.fillText(
-                index ===
-                values.length - 1
-                    ? "Now"
-                    : `Step ${index + 1}`,
-                point.x - 15,
-                height - 15
-            );
-
-        }
-    );
-
 }
 
 
+function showRoro() {
 
-/* =========================================================
-   SETTINGS
-   ========================================================= */
+    const roro =
+        document.getElementById("roroBuddy");
 
-function renderSettings() {
+    if (roro) {
+        roro.classList.add("roro-visible");
+    }
+}
 
-    if (!currentUser) return;
+
+function hideRoro() {
+
+    const roro =
+        document.getElementById("roroBuddy");
+
+    if (roro) {
+        roro.classList.remove("roro-visible");
+    }
+}
 
 
-    setText(
-        "settingsEmail",
+/* =========================
+   FORGOT PASSWORD
+========================= */
+
+function forgotPasswordFunction() {
+
+    const email =
+        prompt("Enter the email address for your account:");
+
+    if (!email) return;
+
+    const normalisedEmail =
+        email.trim().toLowerCase();
+
+    const users = normaliseUsers();
+
+    const user = users[normalisedEmail];
+
+    if (!user) {
+
+        alert(
+            "No account was found with that email address."
+        );
+
+        return;
+    }
+
+    alert(
+        `Your password is: ${user.password}\n\n` +
+        `This is a prototype, so passwords are stored locally.`
+    );
+}
+
+
+/* =========================
+   GOOGLE DEMO LOGIN
+========================= */
+
+function demoGoogleLogin() {
+
+    const users = normaliseUsers();
+
+    const user =
+        users["t.smith@storans.school.nz"];
+
+    if (!user) return;
+
+    currentUser = { ...user };
+
+    assignments = loadAssignments();
+
+    localStorage.setItem(
+        CURRENT_USER_KEY,
         currentUser.email
     );
 
+    showMainApp();
 }
 
 
+/* =========================
+   FORM RESET
+========================= */
 
-/* =========================================================
-   POINTS
-   ========================================================= */
+function resetLoginForm() {
 
-function addPoints(amount) {
+    const form =
+        document.getElementById("loginForm");
 
-    if (!currentUser) return;
-
-
-    currentUser.points += amount;
-
-
-    if (
-        !currentUser.progressHistory
-    ) {
-
-        currentUser.progressHistory =
-            [];
-
+    if (form) {
+        form.reset();
     }
 
+    const error =
+        document.getElementById("loginError");
 
-    /*
-       Only record actual progress.
-    */
-
-    currentUser.progressHistory.push(
-        currentUser.points
-    );
-
-
-    currentUser.progressHistory =
-        currentUser.progressHistory.slice(-6);
+    if (error) {
+        error.textContent = "";
+        error.classList.add("hidden");
+    }
+}
 
 
-    saveCurrentUser();
+function resetSignupForm() {
 
+    const form =
+        document.getElementById("signupForm");
 
-    updateUserUI();
-
-
-    if (
-        currentPage === "progress"
-    ) {
-
-        renderProgress();
-
+    if (form) {
+        form.reset();
     }
 
+    const error =
+        document.getElementById("signupError");
+
+    if (error) {
+        error.textContent = "";
+        error.classList.add("hidden");
+    }
 }
 
 
-
-/* =========================================================
-   NOTIFICATIONS
-   ========================================================= */
-
-function showNotifications() {
-
-    alert(
-        "Notifications\n\n• No new tutoring requests\n• Your next assignment is Maths: Algebra practice\n• Roro says: keep going! 🐉"
-    );
-
-}
-
-
-
-/* =========================================================
+/* =========================
    HELPERS
-   ========================================================= */
-
-function setText(id, text) {
-
-    const element =
-        document.getElementById(id);
-
-
-    if (element) {
-
-        element.textContent =
-            text;
-
-    }
-
-}
-
-
+========================= */
 
 function formatDate(dateString) {
 
-    const date =
-        new Date(
-            `${dateString}T00:00:00`
-        );
+    if (!dateString) return "";
 
-
-    return date.toLocaleDateString(
-        "en-NZ",
-        {
-            day: "numeric",
-            month: "short"
-        }
+    const date = new Date(
+        `${dateString}T00:00:00`
     );
 
+    return date.toLocaleDateString("en-NZ", {
+        day: "numeric",
+        month: "short"
+    });
 }
 
 
+function escapeHTML(value) {
 
-function getDueLabel(dateString) {
-
-    const due =
-        new Date(
-            `${dateString}T00:00:00`
-        );
-
-
-    const today =
-        new Date();
-
-
-    today.setHours(
-        0,
-        0,
-        0,
-        0
-    );
-
-
-    const difference =
-        Math.ceil(
-            (
-                due - today
-            ) /
-            86400000
-        );
-
-
-    if (
-        difference < 0
-    ) {
-
-        return "Overdue";
-
+    if (value === undefined || value === null) {
+        return "";
     }
 
-
-    if (
-        difference === 0
-    ) {
-
-        return "Due today";
-
-    }
-
-
-    if (
-        difference === 1
-    ) {
-
-        return "Due tomorrow";
-
-    }
-
-
-    return `${difference} days left`;
-
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 }
 
 
+/* =========================
+   BEFORE LEAVING PAGE
+========================= */
 
-function capitalize(text) {
+window.addEventListener("beforeunload", () => {
 
-    if (!text) return "";
-
-
-    return (
-        text.charAt(0).toUpperCase() +
-        text.slice(1)
-    );
-
-}
-
-
-
-/* =========================================================
-   INITIAL CALENDAR DATA
-   ========================================================= */
-
-calendarEvents = [
-
-    {
-        title: "Maths assignment",
-        date: "2026-09-08",
-        type: "Assignment"
-    },
-
-    {
-        title: "Science report",
-        date: "2026-09-11",
-        type: "Assignment"
+    if (currentUser) {
+        saveCurrentUserData();
+        saveAssignments();
     }
 
-];
+});
