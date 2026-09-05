@@ -2,11 +2,34 @@
 // DEMO ACCOUNT
 // ========================================
 
-const demoAccount = {
-    email: "t.smith@storans.school.nz",
-    password: "Demo123"
-};
+// ========================================
+// DEMO ACCOUNTS
+// ========================================
 
+const demoAccounts = {
+
+    "t.smith@storans.school.nz": {
+        password: "Demo123",
+        name: "Maya",
+        year: "Year 8",
+        points: 240,
+        helped: 8,
+        sessions: 12,
+        badges: 3
+    },
+
+    "l.worthington@storans.school.nz": {
+        password: "Lucy123",
+        name: "Lucy",
+        year: "Year 13",
+        points: 520,
+        helped: 21,
+        sessions: 28,
+        badges: 6
+    }
+
+};
+let currentUser = null;
 
 // ========================================
 // LOGIN ELEMENTS
@@ -32,6 +55,7 @@ loginForm.addEventListener("submit", function(event) {
 
     const password = document.getElementById("password").value;
 
+
     // Clear previous error
     loginError.textContent = "";
     loginError.style.display = "none";
@@ -48,8 +72,12 @@ loginForm.addEventListener("submit", function(event) {
     }
 
 
-    // Check whether the account exists
-    if (email !== demoAccount.email) {
+    // Find the account
+    const account = demoAccounts[email];
+
+
+    // Account doesn't exist
+    if (!account) {
 
         showLoginError(
             "We couldn't find an account with that school email."
@@ -59,8 +87,8 @@ loginForm.addEventListener("submit", function(event) {
     }
 
 
-    // Check password
-    if (password !== demoAccount.password) {
+    // Password is incorrect
+    if (password !== account.password) {
 
         showLoginError(
             "Incorrect password. Please try again."
@@ -70,13 +98,19 @@ loginForm.addEventListener("submit", function(event) {
     }
 
 
-    // Successful login
+    // Save the logged-in student
+    currentUser = account;
+
+
+    // Load their information
+    loadUserData();
+
+
+    // Open the dashboard
     loginScreen.style.display = "none";
     mainApp.style.display = "flex";
 
 });
-
-
 // ========================================
 // SHOW LOGIN ERROR
 // ========================================
