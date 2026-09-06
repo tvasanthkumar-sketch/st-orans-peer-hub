@@ -4,6 +4,7 @@
 <head>
 
     <meta charset="UTF-8">
+
     <meta
         name="viewport"
         content="width=device-width, initial-scale=1.0"
@@ -16,7 +17,10 @@
         href="style.css"
     >
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
 
     <link
         rel="preconnect"
@@ -47,18 +51,23 @@
     <div class="login-card">
 
         <div class="login-logo">
+
             <div class="logo-mark">
                 S
             </div>
+
         </div>
+
 
         <p class="eyebrow">
             ST ORAN'S COLLEGE
         </p>
 
+
         <h1>
             Welcome back.
         </h1>
+
 
         <p class="login-subtitle">
             Sign in to your Peer Hub account.
@@ -183,6 +192,196 @@
 
 
 <!-- =====================================================
+     SIGN UP
+     ===================================================== -->
+
+<div
+    class="login-screen signup-screen"
+    id="signupScreen"
+    style="display: none;"
+>
+
+    <div class="login-card">
+
+        <div class="login-logo">
+
+            <div class="logo-mark">
+                S
+            </div>
+
+        </div>
+
+
+        <p class="eyebrow">
+            ST ORAN'S COLLEGE
+        </p>
+
+
+        <h1>
+            Create your account.
+        </h1>
+
+
+        <p class="login-subtitle">
+            Set up your St Oran's Peer Hub account.
+        </p>
+
+
+        <form id="signupForm">
+
+
+            <div class="form-group">
+
+                <label>
+                    Your name
+                </label>
+
+                <input
+                    id="signupName"
+                    type="text"
+                    placeholder="e.g. Mia Smith"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    School email
+                </label>
+
+                <input
+                    id="signupEmail"
+                    type="email"
+                    placeholder="e.g. m.smith@storans.school.nz"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Year level
+                </label>
+
+                <select
+                    id="signupYear"
+                    required
+                >
+
+                    <option value="">
+                        Select your year
+                    </option>
+
+                    <option value="Year 8">
+                        Year 8
+                    </option>
+
+                    <option value="Year 9">
+                        Year 9
+                    </option>
+
+                    <option value="Year 10">
+                        Year 10
+                    </option>
+
+                    <option value="Year 11">
+                        Year 11
+                    </option>
+
+                    <option value="Year 12">
+                        Year 12
+                    </option>
+
+                    <option value="Year 13">
+                        Year 13
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Create a password
+                </label>
+
+                <input
+                    id="signupPassword"
+                    type="password"
+                    placeholder="Create a password"
+                    minlength="6"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Confirm password
+                </label>
+
+                <input
+                    id="signupConfirmPassword"
+                    type="password"
+                    placeholder="Enter your password again"
+                    minlength="6"
+                    required
+                >
+
+            </div>
+
+
+            <div
+                id="signupError"
+                class="login-error"
+            ></div>
+
+
+            <button
+                class="login-button"
+                type="submit"
+            >
+                Create account
+            </button>
+
+
+        </form>
+
+
+        <p class="signup-text">
+
+            Already have an account?
+
+            <a
+                href="#"
+                onclick="showLogin(event)"
+            >
+                Log in
+            </a>
+
+        </p>
+
+
+        <p class="prototype-note">
+            Your progress starts from zero when you create a new account.
+        </p>
+
+    </div>
+
+</div>
+
+
+
+<!-- =====================================================
      MAIN APP
      ===================================================== -->
 
@@ -282,8 +481,6 @@
 
         </a>
 
-
-        <!-- NEW: STUDY SESSION -->
 
         <a
             href="#"
@@ -392,8 +589,9 @@
                 class="avatar"
                 id="topAvatar"
             >
-                M
+                S
             </div>
+
 
             <div>
 
@@ -1145,7 +1343,7 @@
 
 
 <!-- =====================================================
-     NEW: STUDY SESSION
+     STUDY SESSION
      ===================================================== -->
 
 <section
@@ -1183,12 +1381,8 @@
 
 
 
-        <!-- Main study screen -->
-
         <div class="study-focus-screen">
 
-
-            <!-- Decorative background -->
 
             <div class="study-orb orb-one"></div>
             <div class="study-orb orb-two"></div>
@@ -1214,12 +1408,11 @@
 
 
 
-                <!-- Pomodoro -->
-
                 <div class="pomodoro-card">
 
 
                     <div class="pomodoro-mode">
+
 
                         <button
                             class="pomodoro-mode-button active"
@@ -1246,6 +1439,7 @@
                         >
                             Long break
                         </button>
+
 
                     </div>
 
@@ -1303,8 +1497,6 @@
 
 
 
-                <!-- Session stats -->
-
                 <div class="study-session-stats">
 
 
@@ -1356,8 +1548,6 @@
         </div>
 
 
-
-        <!-- Roro encouragement -->
 
         <div class="study-roro-message">
 
@@ -1445,7 +1635,7 @@
                 class="large-avatar"
                 id="profileAvatar"
             >
-                M
+                S
             </div>
 
 
