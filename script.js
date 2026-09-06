@@ -5,10 +5,18 @@
 
 
 /* =========================================================
+   STORAGE
+   ========================================================= */
+
+const STORAGE_KEY = "stOransPeerHubUsers";
+const CURRENT_USER_KEY = "stOransPeerHubCurrentUser";
+
+
+/* =========================================================
    DEMO USERS
    ========================================================= */
 
-const users = {
+const demoUsers = {
 
     maya: {
         firstName: "Maya",
@@ -30,6 +38,7 @@ const users = {
         streak: 3,
 
         bio: "I enjoy helping people understand maths and science.",
+
         subjects: [
             "Maths",
             "Algebra",
@@ -69,6 +78,7 @@ const users = {
         streak: 12,
 
         bio: "I love helping younger students with English, study skills and essay writing.",
+
         subjects: [
             "English",
             "Essay writing",
@@ -88,6 +98,136 @@ const users = {
     }
 
 };
+
+
+/* =========================================================
+   LOAD / SAVE USERS
+   ========================================================= */
+
+function getStoredUsers() {
+
+    try {
+
+        const saved =
+            localStorage.getItem(
+                STORAGE_KEY
+            );
+
+        if (!saved) {
+
+            const initialUsers = {
+                maya: {
+                    ...demoUsers.maya
+                },
+
+                lucy: {
+                    ...demoUsers.lucy
+                }
+            };
+
+            localStorage.setItem(
+                STORAGE_KEY,
+                JSON.stringify(initialUsers)
+            );
+
+            return initialUsers;
+
+        }
+
+        return JSON.parse(saved);
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Could not load users:",
+            error
+        );
+
+        return {
+            maya: {
+                ...demoUsers.maya
+            },
+
+            lucy: {
+                ...demoUsers.lucy
+            }
+        };
+
+    }
+
+}
+
+
+
+let users = getStoredUsers();
+
+
+
+function saveUsers() {
+
+    try {
+
+        localStorage.setItem(
+            STORAGE_KEY,
+            JSON.stringify(users)
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Could not save users:",
+            error
+        );
+
+    }
+
+}
+
+
+
+function saveCurrentUser() {
+
+    if (!currentUser) return;
+
+
+    const email =
+        currentUser.email.toLowerCase();
+
+
+    users[email] = {
+        ...currentUser,
+        progressHistory:
+            currentUser.progressHistory
+                ? [...currentUser.progressHistory]
+                : []
+    };
+
+
+    saveUsers();
+
+    try {
+
+        localStorage.setItem(
+            CURRENT_USER_KEY,
+            email
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Could not save current user:",
+            error
+        );
+
+    }
+
+}
 
 
 
@@ -245,7 +385,7 @@ const peers = [
    ASSIGNMENTS
    ========================================================= */
 
-const assignments = [
+const defaultAssignments = [
 
     {
         id: 1,
@@ -297,6 +437,91 @@ const assignments = [
     }
 
 ];
+
+
+let assignments = loadAssignments();
+
+
+
+function loadAssignments() {
+
+    if (!currentUser) {
+
+        return defaultAssignments.map(
+            assignment => ({
+                ...assignment
+            })
+        );
+
+    }
+
+
+    const key =
+        `stOransPeerHubAssignments_${currentUser.email.toLowerCase()}`;
+
+
+    try {
+
+        const saved =
+            localStorage.getItem(key);
+
+
+        if (saved) {
+
+            return JSON.parse(saved);
+
+        }
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Could not load assignments:",
+            error
+        );
+
+    }
+
+
+    return defaultAssignments.map(
+        assignment => ({
+            ...assignment
+        })
+    );
+
+}
+
+
+
+function saveAssignments() {
+
+    if (!currentUser) return;
+
+
+    const key =
+        `stOransPeerHubAssignments_${currentUser.email.toLowerCase()}`;
+
+
+    try {
+
+        localStorage.setItem(
+            key,
+            JSON.stringify(assignments)
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Could not save assignments:",
+            error
+        );
+
+    }
+
+}
 
 
 
@@ -470,6 +695,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     setupLogin();
 
+    setupSignup();
+
     setupNavigation();
 
     updateDate();
@@ -480,7 +707,58 @@ document.addEventListener("DOMContentLoaded", () => {
 
     setupRoro();
 
+    restoreLogin();
+
 });
+
+
+
+/* =========================================================
+   RESTORE LOGIN
+   ========================================================= */
+
+function restoreLogin() {
+
+    let savedEmail = null;
+
+
+    try {
+
+        savedEmail =
+            localStorage.getItem(
+                CURRENT_USER_KEY
+            );
+
+    }
+
+    catch (error) {
+
+        return;
+
+    }
+
+
+    if (!savedEmail) return;
+
+
+    const user =
+        users[savedEmail];
+
+
+    if (!user) {
+
+        localStorage.removeItem(
+            CURRENT_USER_KEY
+        );
+
+        return;
+
+    }
+
+
+    login(user, true);
+
+}
 
 
 
@@ -504,7 +782,7 @@ function setupLogin() {
         const email =
             document
                 .getElementById("email")
-                .value
+                ?.value
                 .trim()
                 .toLowerCase();
 
@@ -512,28 +790,21 @@ function setupLogin() {
         const password =
             document
                 .getElementById("password")
-                .value;
-
-
-        let foundUser = null;
-
-
-        Object.values(users).forEach(user => {
-
-            if (
-                user.email.toLowerCase() === email &&
-                user.password === password
-            ) {
-
-                foundUser = user;
-
-            }
-
-        });
+                ?.value;
 
 
         const error =
-            document.getElementById("loginError");
+            document.getElementById(
+                "loginError"
+            );
+
+
+        const foundUser =
+            Object.values(users).find(
+                user =>
+                    user.email.toLowerCase() === email &&
+                    user.password === password
+            );
 
 
         if (!foundUser) {
@@ -541,7 +812,7 @@ function setupLogin() {
             if (error) {
 
                 error.textContent =
-                    "That email or password doesn't match a demo account.";
+                    "That email or password doesn't match an account.";
 
             }
 
@@ -565,18 +836,55 @@ function setupLogin() {
 
 
 
-function login(user) {
+function login(user, restored = false) {
 
     currentUser = {
+
         ...user,
-        progressHistory: [
-            ...user.progressHistory
-        ]
+
+        progressHistory:
+            user.progressHistory
+                ? [...user.progressHistory]
+                : [],
+
+        subjects:
+            user.subjects
+                ? [...user.subjects]
+                : []
+
     };
+
+
+    assignments =
+        loadAssignments();
+
+
+    try {
+
+        localStorage.setItem(
+            CURRENT_USER_KEY,
+            currentUser.email.toLowerCase()
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Could not remember login:",
+            error
+        );
+
+    }
 
 
     document
         .getElementById("loginScreen")
+        ?.classList.add("hidden");
+
+
+    document
+        .getElementById("signupScreen")
         ?.classList.add("hidden");
 
 
@@ -589,9 +897,14 @@ function login(user) {
 
     showPage("home");
 
-    roroSay(
-        `Welcome back, ${currentUser.firstName}! 🐉`
-    );
+
+    if (!restored) {
+
+        roroSay(
+            `Welcome back, ${currentUser.firstName}! 🐉`
+        );
+
+    }
 
 }
 
@@ -646,8 +959,70 @@ function forgotPassword(event) {
     }
 
 
+    const email =
+        prompt(
+            "Enter the email address on your Peer Hub account:"
+        );
+
+
+    if (!email) return;
+
+
+    const cleanEmail =
+        email.trim().toLowerCase();
+
+
+    const user =
+        Object.values(users).find(
+            account =>
+                account.email.toLowerCase() === cleanEmail
+        );
+
+
+    if (!user) {
+
+        alert(
+            "No Peer Hub account was found with that email."
+        );
+
+        return;
+
+    }
+
+
+    const newPassword =
+        prompt(
+            "Prototype password reset:\n\nEnter your new password:"
+        );
+
+
+    if (!newPassword) return;
+
+
+    if (newPassword.length < 6) {
+
+        alert(
+            "Your new password needs to be at least 6 characters."
+        );
+
+        return;
+
+    }
+
+
+    user.password =
+        newPassword;
+
+
+    users[user.email.toLowerCase()] =
+        user;
+
+
+    saveUsers();
+
+
     alert(
-        "In the full version, password recovery would use the student's school account."
+        "Your password has been changed. You can now log in with your new password."
     );
 
 }
@@ -655,7 +1030,7 @@ function forgotPassword(event) {
 
 
 /* =========================================================
-   SIGN UP
+   SIGNUP SCREEN
    ========================================================= */
 
 function showSignup(event) {
@@ -667,105 +1042,6 @@ function showSignup(event) {
     }
 
 
-    const first =
-        prompt("First name:");
-
-
-    if (!first) return;
-
-
-    const last =
-        prompt("Last name:");
-
-
-    if (!last) return;
-
-
-    const year =
-        prompt("Year level, e.g. 8:");
-
-
-    if (!year) return;
-
-
-    const subjects =
-        prompt(
-            "Subjects you can help with, separated by commas:"
-        );
-
-
-    const subjectList =
-        subjects
-            ? subjects
-                .split(",")
-                .map(item => item.trim())
-                .filter(Boolean)
-            : [];
-
-
-    /*
-       IMPORTANT:
-       New users start with ZERO.
-       No fake points.
-       No fake sessions.
-       No fake badges.
-       No fake graph.
-    */
-
-    const newUser = {
-
-        firstName: first,
-
-        lastName: last,
-
-        fullName:
-            `${first} ${last}`,
-
-        email:
-            `${first.toLowerCase()}.${last.toLowerCase()}@storans.school.nz`,
-
-        password:
-            "Demo123",
-
-        year:
-            `Year ${year}`,
-
-        className:
-            `${year}XX`,
-
-        initials:
-            `${first[0]}${last[0]}`.toUpperCase(),
-
-        points: 0,
-
-        helped: 0,
-
-        sessions: 0,
-
-        badges: 0,
-
-        studySessions: 0,
-
-        studyMinutes: 0,
-
-        streak: 0,
-
-        bio:
-            "I am part of the St Oran's Peer Hub.",
-
-        subjects:
-            subjectList,
-
-        progressHistory:
-            []
-
-    };
-
-
-    currentUser =
-        newUser;
-
-
     document
         .getElementById("loginScreen")
         ?.classList.add("hidden");
@@ -773,21 +1049,338 @@ function showSignup(event) {
 
     document
         .getElementById("mainApp")
+        ?.classList.add("hidden");
+
+
+    document
+        .getElementById("signupScreen")
         ?.classList.remove("hidden");
 
 
-    updateUserUI();
+    document
+        .getElementById("signupError")
+        ?.replaceChildren();
 
-    showPage("home");
-
-
-    roroSay(
-        "Welcome to Peer Hub! Let's get studying 🐉"
-    );
+}
 
 
-    alert(
-        `Account created!\n\nPrototype password: Demo123\n\nYour progress starts at zero.`
+
+function showLogin(event) {
+
+    if (event) {
+
+        event.preventDefault();
+
+    }
+
+
+    document
+        .getElementById("signupScreen")
+        ?.classList.add("hidden");
+
+
+    document
+        .getElementById("mainApp")
+        ?.classList.add("hidden");
+
+
+    document
+        .getElementById("loginScreen")
+        ?.classList.remove("hidden");
+
+}
+
+
+
+function setupSignup() {
+
+    const form =
+        document.getElementById(
+            "signupForm"
+        );
+
+
+    if (!form) return;
+
+
+    form.addEventListener(
+        "submit",
+        event => {
+
+            event.preventDefault();
+
+
+            const firstName =
+                document
+                    .getElementById("signupName")
+                    ?.value
+                    .trim();
+
+
+            const email =
+                document
+                    .getElementById("signupEmail")
+                    ?.value
+                    .trim()
+                    .toLowerCase();
+
+
+            const yearValue =
+                document
+                    .getElementById("signupYear")
+                    ?.value
+                    .trim();
+
+
+            const password =
+                document
+                    .getElementById("signupPassword")
+                    ?.value;
+
+
+            const confirmPassword =
+                document
+                    .getElementById("signupConfirmPassword")
+                    ?.value;
+
+
+            const error =
+                document.getElementById(
+                    "signupError"
+                );
+
+
+            if (error) {
+
+                error.textContent = "";
+
+            }
+
+
+            /* -----------------------------
+               BASIC VALIDATION
+            ----------------------------- */
+
+            if (
+                !firstName ||
+                !email ||
+                !yearValue ||
+                !password ||
+                !confirmPassword
+            ) {
+
+                if (error) {
+
+                    error.textContent =
+                        "Please fill in every field.";
+
+                }
+
+                return;
+
+            }
+
+
+            if (!email.includes("@")) {
+
+                if (error) {
+
+                    error.textContent =
+                        "Please enter a valid email address.";
+
+                }
+
+                return;
+
+            }
+
+
+            if (password.length < 6) {
+
+                if (error) {
+
+                    error.textContent =
+                        "Password must be at least 6 characters.";
+
+                }
+
+                return;
+
+            }
+
+
+            if (password !== confirmPassword) {
+
+                if (error) {
+
+                    error.textContent =
+                        "The passwords don't match.";
+
+                }
+
+                return;
+
+            }
+
+
+            if (
+                users[email]
+            ) {
+
+                if (error) {
+
+                    error.textContent =
+                        "An account with that email already exists.";
+
+                }
+
+                return;
+
+            }
+
+
+            /*
+               Generate a simple surname placeholder
+               because the current HTML only asks for
+               one name.
+            */
+
+            const lastName =
+                "Student";
+
+
+            const initials =
+                `${firstName[0]}${lastName[0]}`
+                    .toUpperCase();
+
+
+            /*
+               IMPORTANT:
+               BRAND NEW ACCOUNT STARTS COMPLETELY EMPTY.
+            */
+
+            const newUser = {
+
+                firstName,
+
+                lastName,
+
+                fullName:
+                    firstName,
+
+                email,
+
+                password,
+
+                year:
+                    `Year ${yearValue}`,
+
+                className:
+                    `${yearValue}XX`,
+
+                initials,
+
+                points: 0,
+
+                helped: 0,
+
+                sessions: 0,
+
+                badges: 0,
+
+                studySessions: 0,
+
+                studyMinutes: 0,
+
+                streak: 0,
+
+                bio:
+                    "I am part of the St Oran's Peer Hub.",
+
+                subjects: [],
+
+                progressHistory: []
+
+            };
+
+
+            users[email] =
+                newUser;
+
+
+            saveUsers();
+
+
+            currentUser = {
+
+                ...newUser,
+
+                progressHistory: [],
+
+                subjects: []
+
+            };
+
+
+            assignments =
+                defaultAssignments.map(
+                    assignment => ({
+                        ...assignment
+                    })
+                );
+
+
+            try {
+
+                localStorage.setItem(
+                    CURRENT_USER_KEY,
+                    email
+                );
+
+            }
+
+            catch (storageError) {
+
+                console.error(
+                    storageError
+                );
+
+            }
+
+
+            form.reset();
+
+
+            document
+                .getElementById("signupScreen")
+                ?.classList.add("hidden");
+
+
+            document
+                .getElementById("loginScreen")
+                ?.classList.add("hidden");
+
+
+            document
+                .getElementById("mainApp")
+                ?.classList.remove("hidden");
+
+
+            updateUserUI();
+
+            showPage("home");
+
+
+            roroSay(
+                "Welcome to Peer Hub! Let's get studying 🐉"
+            );
+
+
+            alert(
+                "Account created! 🎉\n\nYour progress starts at zero."
+            );
+
+        }
     );
 
 }
@@ -802,11 +1395,38 @@ function signOut() {
 
     stopPomodoro();
 
+    saveCurrentUser();
+
+    saveAssignments();
+
+
     currentUser = null;
+
+
+    try {
+
+        localStorage.removeItem(
+            CURRENT_USER_KEY
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            error
+        );
+
+    }
 
 
     document
         .getElementById("mainApp")
+        ?.classList.add("hidden");
+
+
+    document
+        .getElementById("signupScreen")
         ?.classList.add("hidden");
 
 
@@ -836,15 +1456,18 @@ function setupNavigation() {
         .querySelectorAll(".nav-item")
         .forEach(item => {
 
-            item.addEventListener("click", event => {
+            item.addEventListener(
+                "click",
+                event => {
 
-                event.preventDefault();
+                    event.preventDefault();
 
-                showPage(
-                    item.dataset.page
-                );
+                    showPage(
+                        item.dataset.page
+                    );
 
-            });
+                }
+            );
 
         });
 
@@ -894,7 +1517,6 @@ function showPage(page) {
 
 
     renderPage(page);
-
 
     roroReactToPage(page);
 
@@ -1032,7 +1654,9 @@ function updateUserUI() {
 
 
     const avatar =
-        document.getElementById("topAvatar");
+        document.getElementById(
+            "topAvatar"
+        );
 
 
     if (avatar) {
@@ -1044,7 +1668,9 @@ function updateUserUI() {
 
 
     const profileAvatar =
-        document.getElementById("profileAvatar");
+        document.getElementById(
+            "profileAvatar"
+        );
 
 
     if (profileAvatar) {
@@ -1786,6 +2412,8 @@ function toggleAssignment(id) {
     }
 
 
+    saveAssignments();
+
     renderAssignments();
 
     renderHome();
@@ -2123,6 +2751,8 @@ function bookPeer() {
     currentUser.sessions += 1;
 
 
+    saveCurrentUser();
+
     updateUserUI();
 
 
@@ -2344,7 +2974,6 @@ function startPomodoro() {
 
             pomodoroSeconds--;
 
-
             updatePomodoroDisplay();
 
 
@@ -2482,10 +3111,7 @@ function skipPomodoro() {
 
     stopPomodoro();
 
-
-    finishPomodoro(
-        true
-    );
+    finishPomodoro(true);
 
 }
 
@@ -2515,46 +3141,8 @@ function finishPomodoro(skipped = false) {
         studyMinutesThisVisit += 25;
 
 
-        currentUser.points += 5;
+        addPoints(5);
 
-
-        /*
-           Only create progress history once
-           the user has actually done something.
-        */
-
-        if (
-            !currentUser.progressHistory ||
-            currentUser.progressHistory.length === 0
-        ) {
-
-            currentUser.progressHistory = [
-                currentUser.points
-            ];
-
-        }
-
-        else {
-
-            currentUser.progressHistory.push(
-                currentUser.points
-            );
-
-        }
-
-
-        /*
-           Cap graph history at 6 points.
-        */
-
-        currentUser.progressHistory =
-            currentUser.progressHistory.slice(-6);
-
-
-        /*
-           Streak starts at 1 when they
-           actually complete a session.
-        */
 
         if (
             currentUser.streak === 0
@@ -2563,6 +3151,9 @@ function finishPomodoro(skipped = false) {
             currentUser.streak = 1;
 
         }
+
+
+        saveCurrentUser();
 
 
         updateUserUI();
@@ -2647,7 +3238,7 @@ function updatePomodoroDisplay() {
 
 
 /* =========================================================
-   ROROANS
+   RORO
    ========================================================= */
 
 function setupRoro() {
@@ -2674,10 +3265,6 @@ function setupRoro() {
 
     }, 1200);
 
-
-    /*
-       Random little animations.
-    */
 
     setInterval(() => {
 
@@ -3140,10 +3727,6 @@ function renderProgress() {
         padding.bottom;
 
 
-    /*
-       Grid
-    */
-
     ctx.strokeStyle =
         "#e4e0d7";
 
@@ -3182,10 +3765,6 @@ function renderProgress() {
 
     }
 
-
-    /*
-       Points
-    */
 
     const points =
         values.map(
@@ -3226,10 +3805,6 @@ function renderProgress() {
         );
 
 
-    /*
-       Line
-    */
-
     ctx.beginPath();
 
 
@@ -3267,10 +3842,6 @@ function renderProgress() {
     ctx.stroke();
 
 
-    /*
-       Dots
-    */
-
     points.forEach(point => {
 
         ctx.beginPath();
@@ -3301,10 +3872,6 @@ function renderProgress() {
 
     });
 
-
-    /*
-       Labels
-    */
 
     ctx.fillStyle =
         "#85847e";
@@ -3373,8 +3940,7 @@ function addPoints(amount) {
 
 
     /*
-       Don't create a fake graph for zero users.
-       The first real point creates the first entry.
+       Only record actual progress.
     */
 
     currentUser.progressHistory.push(
@@ -3384,6 +3950,9 @@ function addPoints(amount) {
 
     currentUser.progressHistory =
         currentUser.progressHistory.slice(-6);
+
+
+    saveCurrentUser();
 
 
     updateUserUI();
