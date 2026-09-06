@@ -2605,3 +2605,556 @@ p {
     }
 
 }
+/* =========================================================
+   RORO THE DRAGON 🐉
+   ========================================================= */
+
+#roroBuddy {
+    position: fixed;
+    right: 35px;
+    bottom: 25px;
+    width: 150px;
+    height: 190px;
+    z-index: 1000;
+    cursor: pointer;
+    background: transparent;
+}
+
+/* -------------------------
+   SPEECH BUBBLE
+   ------------------------- */
+
+#roroSpeech {
+    position: absolute;
+    right: 0;
+    bottom: 175px;
+
+    width: 300px;
+    min-height: 50px;
+
+    padding: 16px 20px;
+
+    background: #ffffff;
+    color: #173c32;
+
+    border: 1px solid #e2ddd3;
+    border-radius: 22px;
+
+    box-shadow: 0 12px 30px rgba(35, 35, 30, 0.08);
+
+    font-size: 16px;
+    text-align: center;
+
+    opacity: 0;
+    transform: translateY(8px);
+    pointer-events: none;
+
+    transition: 0.25s ease;
+}
+
+/* little speech bubble triangle */
+#roroSpeech::after {
+    content: "";
+    position: absolute;
+
+    right: 35px;
+    bottom: -15px;
+
+    width: 0;
+    height: 0;
+
+    border-left: 15px solid transparent;
+    border-right: 15px solid transparent;
+    border-top: 16px solid white;
+}
+
+#roroSpeech.roro-talking,
+#roroBuddy:hover #roroSpeech {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+
+/* =========================================================
+   DRAGON
+   ========================================================= */
+
+.roro-dragon {
+    position: absolute;
+    width: 150px;
+    height: 180px;
+    bottom: 0;
+    left: 0;
+
+    animation: roroFloat 4s ease-in-out infinite;
+}
+
+
+/* =========================================================
+   WINGS
+   ========================================================= */
+
+.roro-wing {
+    position: absolute;
+    top: 65px;
+
+    width: 52px;
+    height: 75px;
+
+    background: #6f947d;
+    border: 3px solid #456b59;
+
+    z-index: 1;
+}
+
+/* left wing */
+
+.roro-wing-left {
+    left: 2px;
+
+    border-radius: 70% 20% 70% 30%;
+
+    transform: rotate(20deg);
+
+    clip-path: polygon(
+        100% 10%,
+        55% 0%,
+        20% 25%,
+        0% 55%,
+        30% 70%,
+        10% 100%,
+        75% 82%,
+        100% 100%
+    );
+}
+
+/* right wing */
+
+.roro-wing-right {
+    right: 2px;
+
+    border-radius: 20% 70% 30% 70%;
+
+    transform: rotate(-20deg);
+
+    clip-path: polygon(
+        0% 10%,
+        45% 0%,
+        80% 25%,
+        100% 55%,
+        70% 70%,
+        90% 100%,
+        25% 82%,
+        0% 100%
+    );
+}
+
+
+/* wing little inner lines */
+
+.roro-wing-left::after,
+.roro-wing-right::after {
+    content: "";
+    position: absolute;
+
+    width: 35px;
+    height: 2px;
+
+    background: #527765;
+    top: 35px;
+}
+
+.roro-wing-left::after {
+    left: 8px;
+    transform: rotate(25deg);
+}
+
+.roro-wing-right::after {
+    right: 8px;
+    transform: rotate(-25deg);
+}
+
+
+/* =========================================================
+   TAIL
+   ========================================================= */
+
+.roro-tail {
+    position: absolute;
+
+    width: 75px;
+    height: 45px;
+
+    right: -35px;
+    bottom: 30px;
+
+    background: #527966;
+
+    border: 3px solid #456b59;
+    border-radius: 50% 20% 50% 50%;
+
+    transform: rotate(-15deg);
+
+    z-index: 0;
+}
+
+/* pointy dragon tail */
+
+.roro-tail-tip {
+    position: absolute;
+
+    right: -18px;
+    top: 4px;
+
+    width: 0;
+    height: 0;
+
+    border-top: 18px solid transparent;
+    border-bottom: 18px solid transparent;
+    border-left: 30px solid #456b59;
+
+    transform: rotate(10deg);
+}
+
+.roro-tail-tip::after {
+    content: "";
+
+    position: absolute;
+
+    left: -31px;
+    top: -13px;
+
+    width: 0;
+    height: 0;
+
+    border-top: 13px solid transparent;
+    border-bottom: 13px solid transparent;
+    border-left: 23px solid #527966;
+}
+
+
+/* =========================================================
+   BODY
+   ========================================================= */
+
+.roro-body {
+    position: absolute;
+
+    left: 30px;
+    top: 70px;
+
+    width: 90px;
+    height: 105px;
+
+    background: #527966;
+
+    border: 3px solid #456b59;
+    border-radius: 35px 35px 25px 25px;
+
+    z-index: 3;
+}
+
+
+/* belly */
+
+.roro-belly {
+    position: absolute;
+
+    width: 70px;
+    height: 70px;
+
+    left: 7px;
+    top: 30px;
+
+    background: #5e836f;
+
+    border-radius: 40% 40% 45% 45%;
+}
+
+
+/* =========================================================
+   HEAD
+   ========================================================= */
+
+.roro-head {
+    position: absolute;
+
+    left: -8px;
+    top: -45px;
+
+    width: 100px;
+    height: 92px;
+
+    background: #6f947d;
+
+    border: 3px solid #456b59;
+    border-radius: 48% 48% 45% 45%;
+
+    z-index: 5;
+}
+
+
+/* =========================================================
+   HORNS
+   ========================================================= */
+
+.roro-horn {
+    position: absolute;
+
+    top: -22px;
+
+    width: 0;
+    height: 0;
+
+    border-left: 11px solid transparent;
+    border-right: 11px solid transparent;
+    border-bottom: 27px solid #c49b59;
+}
+
+.roro-horn-left {
+    left: 17px;
+    transform: rotate(-5deg);
+}
+
+.roro-horn-right {
+    right: 17px;
+    transform: rotate(5deg);
+}
+
+
+/* =========================================================
+   EARS
+   ========================================================= */
+
+.roro-ear {
+    position: absolute;
+
+    top: 32px;
+
+    width: 30px;
+    height: 38px;
+
+    background: #6f947d;
+
+    border: 3px solid #456b59;
+    border-radius: 50%;
+}
+
+.roro-ear-left {
+    left: -20px;
+}
+
+.roro-ear-right {
+    right: -20px;
+}
+
+
+/* =========================================================
+   EYES
+   ========================================================= */
+
+.roro-eye {
+    position: absolute;
+
+    top: 27px;
+
+    width: 21px;
+    height: 29px;
+
+    background: white;
+
+    border-radius: 50%;
+}
+
+.roro-eye-left {
+    left: 25px;
+}
+
+.roro-eye-right {
+    right: 25px;
+}
+
+.roro-pupil {
+    position: absolute;
+
+    width: 9px;
+    height: 13px;
+
+    background: #173c32;
+
+    border-radius: 50%;
+
+    left: 6px;
+    top: 9px;
+}
+
+
+/* =========================================================
+   SNOUT
+   ========================================================= */
+
+.roro-snout {
+    position: absolute;
+
+    left: 28px;
+    top: 50px;
+
+    width: 44px;
+    height: 28px;
+
+    background: #82a58f;
+
+    border-radius: 50%;
+}
+
+
+/* nose */
+
+.roro-nose {
+    position: absolute;
+
+    z-index: 2;
+
+    left: 42px;
+    top: 58px;
+}
+
+.roro-nose span {
+    display: inline-block;
+
+    width: 5px;
+    height: 5px;
+
+    margin: 0 3px;
+
+    background: #456b59;
+
+    border-radius: 50%;
+}
+
+
+/* cheeks */
+
+.roro-cheek {
+    position: absolute;
+
+    width: 12px;
+    height: 7px;
+
+    background: #c58c8c;
+
+    border-radius: 50%;
+
+    top: 60px;
+
+    opacity: 0.65;
+}
+
+.roro-cheek-left {
+    left: 14px;
+}
+
+.roro-cheek-right {
+    right: 14px;
+}
+
+
+/* =========================================================
+   FEET
+   ========================================================= */
+
+.roro-foot {
+    position: absolute;
+
+    bottom: -8px;
+
+    width: 38px;
+    height: 17px;
+
+    background: #456b59;
+
+    border-radius: 50%;
+}
+
+.roro-foot-left {
+    left: -10px;
+}
+
+.roro-foot-right {
+    right: -10px;
+}
+
+
+/* =========================================================
+   ANIMATIONS
+   ========================================================= */
+
+@keyframes roroFloat {
+    0%, 100% {
+        transform: translateY(0) rotate(0deg);
+    }
+
+    50% {
+        transform: translateY(-7px) rotate(1deg);
+    }
+}
+
+@keyframes roroHappy {
+    0%, 100% {
+        transform: translateY(0) rotate(0deg);
+    }
+
+    30% {
+        transform: translateY(-12px) rotate(-3deg);
+    }
+
+    60% {
+        transform: translateY(-6px) rotate(3deg);
+    }
+}
+
+@keyframes roroCelebrate {
+    0%, 100% {
+        transform: translateY(0) scale(1);
+    }
+
+    25% {
+        transform: translateY(-18px) scale(1.05) rotate(-5deg);
+    }
+
+    50% {
+        transform: translateY(-8px) scale(1.08) rotate(5deg);
+    }
+
+    75% {
+        transform: translateY(-18px) scale(1.05) rotate(-3deg);
+    }
+}
+
+#roroBuddy.roro-happy .roro-dragon {
+    animation: roroHappy 0.8s ease;
+}
+
+#roroBuddy.roro-celebrate .roro-dragon {
+    animation: roroCelebrate 1.2s ease;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+    #roroBuddy {
+        right: 15px;
+        bottom: 15px;
+        transform: scale(0.8);
+        transform-origin: bottom right;
+    }
+
+    #roroSpeech {
+        right: -10px;
+        width: 250px;
+    }
+}
