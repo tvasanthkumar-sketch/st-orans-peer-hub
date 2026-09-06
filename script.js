@@ -109,32 +109,69 @@ function getStoredUsers() {
     try {
 
         const saved =
-            localStorage.getItem(
-                STORAGE_KEY
-            );
+            localStorage.getItem(STORAGE_KEY);
 
-        if (!saved) {
+        let storedUsers = {};
 
-            const initialUsers = {
-                maya: {
-                    ...demoUsers.maya
-                },
+        if (saved) {
 
-                lucy: {
-                    ...demoUsers.lucy
-                }
-            };
-
-            localStorage.setItem(
-                STORAGE_KEY,
-                JSON.stringify(initialUsers)
-            );
-
-            return initialUsers;
+            storedUsers =
+                JSON.parse(saved) || {};
 
         }
 
-        return JSON.parse(saved);
+        /*
+         * Always make sure the demo accounts exist.
+         * This also fixes old localStorage data from
+         * previous versions of the website.
+         */
+
+        const mergedUsers = {
+
+            maya: {
+                ...demoUsers.maya,
+                ...(storedUsers.maya || {}),
+                progressHistory:
+                    storedUsers.maya?.progressHistory
+                        ? [...storedUsers.maya.progressHistory]
+                        : [...demoUsers.maya.progressHistory]
+            },
+
+            lucy: {
+                ...demoUsers.lucy,
+                ...(storedUsers.lucy || {}),
+                progressHistory:
+                    storedUsers.lucy?.progressHistory
+                        ? [...storedUsers.lucy.progressHistory]
+                        : [...demoUsers.lucy.progressHistory]
+            }
+
+        };
+
+        /*
+         * Keep any accounts created by students.
+         */
+
+        Object.keys(storedUsers).forEach(email => {
+
+            if (
+                email !== "maya" &&
+                email !== "lucy"
+            ) {
+
+                mergedUsers[email] =
+                    storedUsers[email];
+
+            }
+
+        });
+
+        localStorage.setItem(
+            STORAGE_KEY,
+            JSON.stringify(mergedUsers)
+        );
+
+        return mergedUsers;
 
     }
 
@@ -146,48 +183,24 @@ function getStoredUsers() {
         );
 
         return {
+
             maya: {
-                ...demoUsers.maya
+                ...demoUsers.maya,
+                progressHistory:
+                    [...demoUsers.maya.progressHistory]
             },
 
             lucy: {
-                ...demoUsers.lucy
+                ...demoUsers.lucy,
+                progressHistory:
+                    [...demoUsers.lucy.progressHistory]
             }
+
         };
 
     }
 
 }
-
-
-
-let users = getStoredUsers();
-
-
-
-function saveUsers() {
-
-    try {
-
-        localStorage.setItem(
-            STORAGE_KEY,
-            JSON.stringify(users)
-        );
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Could not save users:",
-            error
-        );
-
-    }
-
-}
-
-
 
 function saveCurrentUser() {
 
@@ -921,30 +934,33 @@ function googleLogin() {
             "Prototype Google login\n\nType:\n1 = Maya\n2 = Lucy"
         );
 
-
-    if (account === "1") {
-
-        login(users.maya);
-
+    if (account === null) {
+        return;
     }
 
-    else if (account === "2") {
+    if (account.trim() === "1") {
 
-        login(users.lucy);
+        const maya = users.maya || demoUsers.maya;
 
+        login(maya);
+
+        return;
     }
 
-    else {
+    if (account.trim() === "2") {
 
-        alert(
-            "For this prototype, enter 1 for Maya or 2 for Lucy."
-        );
+        const lucy = users.lucy || demoUsers.lucy;
 
+        login(lucy);
+
+        return;
     }
+
+    alert(
+        "For this prototype, enter 1 for Maya or 2 for Lucy."
+    );
 
 }
-
-
 
 /* =========================================================
    FORGOT PASSWORD
