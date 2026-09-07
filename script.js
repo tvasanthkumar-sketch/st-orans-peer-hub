@@ -119,16 +119,7 @@ function getStoredUsers() {
                 JSON.parse(saved) || {};
 
         }
-let users = getStoredUsers();
 
-function saveUsers() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
-}
-        /*
-         * Always make sure the demo accounts exist.
-         * This also fixes old localStorage data from
-         * previous versions of the website.
-         */
 
         const mergedUsers = {
 
@@ -149,6 +140,14 @@ function saveUsers() {
                         ? [...storedUsers.lucy.progressHistory]
                         : [...demoUsers.lucy.progressHistory]
             }
+           let users = getStoredUsers();
+
+function saveUsers() {
+    localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(users)
+    );
+}
 
         };
 
