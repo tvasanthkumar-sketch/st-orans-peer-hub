@@ -3,15 +3,15 @@
    MAIN JAVASCRIPT
    ========================================================= */
 
-/* =========================================================
-   STORAGE
-   ========================================================= */
-
 const USERS_KEY = "stOransPeerHubUsers";
 const CURRENT_USER_KEY = "stOransCurrentUser";
 const EVENTS_KEY = "stOransCalendarEvents";
-const POMODORO_KEY = "stOransPomodoroData";
+const ASSIGNMENTS_KEY = "stOransAssignments";
 
+
+/* =========================================================
+   STORAGE
+   ========================================================= */
 
 function getUsers() {
     try {
@@ -50,7 +50,7 @@ function createDemoAccounts() {
 
     const users = getUsers();
 
-    const demoAccounts = [
+    const demos = [
         {
             id: "demo-maya",
             name: "Maya Patel",
@@ -85,7 +85,7 @@ function createDemoAccounts() {
 
     let changed = false;
 
-    demoAccounts.forEach(demo => {
+    demos.forEach(demo => {
 
         const exists = users.some(
             user => user.email.toLowerCase() === demo.email.toLowerCase()
@@ -111,7 +111,9 @@ function updateCurrentUser(updatedUser) {
 
     const users = getUsers();
 
-    const index = users.findIndex(user => user.id === updatedUser.id);
+    const index = users.findIndex(
+        user => user.id === updatedUser.id
+    );
 
     if (index !== -1) {
         users[index] = updatedUser;
@@ -130,19 +132,20 @@ function loginUser(event) {
 
     event.preventDefault();
 
-    const emailInput = document.getElementById("email");
-    const passwordInput = document.getElementById("password");
-    const error = document.getElementById("loginError");
+    const email = document.getElementById("email")?.value
+        .trim()
+        .toLowerCase();
 
-    const email = emailInput.value.trim().toLowerCase();
-    const password = passwordInput.value;
+    const password =
+        document.getElementById("password")?.value || "";
 
-    const users = getUsers();
+    const error =
+        document.getElementById("loginError");
 
-    const user = users.find(
-        u =>
-            u.email.toLowerCase() === email &&
-            u.password === password
+    const user = getUsers().find(
+        user =>
+            user.email.toLowerCase() === email &&
+            user.password === password
     );
 
     if (!user) {
@@ -161,23 +164,13 @@ function loginUser(event) {
     }
 
     saveCurrentUser(user);
-
     openMainApp();
 }
 
 
 function googleLogin() {
 
-    /*
-       This is a DEMO Google button.
-
-       A real Google login needs Google OAuth and a backend.
-       This version gives the button useful prototype behaviour
-       without pretending that static JavaScript can magically
-       authenticate with Google.
-    */
-
-    const users = getUsers();
+    let users = getUsers();
 
     let googleUser = users.find(
         user => user.email === "google.demo@storans.school.nz"
@@ -206,7 +199,6 @@ function googleLogin() {
     }
 
     saveCurrentUser(googleUser);
-
     openMainApp();
 }
 
@@ -219,16 +211,9 @@ function showSignup(event) {
 
     if (event) event.preventDefault();
 
-    const loginScreen = document.getElementById("loginScreen");
-    const signupScreen = document.getElementById("signupScreen");
-    const mainApp = document.getElementById("mainApp");
-
-    if (loginScreen) loginScreen.style.display = "none";
-    if (mainApp) mainApp.style.display = "none";
-
-    if (signupScreen) {
-        signupScreen.style.display = "flex";
-    }
+    document.getElementById("loginScreen").style.display = "none";
+    document.getElementById("mainApp").style.display = "none";
+    document.getElementById("signupScreen").style.display = "flex";
 }
 
 
@@ -236,16 +221,9 @@ function showLogin(event) {
 
     if (event) event.preventDefault();
 
-    const loginScreen = document.getElementById("loginScreen");
-    const signupScreen = document.getElementById("signupScreen");
-    const mainApp = document.getElementById("mainApp");
-
-    if (signupScreen) signupScreen.style.display = "none";
-    if (mainApp) mainApp.style.display = "none";
-
-    if (loginScreen) {
-        loginScreen.style.display = "flex";
-    }
+    document.getElementById("signupScreen").style.display = "none";
+    document.getElementById("mainApp").style.display = "none";
+    document.getElementById("loginScreen").style.display = "flex";
 }
 
 
@@ -253,15 +231,26 @@ function signupUser(event) {
 
     event.preventDefault();
 
-    const name = document.getElementById("signupName").value.trim();
-    const email = document.getElementById("signupEmail").value.trim().toLowerCase();
-    const year = document.getElementById("signupYear").value;
-    const password = document.getElementById("signupPassword").value;
-    const confirmPassword = document.getElementById("signupConfirmPassword").value;
+    const name =
+        document.getElementById("signupName").value.trim();
 
-    const error = document.getElementById("signupError");
+    const email =
+        document.getElementById("signupEmail").value.trim().toLowerCase();
+
+    const year =
+        document.getElementById("signupYear").value;
+
+    const password =
+        document.getElementById("signupPassword").value;
+
+    const confirmPassword =
+        document.getElementById("signupConfirmPassword").value;
+
+    const error =
+        document.getElementById("signupError");
 
     function showError(message) {
+
         if (error) {
             error.textContent = message;
             error.style.display = "block";
@@ -295,26 +284,23 @@ function signupUser(event) {
 
     const users = getUsers();
 
-    const alreadyExists = users.some(
-        user => user.email.toLowerCase() === email
-    );
-
-    if (alreadyExists) {
+    if (
+        users.some(
+            user => user.email.toLowerCase() === email
+        )
+    ) {
         showError("An account with this email already exists.");
         return;
     }
 
-    /*
-       IMPORTANT:
-       New accounts start with ZERO progress.
-    */
-
     const newUser = {
         id: "user-" + Date.now(),
-        name: name,
-        email: email,
-        password: password,
-        year: year,
+        name,
+        email,
+        password,
+        year,
+
+        /* NEW ACCOUNTS START WITH NOTHING */
         points: 0,
         helped: 0,
         sessions: 0,
@@ -326,44 +312,28 @@ function signupUser(event) {
     };
 
     users.push(newUser);
+
     saveUsers(users);
     saveCurrentUser(newUser);
-
-    if (error) {
-        error.textContent = "";
-        error.style.display = "none";
-    }
 
     openMainApp();
 }
 
 
 /* =========================================================
-   APP DISPLAY
+   APP
    ========================================================= */
 
 function openMainApp() {
 
-    const loginScreen = document.getElementById("loginScreen");
-    const signupScreen = document.getElementById("signupScreen");
-    const mainApp = document.getElementById("mainApp");
-
-    if (loginScreen) loginScreen.style.display = "none";
-    if (signupScreen) signupScreen.style.display = "none";
-
-    if (mainApp) {
-        mainApp.style.display = "flex";
-    }
+    document.getElementById("loginScreen").style.display = "none";
+    document.getElementById("signupScreen").style.display = "none";
+    document.getElementById("mainApp").style.display = "flex";
 
     loadUserIntoSite();
-
     showPage("home");
 }
 
-
-/* =========================================================
-   USER INFORMATION
-   ========================================================= */
 
 function loadUserIntoSite() {
 
@@ -371,19 +341,29 @@ function loadUserIntoSite() {
 
     if (!user) return;
 
-    const welcomeName = document.getElementById("welcomeName");
-    const greeting = document.getElementById("greeting");
+    const firstName =
+        user.name.split(" ")[0];
 
-    const topName = document.getElementById("topName");
-    const topYear = document.getElementById("topYear");
+    const welcomeName =
+        document.getElementById("welcomeName");
 
-    const profileName = document.getElementById("profileName");
-    const profileYear = document.getElementById("profileYear");
+    const topName =
+        document.getElementById("topName");
 
-    const settingsEmail = document.getElementById("settingsEmail");
+    const topYear =
+        document.getElementById("topYear");
+
+    const profileName =
+        document.getElementById("profileName");
+
+    const profileYear =
+        document.getElementById("profileYear");
+
+    const settingsEmail =
+        document.getElementById("settingsEmail");
 
     if (welcomeName) {
-        welcomeName.textContent = user.name.split(" ")[0];
+        welcomeName.textContent = firstName;
     }
 
     if (topName) {
@@ -414,118 +394,111 @@ function loadUserIntoSite() {
 
 
 /* =========================================================
-   GREETING / DATE
-   ========================================================= */
-
-function updateGreeting() {
-
-    const greeting = document.getElementById("greeting");
-    const todayLabel = document.getElementById("todayLabel");
-
-    const now = new Date();
-    const hour = now.getHours();
-
-    let text = "Good evening";
-
-    if (hour < 12) {
-        text = "Good morning";
-    } else if (hour < 18) {
-        text = "Good afternoon";
-    }
-
-    if (greeting) {
-        greeting.textContent = text;
-    }
-
-    if (todayLabel) {
-
-        todayLabel.textContent = now.toLocaleDateString(
-            "en-NZ",
-            {
-                weekday: "long",
-                day: "numeric",
-                month: "long"
-            }
-        );
-    }
-}
-
-
-/* =========================================================
    NAVIGATION
    ========================================================= */
 
 function showPage(pageName) {
 
-    const pages = document.querySelectorAll(".page");
+    const pages =
+        document.querySelectorAll(".page");
 
     pages.forEach(page => {
         page.classList.remove("active");
     });
 
-    const selectedPage = document.getElementById(pageName);
+    const page =
+        document.getElementById(pageName);
 
-    if (selectedPage) {
-        selectedPage.classList.add("active");
+    if (page) {
+        page.classList.add("active");
     }
 
-    /*
-       Some versions of the HTML use page IDs with "Page".
-       This fallback keeps navigation flexible without
-       changing the HTML.
-    */
+    const alternative =
+        document.getElementById(pageName + "Page");
 
-    if (!selectedPage) {
-
-        const alternative = document.getElementById(
-            pageName + "Page"
-        );
-
-        if (alternative) {
-            alternative.classList.add("active");
-        }
+    if (!page && alternative) {
+        alternative.classList.add("active");
     }
 
-    const navItems = document.querySelectorAll(".nav-item");
+    document
+        .querySelectorAll(".nav-item")
+        .forEach(item => {
 
-    navItems.forEach(item => {
+            item.classList.remove("active");
 
-        item.classList.remove("active");
+            if (item.dataset.page === pageName) {
+                item.classList.add("active");
+            }
+        });
 
-        if (item.dataset.page === pageName) {
-            item.classList.add("active");
-        }
-    });
+    if (pageName === "home") {
+        renderHome();
+    }
 
-    switch (pageName) {
+    if (pageName === "calendar") {
+        renderCalendar();
+    }
 
-        case "home":
-            renderHome();
-            break;
+    if (pageName === "assignments") {
+        renderAssignments();
+    }
 
-        case "calendar":
-            renderCalendar();
-            break;
+    if (pageName === "peers") {
+        renderPeers();
+    }
 
-        case "assignments":
-            renderAssignments();
-            break;
+    if (pageName === "profile") {
+        updateProfile();
+    }
 
-        case "peers":
-            renderPeers();
-            break;
+    if (pageName === "progress") {
+        updateProgress();
+    }
 
-        case "profile":
-            updateProfile();
-            break;
+    if (pageName === "study") {
+        updateStudyStats();
+    }
+}
 
-        case "progress":
-            updateProgress();
-            break;
 
-        case "study":
-            updateStudyStats();
-            break;
+/* =========================================================
+   DATE / GREETING
+   ========================================================= */
+
+function updateGreeting() {
+
+    const greeting =
+        document.getElementById("greeting");
+
+    const todayLabel =
+        document.getElementById("todayLabel");
+
+    const now = new Date();
+    const hour = now.getHours();
+
+    let message = "Good evening";
+
+    if (hour < 12) {
+        message = "Good morning";
+    } else if (hour < 18) {
+        message = "Good afternoon";
+    }
+
+    if (greeting) {
+        greeting.textContent = message;
+    }
+
+    if (todayLabel) {
+
+        todayLabel.textContent =
+            now.toLocaleDateString(
+                "en-NZ",
+                {
+                    weekday: "long",
+                    day: "numeric",
+                    month: "long"
+                }
+            );
     }
 }
 
@@ -545,14 +518,13 @@ const quotes = [
 
 function renderHome() {
 
-    const quote = document.getElementById("homeQuote");
+    const quote =
+        document.getElementById("homeQuote");
 
     if (quote) {
 
-        const index =
-            new Date().getDate() % quotes.length;
-
-        quote.textContent = quotes[index];
+        quote.textContent =
+            quotes[new Date().getDate() % quotes.length];
     }
 
     updateHomeStats();
@@ -568,10 +540,17 @@ function updateHomeStats() {
 
     if (!user) return;
 
-    const points = document.getElementById("homePoints");
-    const helped = document.getElementById("homeHelped");
-    const progressFill = document.getElementById("homeProgressFill");
-    const progressCaption = document.getElementById("homeProgressCaption");
+    const points =
+        document.getElementById("homePoints");
+
+    const helped =
+        document.getElementById("homeHelped");
+
+    const progressFill =
+        document.getElementById("homeProgressFill");
+
+    const caption =
+        document.getElementById("homeProgressCaption");
 
     if (points) {
         points.textContent = user.points || 0;
@@ -581,17 +560,19 @@ function updateHomeStats() {
         helped.textContent = user.helped || 0;
     }
 
-    const percentage = Math.min(
-        100,
-        Math.round((user.points || 0) / 500 * 100)
-    );
+    const percentage =
+        Math.min(
+            100,
+            Math.round((user.points || 0) / 500 * 100)
+        );
 
     if (progressFill) {
-        progressFill.style.width = percentage + "%";
+        progressFill.style.width =
+            percentage + "%";
     }
 
-    if (progressCaption) {
-        progressCaption.textContent =
+    if (caption) {
+        caption.textContent =
             `${user.points || 0} / 500 points`;
     }
 }
@@ -603,38 +584,48 @@ function updateHomeStats() {
 
 function renderMiniCalendar() {
 
-    const container = document.getElementById("miniCalendar");
-    const title = document.getElementById("monthTitle");
+    const container =
+        document.getElementById("miniCalendar");
+
+    const title =
+        document.getElementById("monthTitle");
 
     if (!container) return;
 
     const now = new Date();
 
     if (title) {
-        title.textContent = now.toLocaleDateString(
-            "en-NZ",
-            {
-                month: "long",
-                year: "numeric"
-            }
-        );
+
+        title.textContent =
+            now.toLocaleDateString(
+                "en-NZ",
+                {
+                    month: "long",
+                    year: "numeric"
+                }
+            );
     }
 
     const year = now.getFullYear();
     const month = now.getMonth();
 
-    const firstDay = new Date(year, month, 1).getDay();
+    const firstDay =
+        new Date(year, month, 1).getDay();
+
     const daysInMonth =
         new Date(year, month + 1, 0).getDate();
 
     let html = "";
 
-    const weekdays = [
+    [
         "S", "M", "T", "W", "T", "F", "S"
-    ];
+    ].forEach(day => {
 
-    weekdays.forEach(day => {
-        html += `<div class="calendar-weekday">${day}</div>`;
+        html += `
+            <div class="calendar-weekday">
+                ${day}
+            </div>
+        `;
     });
 
     for (let i = 0; i < firstDay; i++) {
@@ -643,7 +634,8 @@ function renderMiniCalendar() {
 
     for (let day = 1; day <= daysInMonth; day++) {
 
-        const isToday = day === now.getDate();
+        const isToday =
+            day === now.getDate();
 
         html += `
             <div class="calendar-day ${isToday ? "today" : ""}">
@@ -657,19 +649,19 @@ function renderMiniCalendar() {
 
 
 /* =========================================================
-   FULL CALENDAR
+   CALENDAR EVENTS
    ========================================================= */
-
-let calendarDate = new Date();
-
 
 function getEvents() {
 
     try {
+
         return JSON.parse(
             localStorage.getItem(EVENTS_KEY)
         ) || [];
+
     } catch {
+
         return [];
     }
 }
@@ -684,6 +676,9 @@ function saveEvents(events) {
 }
 
 
+let calendarDate = new Date();
+
+
 function renderCalendar() {
 
     const container =
@@ -694,10 +689,14 @@ function renderCalendar() {
 
     if (!container) return;
 
-    const year = calendarDate.getFullYear();
-    const month = calendarDate.getMonth();
+    const year =
+        calendarDate.getFullYear();
+
+    const month =
+        calendarDate.getMonth();
 
     if (title) {
+
         title.textContent =
             calendarDate.toLocaleDateString(
                 "en-NZ",
@@ -714,7 +713,8 @@ function renderCalendar() {
     const days =
         new Date(year, month + 1, 0).getDate();
 
-    const events = getEvents();
+    const events =
+        getEvents();
 
     let html = `
         <div class="calendar-header-row">
@@ -725,46 +725,50 @@ function renderCalendar() {
         <div class="calendar-grid">
     `;
 
-    const weekdays = [
-        "Sunday",
-        "Monday",
-        "Tuesday",
-        "Wednesday",
-        "Thursday",
-        "Friday",
-        "Saturday"
-    ];
+    [
+        "Sun",
+        "Mon",
+        "Tue",
+        "Wed",
+        "Thu",
+        "Fri",
+        "Sat"
+    ].forEach(day => {
 
-    weekdays.forEach(day => {
         html += `
             <div class="calendar-weekday">
-                ${day.substring(0, 3)}
+                ${day}
             </div>
         `;
     });
 
     for (let i = 0; i < firstDay; i++) {
-        html += `<div class="calendar-cell empty"></div>`;
+
+        html += `
+            <div class="calendar-cell empty"></div>
+        `;
     }
 
     for (let day = 1; day <= days; day++) {
 
-        const dateString =
+        const date =
             `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 
         const dayEvents =
-            events.filter(event => event.date === dateString);
+            events.filter(event => event.date === date);
 
         const today = new Date();
 
         const isToday =
-            day === today.getDate() &&
-            month === today.getMonth() &&
-            year === today.getFullYear();
+            today.getFullYear() === year &&
+            today.getMonth() === month &&
+            today.getDate() === day;
 
         html += `
-            <div class="calendar-cell ${isToday ? "today" : ""}"
-                 onclick="addCalendarEvent('${dateString}')">
+            <div
+                class="calendar-cell ${isToday ? "today" : ""}"
+                onclick="addCalendarEvent('${date}')"
+            >
 
                 <div class="calendar-number">
                     ${day}
@@ -773,11 +777,22 @@ function renderCalendar() {
                 <div class="calendar-events">
         `;
 
+        /* EVENTS NOW ACTUALLY RENDER INSIDE THE DATE */
+
         dayEvents.forEach(event => {
 
             html += `
-                <div class="calendar-event">
-                    ${escapeHTML(event.title)}
+                <div
+                    class="calendar-event"
+                    title="${escapeAttribute(event.priority)} priority"
+                >
+                    <strong>
+                        ${escapeHTML(event.title)}
+                    </strong>
+
+                    <small>
+                        ${escapeHTML(event.priority)}
+                    </small>
                 </div>
             `;
         });
@@ -791,8 +806,10 @@ function renderCalendar() {
     html += `
         </div>
 
-        <button class="primary-button calendar-add-button"
-                onclick="addCalendarEvent()">
+        <button
+            class="primary-button calendar-add-button"
+            onclick="addCalendarEvent()"
+        >
             + Add event
         </button>
     `;
@@ -811,36 +828,125 @@ function changeCalendarMonth(amount) {
 }
 
 
-function addCalendarEvent(selectedDate) {
+/* =========================================================
+   ADD CALENDAR EVENT
+   ========================================================= */
 
-    const title = prompt(
-        "What is the event called?"
-    );
+function addCalendarEvent(selectedDate = "") {
 
-    if (!title || !title.trim()) return;
+    openModal(`
 
-    let date = selectedDate;
+        <h2>Add event</h2>
+
+        <label>
+            Event name
+            <input
+                type="text"
+                id="eventTitle"
+                placeholder="e.g. Maths test"
+            >
+        </label>
+
+        <label>
+            Date
+            <input
+                type="date"
+                id="eventDate"
+                value="${selectedDate}"
+            >
+        </label>
+
+        <label>
+            Importance
+            <select id="eventPriority">
+
+                <option value="Low">
+                    Low
+                </option>
+
+                <option value="Medium" selected>
+                    Medium
+                </option>
+
+                <option value="High">
+                    High
+                </option>
+
+                <option value="Urgent">
+                    Urgent
+                </option>
+
+            </select>
+        </label>
+
+        <div class="modal-actions">
+
+            <button
+                class="primary-button"
+                onclick="saveCalendarEvent()"
+            >
+                Add event
+            </button>
+
+            <button
+                class="secondary-button"
+                onclick="closeModal()"
+            >
+                Cancel
+            </button>
+
+        </div>
+    `);
+}
+
+
+function saveCalendarEvent() {
+
+    const title =
+        document.getElementById("eventTitle")?.value.trim();
+
+    const date =
+        document.getElementById("eventDate")?.value;
+
+    const priority =
+        document.getElementById("eventPriority")?.value;
+
+    if (!title) {
+
+        alert("Please enter an event name.");
+
+        return;
+    }
 
     if (!date) {
 
-        const input = prompt(
-            "Enter the date (YYYY-MM-DD):"
-        );
+        alert("Please choose a date.");
 
-        if (!input) return;
-
-        date = input.trim();
+        return;
     }
 
     const events = getEvents();
 
     events.push({
+
         id: Date.now(),
-        title: title.trim(),
-        date: date
+
+        title,
+
+        date,
+
+        priority: priority || "Medium"
     });
 
     saveEvents(events);
+
+    closeModal();
+
+    /*
+       Re-render EVERYTHING immediately.
+       This is the bit the previous version was
+       annoyingly failing to do properly.
+    */
 
     renderCalendar();
     renderMiniCalendar();
@@ -849,10 +955,10 @@ function addCalendarEvent(selectedDate) {
 
 
 /* =========================================================
-   DEADLINES
+   ASSIGNMENTS
    ========================================================= */
 
-const assignments = [
+const defaultAssignments = [
     {
         id: 1,
         title: "Science Investigation",
@@ -880,46 +986,35 @@ const assignments = [
 ];
 
 
-function renderDeadlines() {
+function getAssignments() {
 
-    const container =
-        document.getElementById("deadlineList");
+    try {
 
-    if (!container) return;
+        const saved =
+            JSON.parse(
+                localStorage.getItem(ASSIGNMENTS_KEY)
+            );
 
-    const active =
-        assignments.filter(item => !item.completed)
-        .slice(0, 3);
+        if (Array.isArray(saved)) {
+            return saved;
+        }
 
-    if (!active.length) {
+    } catch {}
 
-        container.innerHTML =
-            `<div class="empty-state">No upcoming deadlines 🎉</div>`;
+    saveAssignments(defaultAssignments);
 
-        return;
-    }
-
-    container.innerHTML =
-        active.map(item => `
-            <div class="assignment-row">
-
-                <div class="assignment-info">
-                    <strong>${escapeHTML(item.title)}</strong>
-                    <span>${escapeHTML(item.subject)}</span>
-                </div>
-
-                <div class="assignment-date">
-                    ${formatDate(item.due)}
-                </div>
-
-            </div>
-        `).join("");
+    return [...defaultAssignments];
 }
 
 
-/* =========================================================
-   ASSIGNMENTS
-   ========================================================= */
+function saveAssignments(assignments) {
+
+    localStorage.setItem(
+        ASSIGNMENTS_KEY,
+        JSON.stringify(assignments)
+    );
+}
+
 
 function renderAssignments() {
 
@@ -928,17 +1023,309 @@ function renderAssignments() {
 
     if (!container) return;
 
-    container.innerHTML =
-        assignments.map(item => `
+    const assignments =
+        getAssignments();
+
+    let html = `
+
+        <div class="assignment-add-area">
+
+            <button
+                class="primary-button"
+                onclick="addAssignment()"
+            >
+                + Add assignment
+            </button>
+
+        </div>
+    `;
+
+    if (!assignments.length) {
+
+        html += `
+            <div class="empty-state">
+
+                <h3>No assignments yet</h3>
+
+                <p>
+                    Add your first assignment above.
+                </p>
+
+            </div>
+        `;
+
+        container.innerHTML = html;
+
+        return;
+    }
+
+    assignments.forEach(assignment => {
+
+        html += `
+
             <div class="assignment-card">
 
                 <label class="assignment-check">
+
                     <input
                         type="checkbox"
-                        ${item.completed ? "checked" : ""}
-                        onchange="toggleAssignment(${item.id})"
+                        ${assignment.completed ? "checked" : ""}
+                        onchange="toggleAssignment(${assignment.id})"
                     >
+
                 </label>
+
+                <div class="assignment-info">
+
+                    <strong>
+                        ${escapeHTML(assignment.title)}
+                    </strong>
+
+                    <span>
+                        ${escapeHTML(assignment.subject)}
+                    </span>
+
+                </div>
+
+                <div class="assignment-date">
+
+                    ${formatDate(assignment.due)}
+
+                </div>
+
+                <div class="priority">
+
+                    ${escapeHTML(assignment.priority)}
+
+                </div>
+
+            </div>
+        `;
+    });
+
+    container.innerHTML = html;
+}
+
+
+/* =========================================================
+   ADD ASSIGNMENT
+   ========================================================= */
+
+function addAssignment() {
+
+    openModal(`
+
+        <h2>Add assignment</h2>
+
+        <label>
+            Assignment name
+
+            <input
+                type="text"
+                id="assignmentTitle"
+                placeholder="e.g. Algebra homework"
+            >
+        </label>
+
+        <label>
+            Subject
+
+            <input
+                type="text"
+                id="assignmentSubject"
+                placeholder="e.g. Maths"
+            >
+        </label>
+
+        <label>
+            Due date
+
+            <input
+                type="date"
+                id="assignmentDue"
+            >
+        </label>
+
+        <label>
+            Importance
+
+            <select id="assignmentPriority">
+
+                <option value="Low">
+                    Low
+                </option>
+
+                <option value="Medium" selected>
+                    Medium
+                </option>
+
+                <option value="High">
+                    High
+                </option>
+
+                <option value="Urgent">
+                    Urgent
+                </option>
+
+            </select>
+        </label>
+
+        <div class="modal-actions">
+
+            <button
+                class="primary-button"
+                onclick="saveAssignment()"
+            >
+                Add assignment
+            </button>
+
+            <button
+                class="secondary-button"
+                onclick="closeModal()"
+            >
+                Cancel
+            </button>
+
+        </div>
+    `);
+}
+
+
+function saveAssignment() {
+
+    const title =
+        document
+            .getElementById("assignmentTitle")
+            ?.value.trim();
+
+    const subject =
+        document
+            .getElementById("assignmentSubject")
+            ?.value.trim();
+
+    const due =
+        document
+            .getElementById("assignmentDue")
+            ?.value;
+
+    const priority =
+        document
+            .getElementById("assignmentPriority")
+            ?.value;
+
+    if (!title) {
+
+        alert("Please enter an assignment name.");
+
+        return;
+    }
+
+    if (!subject) {
+
+        alert("Please enter a subject.");
+
+        return;
+    }
+
+    if (!due) {
+
+        alert("Please choose a due date.");
+
+        return;
+    }
+
+    const assignments =
+        getAssignments();
+
+    assignments.push({
+
+        id: Date.now(),
+
+        title,
+
+        subject,
+
+        due,
+
+        priority: priority || "Medium",
+
+        completed: false
+    });
+
+    saveAssignments(assignments);
+
+    closeModal();
+
+    renderAssignments();
+    renderDeadlines();
+}
+
+
+/* =========================================================
+   TOGGLE ASSIGNMENT
+   ========================================================= */
+
+function toggleAssignment(id) {
+
+    const assignments =
+        getAssignments();
+
+    const assignment =
+        assignments.find(
+            item => item.id === id
+        );
+
+    if (!assignment) return;
+
+    assignment.completed =
+        !assignment.completed;
+
+    saveAssignments(assignments);
+
+    renderAssignments();
+    renderDeadlines();
+}
+
+
+/* =========================================================
+   DEADLINES
+   ========================================================= */
+
+function renderDeadlines() {
+
+    const container =
+        document.getElementById("deadlineList");
+
+    if (!container) return;
+
+    const assignments =
+        getAssignments();
+
+    const active =
+        assignments
+            .filter(item => !item.completed)
+            .sort(
+                (a, b) =>
+                    new Date(a.due) -
+                    new Date(b.due)
+            )
+            .slice(0, 3);
+
+    if (!active.length) {
+
+        container.innerHTML = `
+            <div class="empty-state">
+                No upcoming deadlines 🎉
+            </div>
+        `;
+
+        return;
+    }
+
+    container.innerHTML =
+        active.map(item => `
+
+            <div class="assignment-row">
 
                 <div class="assignment-info">
 
@@ -956,27 +1343,9 @@ function renderAssignments() {
                     ${formatDate(item.due)}
                 </div>
 
-                <div class="priority">
-                    ${escapeHTML(item.priority)}
-                </div>
-
             </div>
+
         `).join("");
-}
-
-
-function toggleAssignment(id) {
-
-    const assignment =
-        assignments.find(item => item.id === id);
-
-    if (!assignment) return;
-
-    assignment.completed =
-        !assignment.completed;
-
-    renderAssignments();
-    renderDeadlines();
 }
 
 
@@ -1000,9 +1369,14 @@ function renderRecommendedPeers() {
 
     if (!container) return;
 
+    const currentUser =
+        getCurrentUser();
+
     const peers =
         getPeers()
-            .filter(user => user.id !== getCurrentUser()?.id)
+            .filter(
+                peer => peer.id !== currentUser?.id
+            )
             .slice(0, 3);
 
     if (!peers.length) {
@@ -1024,19 +1398,23 @@ function searchPeers() {
         document.getElementById("peerSearch");
 
     const search =
-        input ? input.value.trim().toLowerCase() : "";
+        input?.value.trim().toLowerCase() || "";
+
+    const currentUser =
+        getCurrentUser();
 
     const peers =
         getPeers().filter(peer => {
 
-            if (peer.id === getCurrentUser()?.id) {
+            if (peer.id === currentUser?.id) {
                 return false;
             }
 
             return (
                 peer.name.toLowerCase().includes(search) ||
-                peer.tags.some(tag =>
-                    tag.toLowerCase().includes(search)
+                peer.tags.some(
+                    tag =>
+                        tag.toLowerCase().includes(search)
                 )
             );
         });
@@ -1045,6 +1423,7 @@ function searchPeers() {
         document.getElementById("recommendedPeers");
 
     if (container) {
+
         container.innerHTML =
             peers.map(peer => peerCard(peer)).join("");
     }
@@ -1053,62 +1432,83 @@ function searchPeers() {
 
 function searchMainPeers() {
 
-    const input =
-        document.getElementById("mainPeerSearch");
+    const search =
+        document
+            .getElementById("mainPeerSearch")
+            ?.value
+            .trim()
+            .toLowerCase() || "";
 
     const subject =
-        document.getElementById("subjectFilter")?.value || "";
+        document
+            .getElementById("subjectFilter")
+            ?.value || "";
 
     const year =
-        document.getElementById("yearFilter")?.value || "";
+        document
+            .getElementById("yearFilter")
+            ?.value || "";
 
     const availability =
-        document.getElementById("availabilityFilter")?.value || "";
+        document
+            .getElementById("availabilityFilter")
+            ?.value || "";
 
     const onlineOnly =
-        document.getElementById("onlineFilter")?.checked;
+        document
+            .getElementById("onlineFilter")
+            ?.checked;
 
-    const search =
-        input ? input.value.trim().toLowerCase() : "";
+    const currentUser =
+        getCurrentUser();
 
-    let peers = getPeers();
-
-    peers = peers.filter(peer => {
-
-        if (peer.id === getCurrentUser()?.id) {
-            return false;
-        }
-
-        const matchesSearch =
-            !search ||
-            peer.name.toLowerCase().includes(search) ||
-            peer.tags.some(tag =>
-                tag.toLowerCase().includes(search)
-            );
-
-        const matchesSubject =
-            !subject ||
-            peer.tags.includes(subject);
-
-        const matchesYear =
-            !year ||
-            peer.year === year;
-
-        const matchesAvailability =
-            !availability ||
-            (availability === "available" && peer.available);
-
-        const matchesOnline =
-            !onlineOnly || peer.online;
-
-        return (
-            matchesSearch &&
-            matchesSubject &&
-            matchesYear &&
-            matchesAvailability &&
-            matchesOnline
+    let peers =
+        getPeers().filter(
+            peer => peer.id !== currentUser?.id
         );
-    });
+
+    peers =
+        peers.filter(peer => {
+
+            const searchMatch =
+                !search ||
+                peer.name
+                    .toLowerCase()
+                    .includes(search) ||
+                peer.tags.some(
+                    tag =>
+                        tag
+                            .toLowerCase()
+                            .includes(search)
+                );
+
+            const subjectMatch =
+                !subject ||
+                peer.tags.includes(subject);
+
+            const yearMatch =
+                !year ||
+                peer.year === year;
+
+            const availabilityMatch =
+                !availability ||
+                (
+                    availability === "available" &&
+                    peer.available
+                );
+
+            const onlineMatch =
+                !onlineOnly ||
+                peer.online;
+
+            return (
+                searchMatch &&
+                subjectMatch &&
+                yearMatch &&
+                availabilityMatch &&
+                onlineMatch
+            );
+        });
 
     const container =
         document.getElementById("searchResults");
@@ -1119,8 +1519,13 @@ function searchMainPeers() {
 
         container.innerHTML = `
             <div class="empty-state">
+
                 <h3>No peers found</h3>
-                <p>Try changing your search or filters.</p>
+
+                <p>
+                    Try changing your search or filters.
+                </p>
+
             </div>
         `;
 
@@ -1133,7 +1538,6 @@ function searchMainPeers() {
 
 
 function renderPeers() {
-
     searchMainPeers();
 }
 
@@ -1149,6 +1553,7 @@ function peerCard(peer) {
             .toUpperCase();
 
     return `
+
         <div class="peer-card">
 
             <div class="peer-card-top">
@@ -1158,8 +1563,13 @@ function peerCard(peer) {
                 </div>
 
                 <div>
-                    <strong>${escapeHTML(peer.name)}</strong>
-                    <span>${escapeHTML(peer.year)}</span>
+                    <strong>
+                        ${escapeHTML(peer.name)}
+                    </strong>
+
+                    <span>
+                        ${escapeHTML(peer.year)}
+                    </span>
                 </div>
 
                 <div class="online-indicator">
@@ -1170,11 +1580,16 @@ function peerCard(peer) {
 
             <div class="subject-tags">
 
-                ${peer.tags.length
+                ${
+                    peer.tags.length
                     ? peer.tags.map(tag =>
-                        `<span class="subject-tag">${escapeHTML(tag)}</span>`
-                      ).join("")
-                    : `<span class="subject-tag">New member</span>`
+                        `<span class="subject-tag">
+                            ${escapeHTML(tag)}
+                        </span>`
+                    ).join("")
+                    : `<span class="subject-tag">
+                        New member
+                    </span>`
                 }
 
             </div>
@@ -1183,13 +1598,15 @@ function peerCard(peer) {
 
                 <button
                     class="secondary-button"
-                    onclick="viewPeer('${peer.id}')">
+                    onclick="viewPeer('${peer.id}')"
+                >
                     View profile
                 </button>
 
                 <button
                     class="primary-button"
-                    onclick="bookPeer('${peer.id}')">
+                    onclick="bookPeer('${peer.id}')"
+                >
                     Book
                 </button>
 
@@ -1207,20 +1624,18 @@ function peerCard(peer) {
 function viewPeer(id) {
 
     const peer =
-        getPeers().find(user => user.id === id);
+        getPeers().find(
+            user => user.id === id
+        );
 
     if (!peer) return;
 
-    /*
-       IMPORTANT:
-       This ONLY opens the profile.
-       It does NOT book the peer.
-    */
-
     openModal(`
+
         <div class="peer-profile-modal">
 
             <div class="avatar-small">
+
                 ${escapeHTML(
                     peer.name
                         .split(" ")
@@ -1229,16 +1644,25 @@ function viewPeer(id) {
                         .substring(0, 2)
                         .toUpperCase()
                 )}
+
             </div>
 
-            <h2>${escapeHTML(peer.name)}</h2>
+            <h2>
+                ${escapeHTML(peer.name)}
+            </h2>
 
-            <p>${escapeHTML(peer.year)}</p>
+            <p>
+                ${escapeHTML(peer.year)}
+            </p>
 
             <div class="subject-tags">
+
                 ${peer.tags.map(tag =>
-                    `<span class="subject-tag">${escapeHTML(tag)}</span>`
+                    `<span class="subject-tag">
+                        ${escapeHTML(tag)}
+                    </span>`
                 ).join("")}
+
             </div>
 
             <p>
@@ -1252,13 +1676,15 @@ function viewPeer(id) {
 
                 <button
                     class="primary-button"
-                    onclick="closeModal(); bookPeer('${peer.id}')">
+                    onclick="closeModal(); bookPeer('${peer.id}')"
+                >
                     Book a session
                 </button>
 
                 <button
                     class="secondary-button"
-                    onclick="closeModal()">
+                    onclick="closeModal()"
+                >
                     Close
                 </button>
 
@@ -1272,12 +1698,17 @@ function viewPeer(id) {
 function bookPeer(id) {
 
     const peer =
-        getPeers().find(user => user.id === id);
+        getPeers().find(
+            user => user.id === id
+        );
 
     if (!peer) return;
 
     openModal(`
-        <h2>Book ${escapeHTML(peer.name)}</h2>
+
+        <h2>
+            Book ${escapeHTML(peer.name)}
+        </h2>
 
         <p>
             Choose a time for your peer-help session.
@@ -1285,25 +1716,35 @@ function bookPeer(id) {
 
         <label>
             Date
-            <input type="date" id="bookingDate">
+
+            <input
+                type="date"
+                id="bookingDate"
+            >
         </label>
 
         <label>
             Time
-            <input type="time" id="bookingTime">
+
+            <input
+                type="time"
+                id="bookingTime"
+            >
         </label>
 
         <div class="modal-actions">
 
             <button
                 class="primary-button"
-                onclick="confirmBooking('${peer.id}')">
+                onclick="confirmBooking('${peer.id}')"
+            >
                 Confirm booking
             </button>
 
             <button
                 class="secondary-button"
-                onclick="closeModal()">
+                onclick="closeModal()"
+            >
                 Cancel
             </button>
 
@@ -1315,7 +1756,9 @@ function bookPeer(id) {
 function confirmBooking(peerId) {
 
     const peer =
-        getPeers().find(user => user.id === peerId);
+        getPeers().find(
+            user => user.id === peerId
+        );
 
     const date =
         document.getElementById("bookingDate")?.value;
@@ -1384,9 +1827,13 @@ function updateProfile() {
     if (tags) {
 
         tags.innerHTML =
-            (user.tags || []).map(tag =>
-                `<span class="subject-tag">${escapeHTML(tag)}</span>`
-            ).join("");
+            (user.tags || [])
+                .map(tag =>
+                    `<span class="subject-tag">
+                        ${escapeHTML(tag)}
+                    </span>`
+                )
+                .join("");
     }
 
     if (preferences) {
@@ -1405,24 +1852,32 @@ function editProfile() {
     if (!user) return;
 
     openModal(`
+
         <h2>Edit profile</h2>
 
         <label>
             Name
-            <input id="editName"
-                   value="${escapeAttribute(user.name)}">
+
+            <input
+                id="editName"
+                value="${escapeAttribute(user.name)}"
+            >
         </label>
 
         <label>
             Subjects
-            <input id="editTags"
-                   value="${escapeAttribute(
-                       (user.tags || []).join(", ")
-                   )}">
+
+            <input
+                id="editTags"
+                value="${escapeAttribute(
+                    (user.tags || []).join(", ")
+                )}"
+            >
         </label>
 
         <label>
             Preferences
+
             <textarea id="editPreferences">${escapeHTML(
                 user.preferences || ""
             )}</textarea>
@@ -1432,13 +1887,15 @@ function editProfile() {
 
             <button
                 class="primary-button"
-                onclick="saveProfileChanges()">
+                onclick="saveProfileChanges()"
+            >
                 Save changes
             </button>
 
             <button
                 class="secondary-button"
-                onclick="closeModal()">
+                onclick="closeModal()"
+            >
                 Cancel
             </button>
 
@@ -1454,18 +1911,25 @@ function saveProfileChanges() {
     if (!user) return;
 
     const name =
-        document.getElementById("editName")?.value.trim();
+        document.getElementById("editName")
+            ?.value
+            .trim();
 
     const tags =
-        document.getElementById("editTags")?.value
+        document.getElementById("editTags")
+            ?.value
             .split(",")
             .map(tag => tag.trim())
             .filter(Boolean);
 
     const preferences =
-        document.getElementById("editPreferences")?.value.trim();
+        document.getElementById("editPreferences")
+            ?.value
+            .trim();
 
-    if (name) user.name = name;
+    if (name) {
+        user.name = name;
+    }
 
     user.tags = tags || [];
     user.preferences = preferences || "";
@@ -1473,6 +1937,7 @@ function saveProfileChanges() {
     updateCurrentUser(user);
 
     loadUserIntoSite();
+
     closeModal();
 }
 
@@ -1531,14 +1996,22 @@ function drawProgressChart() {
         canvas.getContext("2d");
 
     const width =
-        canvas.width = canvas.offsetWidth || 500;
+        canvas.width =
+            canvas.offsetWidth || 500;
 
     const height =
-        canvas.height = canvas.offsetHeight || 220;
+        canvas.height =
+            canvas.offsetHeight || 220;
 
-    ctx.clearRect(0, 0, width, height);
+    ctx.clearRect(
+        0,
+        0,
+        width,
+        height
+    );
 
-    const user = getCurrentUser();
+    const user =
+        getCurrentUser();
 
     const points =
         user?.points || 0;
@@ -1587,17 +2060,13 @@ function drawProgressChart() {
 
 
 /* =========================================================
-   STUDY / POMODORO
+   POMODORO
    ========================================================= */
 
 let pomodoroMode = "focus";
-
 let pomodoroSeconds = 25 * 60;
-
 let pomodoroTimer = null;
-
 let pomodoroRunning = false;
-
 
 const pomodoroLengths = {
     focus: 25,
@@ -1621,6 +2090,7 @@ function setPomodoroMode(mode) {
 
     updatePomodoroDisplay();
     updatePomodoroButtons();
+    updatePomodoroButtonText();
 }
 
 
@@ -1644,45 +2114,52 @@ function updatePomodoroDisplay() {
             `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
     }
 
-    if (status) {
+    if (status && pomodoroRunning) {
+        status.textContent = "Stay focused.";
+    }
 
-        if (pomodoroRunning) {
-            status.textContent = "Stay focused.";
-        } else {
-            status.textContent = "Ready when you are.";
-        }
+    if (status && !pomodoroRunning) {
+        status.textContent = "Ready when you are.";
     }
 }
 
 
 function updatePomodoroButtons() {
 
-    const focus =
-        document.getElementById("focusModeButton");
+    const buttons = [
 
-    const short =
-        document.getElementById("shortBreakButton");
+        document.getElementById("focusModeButton"),
+        document.getElementById("shortBreakButton"),
+        document.getElementById("longBreakButton")
 
-    const long =
-        document.getElementById("longBreakButton");
+    ];
 
-    [focus, short, long].forEach(button => {
+    buttons.forEach(button => {
 
         if (button) {
             button.classList.remove("active");
         }
     });
 
-    if (pomodoroMode === "focus" && focus) {
-        focus.classList.add("active");
+    if (
+        pomodoroMode === "focus" &&
+        buttons[0]
+    ) {
+        buttons[0].classList.add("active");
     }
 
-    if (pomodoroMode === "short" && short) {
-        short.classList.add("active");
+    if (
+        pomodoroMode === "short" &&
+        buttons[1]
+    ) {
+        buttons[1].classList.add("active");
     }
 
-    if (pomodoroMode === "long" && long) {
-        long.classList.add("active");
+    if (
+        pomodoroMode === "long" &&
+        buttons[2]
+    ) {
+        buttons[2].classList.add("active");
     }
 }
 
@@ -1696,7 +2173,6 @@ function togglePomodoro() {
         pomodoroRunning = false;
 
         updatePomodoroDisplay();
-
         updatePomodoroButtonText();
 
         return;
@@ -1730,12 +2206,16 @@ function togglePomodoro() {
 function updatePomodoroButtonText() {
 
     const button =
-        document.getElementById("pomodoroStartButton");
+        document.getElementById(
+            "pomodoroStartButton"
+        );
 
     if (!button) return;
 
     button.textContent =
-        pomodoroRunning ? "Pause" : "Start";
+        pomodoroRunning
+            ? "Pause"
+            : "Start";
 }
 
 
@@ -1769,9 +2249,13 @@ function skipPomodoro() {
 
 function completePomodoro() {
 
-    const user = getCurrentUser();
+    const user =
+        getCurrentUser();
 
-    if (pomodoroMode === "focus" && user) {
+    if (
+        pomodoroMode === "focus" &&
+        user
+    ) {
 
         user.sessions =
             (user.sessions || 0) + 1;
@@ -1787,7 +2271,9 @@ function completePomodoro() {
     }
 
     const status =
-        document.getElementById("pomodoroStatus");
+        document.getElementById(
+            "pomodoroStatus"
+        );
 
     if (status) {
         status.textContent =
@@ -1802,13 +2288,15 @@ function changePomodoroTime() {
 
     if (pomodoroRunning) return;
 
-    const currentMinutes =
-        Math.round(pomodoroSeconds / 60);
+    const current =
+        Math.round(
+            pomodoroSeconds / 60
+        );
 
     const answer =
         prompt(
             "How many minutes should the timer be?",
-            currentMinutes
+            current
         );
 
     if (answer === null) return;
@@ -1821,7 +2309,11 @@ function changePomodoroTime() {
         minutes <= 0 ||
         minutes > 180
     ) {
-        alert("Please enter a number between 1 and 180.");
+
+        alert(
+            "Please enter a number between 1 and 180."
+        );
+
         return;
     }
 
@@ -1832,24 +2324,27 @@ function changePomodoroTime() {
 }
 
 
-/* =========================================================
-   STUDY STATS
-   ========================================================= */
-
 function updateStudyStats() {
 
-    const user = getCurrentUser();
+    const user =
+        getCurrentUser();
 
     if (!user) return;
 
     const sessions =
-        document.getElementById("studySessionsToday");
+        document.getElementById(
+            "studySessionsToday"
+        );
 
     const minutes =
-        document.getElementById("studyMinutesToday");
+        document.getElementById(
+            "studyMinutesToday"
+        );
 
     const streak =
-        document.getElementById("studyStreak");
+        document.getElementById(
+            "studyStreak"
+        );
 
     if (sessions) {
         sessions.textContent =
@@ -1863,7 +2358,9 @@ function updateStudyStats() {
 
     if (streak) {
         streak.textContent =
-            user.sessions > 0 ? "1" : "0";
+            user.sessions > 0
+                ? "1"
+                : "0";
     }
 }
 
@@ -1875,18 +2372,23 @@ function updateStudyStats() {
 function resourceNotice(resourceName) {
 
     openModal(`
-        <h2>${escapeHTML(resourceName)}</h2>
+
+        <h2>
+            ${escapeHTML(resourceName)}
+        </h2>
 
         <p>
-            This resource section is ready to be connected
-            to your school study materials.
+            This resource section is ready to be
+            connected to your school study materials.
         </p>
 
         <button
             class="primary-button"
-            onclick="closeModal()">
+            onclick="closeModal()"
+        >
             Close
         </button>
+
     `);
 }
 
@@ -1898,23 +2400,28 @@ function resourceNotice(resourceName) {
 function showNotifications() {
 
     openModal(`
+
         <h2>Notifications</h2>
 
-        <div class="notification-list">
+        <p>
+            🌿 Welcome to St Oran's Peer Hub.
+        </p>
 
-            <p>🌿 Welcome to St Oran's Peer Hub.</p>
+        <p>
+            📚 Check your upcoming assignments.
+        </p>
 
-            <p>📚 Check your upcoming assignments.</p>
-
-            <p>🐉 Roro is ready for a study session.</p>
-
-        </div>
+        <p>
+            🐉 Roro is ready for a study session.
+        </p>
 
         <button
             class="primary-button"
-            onclick="closeModal()">
+            onclick="closeModal()"
+        >
             Done
         </button>
+
     `);
 }
 
@@ -1936,22 +2443,28 @@ const roroMessages = [
 function roroInteract() {
 
     const speech =
-        document.getElementById("roroSpeech");
+        document.getElementById(
+            "roroSpeech"
+        );
 
     if (!speech) return;
 
-    const random =
-        Math.floor(
-            Math.random() * roroMessages.length
-        );
+    const message =
+        roroMessages[
+            Math.floor(
+                Math.random() *
+                roroMessages.length
+            )
+        ];
 
-    speech.textContent =
-        roroMessages[random];
+    speech.textContent = message;
 
     speech.classList.add("show");
 
     setTimeout(() => {
+
         speech.classList.remove("show");
+
     }, 4000);
 }
 
@@ -1999,32 +2512,15 @@ function signOut() {
 
     removeCurrentUser();
 
-    const mainApp =
-        document.getElementById("mainApp");
+    document.getElementById("mainApp").style.display = "none";
+    document.getElementById("signupScreen").style.display = "none";
+    document.getElementById("loginScreen").style.display = "flex";
 
-    const loginScreen =
-        document.getElementById("loginScreen");
-
-    const signupScreen =
-        document.getElementById("signupScreen");
-
-    if (mainApp) {
-        mainApp.style.display = "none";
-    }
-
-    if (signupScreen) {
-        signupScreen.style.display = "none";
-    }
-
-    if (loginScreen) {
-        loginScreen.style.display = "flex";
-    }
-
-    const loginForm =
+    const form =
         document.getElementById("loginForm");
 
-    if (loginForm) {
-        loginForm.reset();
+    if (form) {
+        form.reset();
     }
 }
 
@@ -2042,12 +2538,10 @@ function forgotPassword(event) {
 
     if (!email) return;
 
-    const users = getUsers();
-
     const user =
-        users.find(
-            u =>
-                u.email.toLowerCase() ===
+        getUsers().find(
+            user =>
+                user.email.toLowerCase() ===
                 email.trim().toLowerCase()
         );
 
@@ -2067,7 +2561,7 @@ function forgotPassword(event) {
 
 
 /* =========================================================
-   UTILITY FUNCTIONS
+   UTILITIES
    ========================================================= */
 
 function formatDate(dateString) {
@@ -2075,7 +2569,9 @@ function formatDate(dateString) {
     if (!dateString) return "";
 
     const date =
-        new Date(dateString + "T00:00:00");
+        new Date(
+            dateString + "T00:00:00"
+        );
 
     if (Number.isNaN(date.getTime())) {
         return dateString;
@@ -2108,125 +2604,136 @@ function escapeAttribute(value) {
 
 
 /* =========================================================
-   EVENT LISTENERS
+   STARTUP
    ========================================================= */
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
 
-    /* Create demo accounts first */
-    createDemoAccounts();
+        createDemoAccounts();
 
-    /* Login form */
-    const loginForm =
-        document.getElementById("loginForm");
+        const loginForm =
+            document.getElementById("loginForm");
 
-    if (loginForm) {
-        loginForm.addEventListener(
-            "submit",
-            loginUser
-        );
-    }
+        if (loginForm) {
+            loginForm.addEventListener(
+                "submit",
+                loginUser
+            );
+        }
 
-    /* Signup form */
-    const signupForm =
-        document.getElementById("signupForm");
+        const signupForm =
+            document.getElementById("signupForm");
 
-    if (signupForm) {
-        signupForm.addEventListener(
-            "submit",
-            signupUser
-        );
-    }
+        if (signupForm) {
+            signupForm.addEventListener(
+                "submit",
+                signupUser
+            );
+        }
 
-    /* Sidebar navigation */
-    const navItems =
-        document.querySelectorAll(".nav-item");
+        /* SIDEBAR */
 
-    navItems.forEach(item => {
+        document
+            .querySelectorAll(".nav-item")
+            .forEach(item => {
 
-        item.addEventListener("click", () => {
+                item.addEventListener(
+                    "click",
+                    () => {
 
-            const page =
-                item.dataset.page;
+                        const page =
+                            item.dataset.page;
 
-            if (page) {
-                showPage(page);
-            }
-        });
-    });
+                        if (page) {
+                            showPage(page);
+                        }
+                    }
+                );
+            });
 
-    /* Pomodoro timer */
-    const pomodoroTime =
-        document.getElementById("pomodoroTime");
+        /* POMODORO */
 
-    if (pomodoroTime) {
+        const timer =
+            document.getElementById(
+                "pomodoroTime"
+            );
 
-        pomodoroTime.addEventListener(
-            "click",
-            changePomodoroTime
-        );
+        if (timer) {
 
-        pomodoroTime.style.cursor = "pointer";
-    }
+            timer.addEventListener(
+                "click",
+                changePomodoroTime
+            );
 
-    /* Modal background */
-    const modal =
-        document.getElementById("modal");
+            timer.style.cursor = "pointer";
+        }
 
-    if (modal) {
+        /* MODAL */
 
-        modal.addEventListener(
-            "click",
+        const modal =
+            document.getElementById("modal");
+
+        if (modal) {
+
+            modal.addEventListener(
+                "click",
+                event => {
+
+                    if (
+                        event.target === modal
+                    ) {
+                        closeModal();
+                    }
+
+                }
+            );
+        }
+
+        /* START AT LOGIN */
+
+        const loginScreen =
+            document.getElementById(
+                "loginScreen"
+            );
+
+        const signupScreen =
+            document.getElementById(
+                "signupScreen"
+            );
+
+        const mainApp =
+            document.getElementById(
+                "mainApp"
+            );
+
+        if (loginScreen) {
+            loginScreen.style.display =
+                "flex";
+        }
+
+        if (signupScreen) {
+            signupScreen.style.display =
+                "none";
+        }
+
+        if (mainApp) {
+            mainApp.style.display =
+                "none";
+        }
+
+        setPomodoroMode("focus");
+
+        document.addEventListener(
+            "keydown",
             event => {
 
-                if (event.target === modal) {
+                if (event.key === "Escape") {
                     closeModal();
                 }
 
             }
         );
     }
-
-    /*
-       START AT LOGIN SCREEN.
-       This stops the website from randomly opening
-       straight into the dashboard.
-    */
-
-    const loginScreen =
-        document.getElementById("loginScreen");
-
-    const signupScreen =
-        document.getElementById("signupScreen");
-
-    const mainApp =
-        document.getElementById("mainApp");
-
-    if (loginScreen) {
-        loginScreen.style.display = "flex";
-    }
-
-    if (signupScreen) {
-        signupScreen.style.display = "none";
-    }
-
-    if (mainApp) {
-        mainApp.style.display = "none";
-    }
-
-    /* Initial timer */
-    setPomodoroMode("focus");
-
-    /* Close modal with Escape */
-    document.addEventListener(
-        "keydown",
-        event => {
-
-            if (event.key === "Escape") {
-                closeModal();
-            }
-
-        }
-    );
-
-});
+);
