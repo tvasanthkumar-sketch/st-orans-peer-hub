@@ -54,7 +54,6 @@ const demoUsers = {
             205,
             240
         ]
-
     },
 
 
@@ -94,7 +93,6 @@ const demoUsers = {
             465,
             520
         ]
-
     }
 
 };
@@ -250,70 +248,6 @@ function saveCurrentUser() {
 
 }
 
-}
-
-
-/* =========================================================
-   USERS
-   ========================================================= */
-
-let users = getStoredUsers();
-
-
-function saveUsers() {
-
-    localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify(users)
-    );
-
-}
-
-
-/* =========================================================
-   SAVE CURRENT USER
-   ========================================================= */
-
-function saveCurrentUser() {
-
-    if (!currentUser) return;
-
-
-    const email =
-        currentUser.email.toLowerCase();
-
-
-    users[email] = {
-        ...currentUser,
-        progressHistory:
-            currentUser.progressHistory
-                ? [...currentUser.progressHistory]
-                : []
-    };
-
-
-    saveUsers();
-
-
-    try {
-
-        localStorage.setItem(
-            CURRENT_USER_KEY,
-            email
-        );
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Could not save current user:",
-            error
-        );
-
-    }
-
-}
 
 /* =========================================================
    PEERS
@@ -464,7 +398,6 @@ const peers = [
 ];
 
 
-
 /* =========================================================
    ASSIGNMENTS
    ========================================================= */
@@ -523,7 +456,6 @@ const defaultAssignments = [
 ];
 
 
-
 function loadAssignments() {
 
     if (!currentUser) {
@@ -574,7 +506,6 @@ function loadAssignments() {
 }
 
 
-
 function saveAssignments() {
 
     if (!currentUser) return;
@@ -603,7 +534,6 @@ function saveAssignments() {
     }
 
 }
-
 
 
 /* =========================================================
@@ -660,7 +590,6 @@ const resources = [
     }
 
 ];
-
 
 
 /* =========================================================
@@ -737,7 +666,6 @@ const pageQuotes = {
 };
 
 
-
 /* =========================================================
    APP STATE
    ========================================================= */
@@ -774,7 +702,6 @@ let studyMinutesThisVisit = 0;
 let assignments = loadAssignments();
 
 
-
 /* =========================================================
    START
    ========================================================= */
@@ -798,7 +725,6 @@ document.addEventListener("DOMContentLoaded", () => {
     restoreLogin();
 
 });
-
 
 
 /* =========================================================
@@ -847,7 +773,6 @@ function restoreLogin() {
     login(user, true);
 
 }
-
 
 
 /* =========================================================
@@ -923,7 +848,6 @@ function setupLogin() {
 }
 
 
-
 function login(user, restored = false) {
 
     currentUser = {
@@ -997,7 +921,6 @@ function login(user, restored = false) {
 }
 
 
-
 /* =========================================================
    GOOGLE LOGIN
    ========================================================= */
@@ -1009,33 +932,44 @@ function googleLogin() {
             "Prototype Google login\n\nType:\n1 = Maya\n2 = Lucy"
         );
 
+
     if (account === null) {
+
         return;
+
     }
+
 
     if (account.trim() === "1") {
 
-        const maya = users.maya || demoUsers.maya;
+        const maya =
+            users.maya || demoUsers.maya;
 
         login(maya);
 
         return;
+
     }
+
 
     if (account.trim() === "2") {
 
-        const lucy = users.lucy || demoUsers.lucy;
+        const lucy =
+            users.lucy || demoUsers.lucy;
 
         login(lucy);
 
         return;
+
     }
+
 
     alert(
         "For this prototype, enter 1 for Maya or 2 for Lucy."
     );
 
 }
+
 
 /* =========================================================
    FORGOT PASSWORD
@@ -1119,7 +1053,6 @@ function forgotPassword(event) {
 }
 
 
-
 /* =========================================================
    SIGNUP SCREEN
    ========================================================= */
@@ -1155,7 +1088,6 @@ function showSignup(event) {
 }
 
 
-
 function showLogin(event) {
 
     if (event) {
@@ -1180,7 +1112,6 @@ function showLogin(event) {
         ?.classList.remove("hidden");
 
 }
-
 
 
 function setupSignup() {
@@ -1314,9 +1245,7 @@ function setupSignup() {
             }
 
 
-            if (
-                users[email]
-            ) {
+            if (users[email]) {
 
                 if (error) {
 
@@ -1477,7 +1406,6 @@ function setupSignup() {
 }
 
 
-
 /* =========================================================
    SIGN OUT
    ========================================================= */
@@ -1536,7 +1464,6 @@ function signOut() {
 }
 
 
-
 /* =========================================================
    NAVIGATION
    ========================================================= */
@@ -1563,7 +1490,6 @@ function setupNavigation() {
         });
 
 }
-
 
 
 function showPage(page) {
@@ -1614,7 +1540,6 @@ function showPage(page) {
 }
 
 
-
 function renderPage(page) {
 
     renderQuote(page);
@@ -1660,7 +1585,6 @@ function renderPage(page) {
     }
 
 }
-
 
 
 /* =========================================================
@@ -1777,7 +1701,6 @@ function updateUserUI() {
 }
 
 
-
 /* =========================================================
    HOME
    ========================================================= */
@@ -1830,7 +1753,6 @@ function renderHome() {
 }
 
 
-
 function renderRecommendedPeers() {
 
     const container =
@@ -1875,7 +1797,6 @@ function renderRecommendedPeers() {
             .join("");
 
 }
-
 
 
 function renderUpcomingAssignments() {
@@ -1936,7 +1857,6 @@ function renderUpcomingAssignments() {
             .join("");
 
 }
-
 
 
 /* =========================================================
@@ -2000,7 +1920,6 @@ function renderHomeProgress() {
 }
 
 
-
 /* =========================================================
    DATE
    ========================================================= */
@@ -2039,7 +1958,6 @@ function updateDate() {
 }
 
 
-
 function updateClock() {
 
     /*
@@ -2048,7 +1966,6 @@ function updateClock() {
     */
 
 }
-
 
 
 /* =========================================================
@@ -2095,7 +2012,6 @@ function renderQuote(page) {
 }
 
 
-
 function getDailyQuote(list) {
 
     const day =
@@ -2110,7 +2026,6 @@ function getDailyQuote(list) {
     ];
 
 }
-
 
 
 /* =========================================================
@@ -2207,7 +2122,6 @@ function renderMiniCalendar() {
         html;
 
 }
-
 
 
 /* =========================================================
@@ -2373,7 +2287,6 @@ function renderCalendar() {
 }
 
 
-
 /* =========================================================
    ASSIGNMENTS
    ========================================================= */
@@ -2476,7 +2389,6 @@ function renderAssignments() {
 }
 
 
-
 function toggleAssignment(id) {
 
     const assignment =
@@ -2512,7 +2424,6 @@ function toggleAssignment(id) {
 }
 
 
-
 /* =========================================================
    PEERS
    ========================================================= */
@@ -2522,7 +2433,6 @@ function renderPeers() {
     searchMainPeers();
 
 }
-
 
 
 function searchPeers() {
@@ -2556,7 +2466,6 @@ function searchPeers() {
     searchMainPeers();
 
 }
-
 
 
 function searchMainPeers() {
@@ -2671,7 +2580,6 @@ function searchMainPeers() {
 }
 
 
-
 function renderPeerResults(list) {
 
     const container =
@@ -2776,7 +2684,6 @@ function renderPeerResults(list) {
 }
 
 
-
 /* =========================================================
    PEER PROFILE
    ========================================================= */
@@ -2831,7 +2738,6 @@ function viewPeer(id) {
 }
 
 
-
 function bookPeer() {
 
     if (!selectedPeer) return;
@@ -2859,7 +2765,6 @@ function bookPeer() {
 }
 
 
-
 /* =========================================================
    RESOURCES
    ========================================================= */
@@ -2871,7 +2776,6 @@ function resourceNotice(type) {
     );
 
 }
-
 
 
 /* =========================================================
@@ -2904,7 +2808,6 @@ function renderStudyPage() {
     updatePomodoroDisplay();
 
 }
-
 
 
 function setPomodoroMode(mode) {
@@ -3003,7 +2906,6 @@ function setPomodoroMode(mode) {
 }
 
 
-
 function togglePomodoro() {
 
     if (pomodoroRunning) {
@@ -3019,7 +2921,6 @@ function togglePomodoro() {
     }
 
 }
-
 
 
 function startPomodoro() {
@@ -3081,7 +2982,6 @@ function startPomodoro() {
 }
 
 
-
 function pausePomodoro() {
 
     pomodoroRunning =
@@ -3124,7 +3024,6 @@ function pausePomodoro() {
 }
 
 
-
 function stopPomodoro() {
 
     clearInterval(
@@ -3140,7 +3039,6 @@ function stopPomodoro() {
         false;
 
 }
-
 
 
 function resetPomodoro() {
@@ -3197,7 +3095,6 @@ function resetPomodoro() {
 }
 
 
-
 function skipPomodoro() {
 
     stopPomodoro();
@@ -3205,7 +3102,6 @@ function skipPomodoro() {
     finishPomodoro(true);
 
 }
-
 
 
 function finishPomodoro(skipped = false) {
@@ -3306,7 +3202,6 @@ function finishPomodoro(skipped = false) {
 }
 
 
-
 function updatePomodoroDisplay() {
 
     const minutes =
@@ -3325,7 +3220,6 @@ function updatePomodoroDisplay() {
     );
 
 }
-
 
 
 /* =========================================================
@@ -3383,7 +3277,6 @@ function setupRoro() {
 }
 
 
-
 function roroReactToPage(page) {
 
     const messages = {
@@ -3431,7 +3324,6 @@ function roroReactToPage(page) {
 }
 
 
-
 function roroSay(message) {
 
     const speech =
@@ -3476,7 +3368,6 @@ function roroSay(message) {
         }, 900);
 
 }
-
 
 
 function roroInteract() {
@@ -3536,7 +3427,6 @@ function roroInteract() {
 }
 
 
-
 function roroCelebrate() {
 
     const roro =
@@ -3569,7 +3459,6 @@ function roroCelebrate() {
 }
 
 
-
 function roroHide() {
 
     const roro =
@@ -3587,7 +3476,6 @@ function roroHide() {
     }
 
 }
-
 
 
 /* =========================================================
@@ -3649,7 +3537,6 @@ function renderProfile() {
 }
 
 
-
 function editProfile() {
 
     alert(
@@ -3657,7 +3544,6 @@ function editProfile() {
     );
 
 }
-
 
 
 /* =========================================================
@@ -3989,7 +3875,6 @@ function renderProgress() {
 }
 
 
-
 /* =========================================================
    SETTINGS
    ========================================================= */
@@ -4005,7 +3890,6 @@ function renderSettings() {
     );
 
 }
-
 
 
 /* =========================================================
@@ -4057,8 +3941,7 @@ function addPoints(amount) {
 
     }
 
- }
-
+}
 
 
 /* =========================================================
@@ -4072,7 +3955,6 @@ function showNotifications() {
     );
 
 }
-
 
 
 /* =========================================================
@@ -4095,7 +3977,6 @@ function setText(id, text) {
 }
 
 
-
 function formatDate(dateString) {
 
     const date =
@@ -4113,7 +3994,6 @@ function formatDate(dateString) {
     );
 
 }
-
 
 
 function getDueLabel(dateString) {
@@ -4177,7 +4057,6 @@ function getDueLabel(dateString) {
 }
 
 
-
 function capitalize(text) {
 
     if (!text) return "";
@@ -4189,7 +4068,6 @@ function capitalize(text) {
     );
 
 }
-
 
 
 /* =========================================================
