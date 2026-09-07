@@ -15,13 +15,34 @@ const ASSIGNMENTS_KEY = "stOransAssignments";
 
 function getUsers() {
     try {
-        return JSON.parse(localStorage.getItem(USERS_KEY)) || [];
+        const stored = localStorage.getItem(USERS_KEY);
+
+        if (!stored) {
+            return [];
+        }
+
+        const parsed = JSON.parse(stored);
+
+        // Make sure users is actually an array
+        if (Array.isArray(parsed)) {
+            return parsed;
+        }
+
+        // Remove broken/old data
+        localStorage.removeItem(USERS_KEY);
+        return [];
     } catch {
+        localStorage.removeItem(USERS_KEY);
         return [];
     }
 }
 
 function saveUsers(users) {
+    if (!Array.isArray(users)) {
+        console.error("saveUsers expected an array, but received:", users);
+        return;
+    }
+
     localStorage.setItem(USERS_KEY, JSON.stringify(users));
 }
 
