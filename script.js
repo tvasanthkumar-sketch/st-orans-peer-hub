@@ -68,59 +68,56 @@ function removeCurrentUser() {
    ========================================================= */
 
 function createDemoAccounts() {
+    let users = getUsers();
 
-    const users = getUsers();
+    // Extra safety: make absolutely sure users is an array
+    if (!Array.isArray(users)) {
+        users = [];
+    }
 
-    const demos = [
+    const demoAccounts = [
         {
             id: "demo-maya",
-            name: "Maya Patel",
+            name: "Maya",
             email: "maya@storans.school.nz",
-            password: "maya123",
             year: "Year 8",
+            password: "maya123",
             points: 120,
-            helped: 8,
-            sessions: 12,
-            badges: ["Helpful Heart", "Study Starter"],
+            helped: 4,
+            sessions: 8,
+            badges: ["First Helper", "Study Starter"],
             tags: ["Maths", "Science"],
-            preferences: "Happy to help with Maths and Science.",
-            online: true,
-            available: true
+            preferences: "Likes helping with Maths and Science."
         },
         {
             id: "demo-lucy",
-            name: "Lucy Williams",
+            name: "Lucy",
             email: "lucy@storans.school.nz",
+            year: "Year 8",
             password: "lucy123",
-            year: "Year 9",
-            points: 180,
-            helped: 14,
-            sessions: 19,
-            badges: ["Study Star", "Peer Helper"],
-            tags: ["English", "Social Studies"],
-            preferences: "I can help with English and Social Studies.",
-            online: true,
-            available: true
+            points: 85,
+            helped: 2,
+            sessions: 5,
+            badges: ["Study Starter"],
+            tags: ["English", "Art"],
+            preferences: "Likes helping with English and Art."
         }
     ];
 
-    let changed = false;
-
-    demos.forEach(demo => {
-
-        const exists = users.some(
-            user => user.email.toLowerCase() === demo.email.toLowerCase()
+    demoAccounts.forEach(account => {
+        const exists = users.some(user =>
+            user &&
+            typeof user === "object" &&
+            user.email &&
+            user.email.toLowerCase() === account.email.toLowerCase()
         );
 
         if (!exists) {
-            users.push(demo);
-            changed = true;
+            users.push(account);
         }
     });
 
-    if (changed) {
-        saveUsers(users);
-    }
+    saveUsers(users);
 }
 
 
