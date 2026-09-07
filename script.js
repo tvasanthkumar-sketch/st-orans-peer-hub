@@ -140,16 +140,9 @@ function getStoredUsers() {
                         ? [...storedUsers.lucy.progressHistory]
                         : [...demoUsers.lucy.progressHistory]
             }
-           let users = getStoredUsers();
-
-function saveUsers() {
-    localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify(users)
-    );
-}
 
         };
+
 
         /*
          * Keep any accounts created by students.
@@ -168,6 +161,7 @@ function saveUsers() {
             }
 
         });
+
 
         localStorage.setItem(
             STORAGE_KEY,
@@ -205,6 +199,28 @@ function saveUsers() {
 
 }
 
+
+/* =========================================================
+   USERS
+   ========================================================= */
+
+let users = getStoredUsers();
+
+
+function saveUsers() {
+
+    localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(users)
+    );
+
+}
+
+
+/* =========================================================
+   SAVE CURRENT USER
+   ========================================================= */
+
 function saveCurrentUser() {
 
     if (!currentUser) return;
@@ -225,6 +241,7 @@ function saveCurrentUser() {
 
     saveUsers();
 
+
     try {
 
         localStorage.setItem(
@@ -244,8 +261,6 @@ function saveCurrentUser() {
     }
 
 }
-
-
 
 /* =========================================================
    PEERS
