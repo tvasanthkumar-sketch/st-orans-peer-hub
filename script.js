@@ -144,10 +144,6 @@ function getStoredUsers() {
         };
 
 
-        /*
-         * Keep any accounts created by students.
-         */
-
         Object.keys(storedUsers).forEach(email => {
 
             if (
@@ -196,6 +192,63 @@ function getStoredUsers() {
         };
 
     }
+
+}
+
+
+let users = getStoredUsers();
+
+
+function saveUsers() {
+
+    localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(users)
+    );
+
+}
+
+
+function saveCurrentUser() {
+
+    if (!currentUser) return;
+
+
+    const email =
+        currentUser.email.toLowerCase();
+
+
+    users[email] = {
+        ...currentUser,
+        progressHistory:
+            currentUser.progressHistory
+                ? [...currentUser.progressHistory]
+                : []
+    };
+
+
+    saveUsers();
+
+
+    try {
+
+        localStorage.setItem(
+            CURRENT_USER_KEY,
+            email
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Could not save current user:",
+            error
+        );
+
+    }
+
+}
 
 }
 
