@@ -119,7 +119,11 @@ function getStoredUsers() {
                 JSON.parse(saved) || {};
 
         }
+let users = getStoredUsers();
 
+function saveUsers() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
+}
         /*
          * Always make sure the demo accounts exist.
          * This also fixes old localStorage data from
