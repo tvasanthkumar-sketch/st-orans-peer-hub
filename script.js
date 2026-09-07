@@ -452,9 +452,6 @@ const defaultAssignments = [
 ];
 
 
-let assignments = loadAssignments();
-
-
 
 function loadAssignments() {
 
@@ -697,6 +694,13 @@ let pomodoroRunning = false;
 let completedPomodoros = 0;
 
 let studyMinutesThisVisit = 0;
+
+
+/* =========================================================
+   ASSIGNMENT STATE
+   ========================================================= */
+
+let assignments = loadAssignments();
 
 
 
@@ -3982,7 +3986,7 @@ function addPoints(amount) {
 
     }
 
-}
+ }
 
 
 
