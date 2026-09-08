@@ -416,43 +416,27 @@ function loadUserIntoSite() {
    ========================================================= */
 
 function showPage(pageName) {
-
-    const pages =
-        document.querySelectorAll(".page");
-
-    pages.forEach(page => {
-        page.classList.remove("active");
+    // Hide every page
+    document.querySelectorAll(".page").forEach(page => {
+        page.classList.remove("active-page");
     });
 
-    const page =
-        document.getElementById(pageName);
+    // Show the selected page
+    const selectedPage = document.getElementById(pageName);
 
-    if (page) {
-        page.classList.add("active");
+    if (selectedPage) {
+        selectedPage.classList.add("active-page");
     }
 
-    const alternative =
-        document.getElementById(pageName + "Page");
+    // Update sidebar
+    document.querySelectorAll(".nav-item").forEach(item => {
+        item.classList.toggle(
+            "active",
+            item.dataset.page === pageName
+        );
+    });
 
-    if (!page && alternative) {
-        alternative.classList.add("active");
-    }
-
-    document
-        .querySelectorAll(".nav-item")
-        .forEach(item => {
-
-            item.classList.remove("active");
-
-            if (item.dataset.page === pageName) {
-                item.classList.add("active");
-            }
-        });
-
-    if (pageName === "home") {
-        renderHome();
-    }
-
+    // Render page-specific content
     if (pageName === "calendar") {
         renderCalendar();
     }
@@ -462,19 +446,21 @@ function showPage(pageName) {
     }
 
     if (pageName === "peers") {
-        renderPeers();
+        if (typeof searchMainPeers === "function") {
+            searchMainPeers();
+        }
     }
 
     if (pageName === "profile") {
-        updateProfile();
+        if (typeof loadUserData === "function") {
+            loadUserData();
+        }
     }
 
     if (pageName === "progress") {
-        updateProgress();
-    }
-
-    if (pageName === "study") {
-        updateStudyStats();
+        if (typeof loadUserData === "function") {
+            loadUserData();
+        }
     }
 }
 
