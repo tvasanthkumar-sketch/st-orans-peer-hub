@@ -1,1 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>St Oran's Peer Hub — Sign in</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
 
+<div class="auth-screen">
+  <div class="auth-visual">
+    <div>
+      <svg class="crest-big" viewBox="0 0 40 40" fill="none"><path d="M20 3 34 9v10c0 9-6 15.5-14 18-8-2.5-14-9-14-18V9Z" fill="#C6A15B" opacity="0.18"/><path d="M20 3 34 9v10c0 9-6 15.5-14 18-8-2.5-14-9-14-18V9Z" stroke="#C6A15B" stroke-width="1.6"/><path d="M20 12v16M13.5 16.5h13" stroke="#F6F1E3" stroke-width="1.6"/></svg>
+      <div style="margin-top:16px; font-family:'Playfair Display'; font-size:1.3rem; color:#F6F1E3;">St Oran's</div>
+      <div style="font-size:.8rem; letter-spacing:.08em; color:rgba(246,241,227,0.65);">PEER HUB</div>
+    </div>
+    <p class="quote">"The best way to learn something is to help someone else understand it."<span class="quote-by">— The Peer Hub motto</span></p>
+    <div style="font-size:.78rem; color:rgba(246,241,227,0.55);">A calm, organised space for St Oran's students to study, plan and support one another.</div>
+  </div>
+
+  <div class="auth-form-side">
+    <div class="auth-card">
+      <div class="auth-tabs">
+        <button id="tab-login" class="active">Sign in</button>
+        <button id="tab-signup">Sign up</button>
+      </div>
+
+      <!-- Sign in -->
+      <form id="login-form">
+        <h2>Welcome back</h2>
+        <p class="text-muted" style="margin-top:-6px; font-size:.86rem;">Sign in to pick up where you left off.</p>
+        <div class="field">
+          <label for="login-username">Username</label>
+          <input id="login-username" type="text" placeholder="demo.aria" autocomplete="username" required>
+        </div>
+        <div class="field">
+          <label for="login-password">Password</label>
+          <input id="login-password" type="password" placeholder="••••••••" autocomplete="current-password" required>
+        </div>
+        <div id="login-error" class="field-hint" style="color:var(--burgundy); display:none;"></div>
+        <button type="submit" class="btn btn-primary btn-block">Sign in</button>
+
+        <div class="demo-box">
+          Try a demo account — no sign-up needed:
+          <div class="demo-acct"><span>Aria (Year 12)</span><code>demo.aria / peerhub</code></div>
+          <div class="demo-acct"><span>Kai (Year 13)</span><code>demo.kai / peerhub</code></div>
+        </div>
+      </form>
+
+      <!-- Sign up -->
+      <form id="signup-form" class="hidden">
+        <h2>Create your account</h2>
+        <p class="text-muted" style="margin-top:-6px; font-size:.86rem;">Join the Hub in under a minute.</p>
+        <div class="field">
+          <label for="signup-name">Full name</label>
+          <input id="signup-name" type="text" placeholder="e.g. Jordan Smith" required>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="signup-username">Username</label>
+            <input id="signup-username" type="text" placeholder="jordan.smith" required>
+          </div>
+          <div class="field">
+            <label for="signup-year">Year level</label>
+            <select id="signup-year">
+              <option>Year 9</option><option>Year 10</option><option>Year 11</option>
+              <option>Year 12</option><option>Year 13</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label for="signup-password">Password</label>
+          <input id="signup-password" type="password" placeholder="Choose a password" required>
+        </div>
+        <div id="signup-error" class="field-hint" style="color:var(--burgundy); display:none;"></div>
+        <button type="submit" class="btn btn-primary btn-block">Create account</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="js/data.js"></script>
+<script>
+  PeerHub.load();
+  // If already signed in, skip straight to the dashboard
+  if(PeerHub.currentUser()){ window.location.href = 'home.html'; }
+
+  const tabLogin = document.getElementById('tab-login');
+  const tabSignup = document.getElementById('tab-signup');
+  const loginForm = document.getElementById('login-form');
+  const signupForm = document.getElementById('signup-form');
+
+  tabLogin.addEventListener('click', ()=>{
+    tabLogin.classList.add('active'); tabSignup.classList.remove('active');
+    loginForm.classList.remove('hidden'); signupForm.classList.add('hidden');
+  });
+  tabSignup.addEventListener('click', ()=>{
+    tabSignup.classList.add('active'); tabLogin.classList.remove('active');
+    signupForm.classList.remove('hidden'); loginForm.classList.add('hidden');
+  });
+
+  loginForm.addEventListener('submit', (e)=>{
+    e.preventDefault();
+    const u = document.getElementById('login-username').value.trim();
+    const p = document.getElementById('login-password').value;
+    const err = document.getElementById('login-error');
+    if(PeerHub.login(u,p)){
+      window.location.href = 'home.html';
+    } else {
+      err.textContent = "That username or password doesn't match our records.";
+      err.style.display = 'block';
+    }
+  });
+
+  signupForm.addEventListener('submit', (e)=>{
+    e.preventDefault();
+    const name = document.getElementById('signup-name').value.trim();
+    const username = document.getElementById('signup-username').value.trim();
+    const year = document.getElementById('signup-year').value;
+    const password = document.getElementById('signup-password').value;
+    const err = document.getElementById('signup-error');
+    if(!name || !username || !password){
+      err.textContent = 'Please fill in every field.'; err.style.display='block'; return;
+    }
+    const result = PeerHub.signup({username, name, year, password});
+    if(result.ok){
+      window.location.href = 'home.html';
+    } else {
+      err.textContent = result.error; err.style.display = 'block';
+    }
+  });
+</script>
+</body>
+</html>
