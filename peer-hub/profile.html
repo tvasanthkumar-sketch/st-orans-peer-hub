@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Profile — St Oran's Peer Hub</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app-shell">
+  <aside id="sidebar-slot"></aside>
+  <main class="main">
+    <div class="topbar" id="topbar-slot" style="position:relative;"></div>
+
+    <div class="page-title">
+      <div>
+        <h1>My Profile</h1>
+        <div class="subtitle">How other students see you on the Hub</div>
+      </div>
+    </div>
+
+    <div class="grid grid-dashboard">
+      <div class="stack">
+        <div class="card">
+          <div style="display:flex; align-items:center; gap:18px; margin-bottom:18px;">
+            <div class="peer-avatar" id="profile-avatar" style="width:72px; height:72px; font-size:1.5rem;"></div>
+            <div>
+              <h2 id="profile-name" style="margin:0;"></h2>
+              <div class="text-muted" id="profile-year"></div>
+            </div>
+          </div>
+          <form id="profile-form">
+            <div class="field">
+              <label for="pf-bio">About me</label>
+              <textarea id="pf-bio" rows="3"></textarea>
+            </div>
+            <div class="field">
+              <label for="pf-year">Year level</label>
+              <select id="pf-year">
+                <option>Year 9</option><option>Year 10</option><option>Year 11</option>
+                <option>Year 12</option><option>Year 13</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Save changes</button>
+          </form>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><h3>Subjects I can help with</h3></div>
+          <div class="tag-list" id="profile-subjects" style="margin-bottom:12px;"></div>
+          <div class="flex-gap">
+            <select id="pf-add-subject" style="flex:1; padding:9px; border:1px solid var(--border-hair); border-radius:8px;"></select>
+            <button class="btn btn-outline btn-sm" id="pf-add-subject-btn">Add</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><h3>Interests</h3></div>
+          <div class="tag-list" id="profile-interests" style="margin-bottom:12px;"></div>
+          <div class="flex-gap">
+            <input id="pf-add-interest" type="text" placeholder="e.g. Chess Club" style="flex:1; padding:9px 12px; border:1px solid var(--border-hair); border-radius:8px;">
+            <button class="btn btn-outline btn-sm" id="pf-add-interest-btn">Add</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="stack">
+        <div class="card card-gold">
+          <div class="card-header"><h3>Snapshot</h3></div>
+          <div class="flex-between" style="padding:8px 0; border-bottom:1px solid var(--border-hair);"><span class="text-muted">Peer Points</span><strong id="snap-points"></strong></div>
+          <div class="flex-between" style="padding:8px 0; border-bottom:1px solid var(--border-hair);"><span class="text-muted">Students helped</span><strong id="snap-helped"></strong></div>
+          <div class="flex-between" style="padding:8px 0; border-bottom:1px solid var(--border-hair);"><span class="text-muted">Study sessions</span><strong id="snap-sessions"></strong></div>
+          <div class="flex-between" style="padding:8px 0;"><span class="text-muted">Current streak</span><strong id="snap-streak"></strong></div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><h3>Preferences</h3></div>
+          <label class="flex-between" style="padding:9px 0; border-bottom:1px solid var(--border-hair); cursor:pointer;">
+            <span style="font-size:.87rem;">Show my profile to other students</span>
+            <input type="checkbox" id="pf-public" style="width:17px;height:17px; accent-color:var(--forest);">
+          </label>
+          <label class="flex-between" style="padding:9px 0; cursor:pointer;">
+            <span style="font-size:.87rem;">Email me a weekly digest</span>
+            <input type="checkbox" id="pf-digest" style="width:17px;height:17px; accent-color:var(--forest);">
+          </label>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div id="roro-slot"></div>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script src="js/pages/profile.js"></script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Study Session — St Oran's Peer Hub</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app-shell">
+  <aside id="sidebar-slot"></aside>
+  <main class="main">
+    <div class="topbar" id="topbar-slot" style="position:relative;"></div>
+
+    <div class="page-title">
+      <div>
+        <h1>Study Session</h1>
+        <div class="subtitle">A focused Pomodoro timer, with Roro cheering you on</div>
+      </div>
+    </div>
+
+    <div class="grid grid-dashboard">
+      <div class="card" style="text-align:center; padding:36px 22px;">
+        <div class="mode-tabs">
+          <button class="active" data-mode="focus" data-mins="25">Focus 25</button>
+          <button data-mode="short" data-mins="5">Short break 5</button>
+          <button data-mode="long" data-mins="15">Long break 15</button>
+        </div>
+
+        <div class="timer-ring">
+          <svg width="260" height="260" viewBox="0 0 260 260" style="position:absolute;">
+            <circle cx="130" cy="130" r="112" fill="none" stroke="var(--cream-dim)" stroke-width="10"/>
+            <circle id="timer-arc" cx="130" cy="130" r="112" fill="none" stroke="var(--gold)" stroke-width="10"
+              stroke-linecap="round" stroke-dasharray="703.7" stroke-dashoffset="0"
+              transform="rotate(-90 130 130)"/>
+          </svg>
+          <div class="timer-display">
+            <div class="time" id="timer-time">25:00</div>
+            <div class="mode" id="timer-mode">FOCUS MODE</div>
+          </div>
+        </div>
+
+        <div class="timer-controls">
+          <button class="btn btn-primary" id="timer-toggle">Start</button>
+          <button class="btn btn-outline" id="timer-reset">Reset</button>
+        </div>
+      </div>
+
+      <div class="stack">
+        <div class="card">
+          <div class="card-header"><h3>This week's study stats</h3></div>
+          <div style="display:flex; justify-content:space-between; margin-bottom:18px;">
+            <div class="stat-block"><div class="num" id="stat-sessions">0</div><div class="label">sessions</div></div>
+            <div class="stat-block"><div class="num" id="stat-minutes">0</div><div class="label">minutes</div></div>
+            <div class="stat-block"><div class="num" id="stat-streak">0</div><div class="label">day streak</div></div>
+          </div>
+          <div id="week-bars" style="display:flex; gap:6px; align-items:flex-end; height:70px;"></div>
+          <div style="display:flex; gap:6px; margin-top:6px;">
+            ${['M','T','W','T','F','S','S'].map(d=>`<div style="flex:1; text-align:center; font-size:.68rem; color:var(--ink-soft);">${d}</div>`).join('')}
+          </div>
+        </div>
+
+        <div class="card" style="background:var(--forest); border:none;">
+          <div class="flex-gap" style="margin-bottom:8px;">
+            <svg width="26" height="26" viewBox="0 0 64 64"><ellipse cx="32" cy="38" rx="17" ry="15" fill="#C6A15B"/><circle cx="25" cy="35" r="3" fill="#1B3B2F"/><circle cx="39" cy="35" r="3" fill="#1B3B2F"/></svg>
+            <h3 style="color:var(--gold-soft); margin:0;">Roro says</h3>
+          </div>
+          <p id="study-roro-line" style="color:var(--cream); font-size:.9rem; margin:0;"></p>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div id="roro-slot"></div>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script src="js/pages/study.js"></script>
+</body>
+</html>

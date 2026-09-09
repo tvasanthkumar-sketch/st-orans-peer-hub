@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Progress — St Oran's Peer Hub</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app-shell">
+  <aside id="sidebar-slot"></aside>
+  <main class="main">
+    <div class="topbar" id="topbar-slot" style="position:relative;"></div>
+
+    <div class="page-title">
+      <div>
+        <h1>My Progress</h1>
+        <div class="subtitle">A term's worth of effort, all in one place</div>
+      </div>
+    </div>
+
+    <div class="grid" style="grid-template-columns:repeat(4,1fr); margin-bottom:20px;">
+      <div class="card" style="text-align:center;">
+        <div class="stat-block"><div class="num" id="pg-points"></div><div class="label">Peer Points</div></div>
+      </div>
+      <div class="card" style="text-align:center;">
+        <div class="stat-block"><div class="num" id="pg-helped"></div><div class="label">Students helped</div></div>
+      </div>
+      <div class="card" style="text-align:center;">
+        <div class="stat-block"><div class="num" id="pg-sessions"></div><div class="label">Study sessions</div></div>
+      </div>
+      <div class="card" style="text-align:center;">
+        <div class="stat-block"><div class="num" id="pg-streak"></div><div class="label">Day streak</div></div>
+      </div>
+    </div>
+
+    <div class="grid grid-dashboard">
+      <div class="card">
+        <div class="card-header"><h3>Study minutes this week</h3></div>
+        <div id="pg-chart" style="display:flex; gap:10px; align-items:flex-end; height:150px; padding-top:10px;"></div>
+        <div style="display:flex; gap:10px; margin-top:8px;">
+          ${['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(d=>`<div style="flex:1; text-align:center; font-size:.7rem; color:var(--ink-soft);">${d}</div>`).join('')}
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3>Level progress</h3></div>
+        <p class="text-muted" style="font-size:.85rem; margin-top:-6px;">Every 200 Peer Points unlocks a new level.</p>
+        <div class="progress-track" style="margin:14px 0;"><div class="progress-fill" id="pg-fill" style="width:0;"></div></div>
+        <div class="flex-between" style="font-size:.8rem;">
+          <span id="pg-level-label"></span>
+          <span class="text-muted" id="pg-remaining"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:20px;">
+      <div class="card-header"><h3>Badges earned</h3></div>
+      <div class="tag-list" id="pg-badges"></div>
+    </div>
+  </main>
+</div>
+
+<div id="roro-slot"></div>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script src="js/pages/progress.js"></script>
+</body>
+</html>

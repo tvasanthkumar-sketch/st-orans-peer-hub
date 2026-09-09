@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Assignments — St Oran's Peer Hub</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app-shell">
+  <aside id="sidebar-slot"></aside>
+  <main class="main">
+    <div class="topbar" id="topbar-slot" style="position:relative;"></div>
+
+    <div class="page-title">
+      <div>
+        <h1>Assignments</h1>
+        <div class="subtitle">Keep every due date somewhere you'll actually look</div>
+      </div>
+      <button class="btn btn-primary" id="add-assignment-btn">+ Add assignment</button>
+    </div>
+
+    <div class="flex-gap" style="margin-bottom:20px; flex-wrap:wrap;">
+      <span class="chip chip-select active" data-filter="all">All</span>
+      <span class="chip chip-select" data-filter="pending">Pending</span>
+      <span class="chip chip-select" data-filter="done">Completed</span>
+      <span class="chip chip-select" data-filter="high">High priority</span>
+    </div>
+
+    <div class="card">
+      <table>
+        <thead>
+          <tr><th></th><th>Assignment</th><th>Subject</th><th>Priority</th><th>Due</th><th></th></tr>
+        </thead>
+        <tbody id="assignment-rows"></tbody>
+      </table>
+      <div id="assignment-empty" class="empty-state hidden"><div class="glyph">📄</div>No assignments match this filter.</div>
+    </div>
+  </main>
+</div>
+
+<div id="roro-slot"></div>
+
+<div class="modal-overlay hidden" id="assignment-modal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>Add an assignment</h3>
+      <button class="modal-close" id="assignment-modal-close">&times;</button>
+    </div>
+    <form id="assignment-form">
+      <div class="field">
+        <label for="as-title">Title</label>
+        <input id="as-title" type="text" placeholder="e.g. Photosynthesis report" required>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label for="as-subject">Subject</label>
+          <select id="as-subject"></select>
+        </div>
+        <div class="field">
+          <label for="as-due">Due date</label>
+          <input id="as-due" type="date" required>
+        </div>
+      </div>
+      <div class="field">
+        <label for="as-priority">Priority</label>
+        <select id="as-priority">
+          <option value="high">High</option>
+          <option value="medium" selected>Medium</option>
+          <option value="low">Low</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">Save assignment</button>
+    </form>
+  </div>
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script src="js/pages/assignments.js"></script>
+</body>
+</html>
