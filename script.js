@@ -208,6 +208,18 @@ function updateCurrentUser(updates) {
     };
 
     currentUser = appData.users[index];
+    saveData();
+}
+    const index = appData.users.findIndex(user => user.id === currentUser.id);
+
+    if (index === -1) return;
+
+    appData.users[index] = {
+        ...appData.users[index],
+        ...updates
+    };
+
+    currentUser = appData.users[index];
 
     saveData();
 }
