@@ -2148,10 +2148,15 @@ function completeAssignment(
 
     if (!assignment) return;
 
+    /*
+     * Don't award/remove points if the state
+     * hasn't actually changed.
+     */
+    if (assignment.completed === completed) {
+        return;
+    }
 
-    assignment.completed =
-        completed;
-
+    assignment.completed = completed;
 
     if (completed) {
 
@@ -2187,12 +2192,10 @@ function completeAssignment(
         );
     }
 
-
     saveData();
 
     renderPage();
 }
-
 
 /* =========================================================
    TUTORS
