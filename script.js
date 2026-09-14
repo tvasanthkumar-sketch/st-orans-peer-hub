@@ -865,37 +865,35 @@ function renderPage() {
 
 function renderHome(content) {
 
-    const assignments =
-        currentUser.assignments
-            .filter(item => !item.completed)
-            .sort(
-                (a, b) =>
-                    a.dueDate.localeCompare(b.dueDate)
-            );
+    const assignments = currentUser.assignments
+        .filter(item => !item.completed)
+        .sort((a, b) => a.dueDate.localeCompare(b.dueDate));
 
-    const nextAssignments =
-        assignments.slice(0, 4);
+    const nextAssignments = assignments.slice(0, 4);
 
-    content.innerHTML = `
-        <div class="home-hero">
+    const firstName = escapeHTML(
+        currentUser.name.split(" ")[0]
+    );
 
-            <h1>
-                ${getGreeting()},
-                ${escapeHTML(
-                    currentUser.name.split(" ")[0]
-                )}
-            </h1>
+    const greeting = getGreeting();
+    const quote = getDailyQuote();
 
-            <p>
-                ${getDailyQuote()}
-            </p>
+    content.innerHTML =
+        '<div class="home-hero">' +
+            '<h1>' +
+                greeting + ', ' +
+                firstName +
+            '</h1>' +
 
-            <div class="home-hero-dragon">
-                🐉
-            </div>
+            '<p>' +
+                quote +
+            '</p>' +
 
-        </div>
+            '<div class="home-hero-dragon">' +
+                '🐉' +
+            '</div>' +
 
+        '</div>';
 
         <div class="stats-grid">
 
