@@ -877,7 +877,6 @@ function renderHome(content) {
         assignments.slice(0, 4);
 
     content.innerHTML = `
-
         <div class="home-hero">
 
             <h1>
