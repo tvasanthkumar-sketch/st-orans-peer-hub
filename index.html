@@ -3,105 +3,62 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <meta
-        name="description"
-        content="St Oran's Peer Hub - a study, tutoring and productivity space for students."
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>St Oran's Peer Hub</title>
 
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <link
-        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap"
-        rel="stylesheet"
-    >
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Main stylesheet -->
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-    <!-- =====================================================
-         LOGIN / SIGN UP SCREEN
-         ===================================================== -->
+    <!-- =========================
+         AUTH SCREEN
+    ========================== -->
 
     <section id="authScreen" class="auth-screen">
 
-        <div class="auth-decoration auth-decoration-left">
-            ✦
-        </div>
-
-        <div class="auth-decoration auth-decoration-right">
-            ❧
-        </div>
-
+        <div class="auth-decoration auth-decoration-one"></div>
+        <div class="auth-decoration auth-decoration-two"></div>
 
         <div class="auth-card">
 
-            <!-- Logo -->
-            <div class="brand-mark">
-                ✦
+            <div class="auth-brand">
+                <div class="brand-dragon">🐉</div>
+
+                <div>
+                    <h1>St Oran's</h1>
+                    <span>Peer Hub</span>
+                </div>
             </div>
 
-            <p class="eyebrow">
-                ST ORAN'S COLLEGE
+            <p class="auth-intro">
+                Study smarter. Help each other. Grow together.
             </p>
-
-            <h1>
-                Peer Hub
-            </h1>
-
-            <p class="auth-subtitle">
-                Study smarter. Help each other. Keep going.
-            </p>
-
-
-            <!-- Sign in / Sign up tabs -->
 
             <div class="auth-tabs">
-
-                <button
-                    type="button"
-                    class="auth-tab active"
-                    data-auth="signin"
-                >
-                    Sign in
+                <button class="auth-tab active" data-auth="signin">
+                    Sign In
                 </button>
 
-                <button
-                    type="button"
-                    class="auth-tab"
-                    data-auth="signup"
-                >
-                    Create account
+                <button class="auth-tab" data-auth="signup">
+                    Create Account
                 </button>
-
             </div>
 
+            <!-- SIGN IN -->
 
-            <!-- ================= SIGN IN ================= -->
+            <form id="signinForm" class="auth-form">
 
-            <form
-                id="signinForm"
-                class="auth-form"
-            >
-
-                <label for="loginEmail">
-                    School email
-
+                <label>
+                    School Email
                     <input
                         id="loginEmail"
-                        name="email"
                         type="email"
                         placeholder="you@storans.school.nz"
                         autocomplete="email"
@@ -109,398 +66,374 @@
                     >
                 </label>
 
-
-                <label for="loginPassword">
+                <label>
                     Password
-
                     <input
                         id="loginPassword"
-                        name="password"
                         type="password"
-                        placeholder="••••••••"
+                        placeholder="Enter your password"
                         autocomplete="current-password"
                         required
                     >
                 </label>
 
-
-                <button
-                    type="submit"
-                    class="primary-btn full"
-                >
-                    Sign in
+                <button class="primary-button auth-submit" type="submit">
+                    Sign In
                 </button>
-
-
-                <div class="or">
-                    <span>or</span>
-                </div>
-
-
-                <!-- Google demo login -->
-
-                <button
-                    id="googleDemo"
-                    type="button"
-                    class="google-btn"
-                >
-                    <span class="google-letter">G</span>
-
-                    Continue with Google
-
-                    <small>
-                        demo
-                    </small>
-                </button>
-
-
-                <p class="auth-note">
-                    Prototype mode: school-account authentication is simulated.
-                </p>
 
             </form>
 
+            <!-- SIGN UP -->
 
-            <!-- ================= SIGN UP ================= -->
+            <form id="signupForm" class="auth-form hidden">
 
-            <form
-                id="signupForm"
-                class="auth-form hidden"
-            >
-
-                <label for="signupName">
-                    Full name
-
+                <label>
+                    Full Name
                     <input
                         id="signupName"
-                        name="name"
                         type="text"
                         placeholder="Your name"
-                        autocomplete="name"
                         required
                     >
                 </label>
 
-
-                <label for="signupEmail">
-                    School email
-
+                <label>
+                    School Email
                     <input
                         id="signupEmail"
-                        name="email"
                         type="email"
                         placeholder="you@storans.school.nz"
-                        autocomplete="email"
                         required
                     >
                 </label>
 
-
-                <label for="signupYear">
-                    Year level
-
-                    <select
-                        id="signupYear"
-                        name="year"
-                        required
-                    >
-                        <option value="Year 8">Year 8</option>
-                        <option value="Year 9">Year 9</option>
-                        <option value="Year 10">Year 10</option>
-                        <option value="Year 11">Year 11</option>
-                        <option value="Year 12">Year 12</option>
-                        <option value="Year 13">Year 13</option>
+                <label>
+                    Year Level
+                    <select id="signupYear" required>
+                        <option value="">Select your year</option>
+                        <option>Year 7</option>
+                        <option>Year 8</option>
+                        <option>Year 9</option>
+                        <option>Year 10</option>
+                        <option>Year 11</option>
+                        <option>Year 12</option>
+                        <option>Year 13</option>
                     </select>
-
                 </label>
 
-
-                <label for="signupPassword">
+                <label>
                     Password
-
                     <input
                         id="signupPassword"
-                        name="password"
                         type="password"
-                        placeholder="At least 6 characters"
-                        autocomplete="new-password"
+                        placeholder="Create a password"
                         minlength="6"
                         required
                     >
                 </label>
 
-
-                <button
-                    type="submit"
-                    class="primary-btn full"
-                >
-                    Create account
+                <button class="primary-button auth-submit" type="submit">
+                    Create Account
                 </button>
 
-
-                <p class="auth-note">
-                    In the real version, only verified St Oran's accounts would
-                    be allowed to register.
-                </p>
-
             </form>
+
+            <div class="auth-divider">
+                <span>or</span>
+            </div>
+
+            <button id="googleDemo" class="google-button" type="button">
+                <span>G</span>
+                Continue with Google
+            </button>
+
+            <p class="demo-note">
+                Google sign-in is currently a prototype feature.
+            </p>
 
         </div>
 
     </section>
 
 
+    <!-- =========================
+         MAIN APP
+    ========================== -->
 
-    <!-- =====================================================
-         MAIN APPLICATION
-         ===================================================== -->
+    <section id="app" class="app hidden">
 
-    <div
-        id="app"
-        class="app hidden"
-    >
-
-
-        <!-- =================================================
-             SIDEBAR
-             ================================================= -->
+        <!-- SIDEBAR -->
 
         <aside class="sidebar">
 
-            <!-- Brand -->
-
             <div class="sidebar-brand">
 
-                <div class="mini-mark">
-                    ✦
-                </div>
+                <div class="sidebar-dragon">🐉</div>
 
-                <div class="sidebar-brand-text">
-
-                    <strong>
-                        St Oran's
-                    </strong>
-
-                    <span>
-                        Peer Hub
-                    </span>
-
+                <div>
+                    <strong>St Oran's</strong>
+                    <span>Peer Hub</span>
                 </div>
 
             </div>
 
 
-            <!-- Navigation -->
+            <nav class="main-nav">
 
-            <nav
-                class="main-navigation"
-                aria-label="Main navigation"
-            >
-
-                <button
-                    type="button"
-                    class="nav-item active"
-                    data-page="home"
-                >
-                    <span class="nav-icon">⌂</span>
-                    <span class="nav-label">Home</span>
+                <button class="nav-item active" data-page="home">
+                    <span>⌂</span>
+                    Home
                 </button>
 
-
-                <button
-                    type="button"
-                    class="nav-item"
-                    data-page="calendar"
-                >
-                    <span class="nav-icon">□</span>
-                    <span class="nav-label">Calendar</span>
+                <button class="nav-item" data-page="calendar">
+                    <span>▣</span>
+                    Calendar
                 </button>
 
-
-                <button
-                    type="button"
-                    class="nav-item"
-                    data-page="assignments"
-                >
-                    <span class="nav-icon">✓</span>
-                    <span class="nav-label">Assignments</span>
+                <button class="nav-item" data-page="assignments">
+                    <span>▤</span>
+                    Assignments
                 </button>
 
-
-                <button
-                    type="button"
-                    class="nav-item"
-                    data-page="tutors"
-                >
-                    <span class="nav-icon">♧</span>
-                    <span class="nav-label">Find a Peer</span>
+                <button class="nav-item" data-page="tutors">
+                    <span>♧</span>
+                    Find a Peer
                 </button>
 
-
-                <button
-                    type="button"
-                    class="nav-item"
-                    data-page="study"
-                >
-                    <span class="nav-icon">◷</span>
-                    <span class="nav-label">Study Session</span>
+                <button class="nav-item" data-page="study">
+                    <span>◷</span>
+                    Study
                 </button>
 
-
-                <button
-                    type="button"
-                    class="nav-item"
-                    data-page="profile"
-                >
-                    <span class="nav-icon">◎</span>
-                    <span class="nav-label">My Profile</span>
+                <button class="nav-item" data-page="profile">
+                    <span>○</span>
+                    My Profile
                 </button>
 
-
-                <button
-                    type="button"
-                    class="nav-item"
-                    data-page="settings"
-                >
-                    <span class="nav-icon">⚙</span>
-                    <span class="nav-label">Settings</span>
+                <button class="nav-item" data-page="settings">
+                    <span>⚙</span>
+                    Settings
                 </button>
 
             </nav>
 
 
-            <!-- Roro sidebar card -->
+            <!-- RORAN SIDEBAR CARD -->
 
-            <div class="sidebar-bottom">
+            <div class="roran-sidebar-card">
 
-                <div class="roro-mini">
+                <div class="roran-sidebar-art">
                     🐉
                 </div>
 
-                <div class="roro-mini-text">
-
-                    <strong>
-                        Roro
-                    </strong>
-
-                    <span>
-                        Your study buddy
-                    </span>
-
+                <div class="roran-sidebar-text">
+                    <strong>St Roran</strong>
+                    <span>Your study buddy</span>
                 </div>
 
+                <div class="roran-sparkles">
+                    ✦
+                </div>
+
+            </div>
+
+
+            <div class="sidebar-footer">
+                <span>St Oran's College</span>
+                <span>Study together 🌿</span>
             </div>
 
         </aside>
 
 
-
-        <!-- =================================================
-             MAIN CONTENT
-             ================================================= -->
+        <!-- MAIN CONTENT -->
 
         <main class="main">
 
-
-            <!-- =================================================
-                 TOP BAR
-                 ================================================= -->
-
             <header class="topbar">
 
-                <!-- Mobile brand -->
-
                 <div class="mobile-brand">
-                    <strong>
-                        Peer Hub
-                    </strong>
+                    <span>🐉</span>
+                    St Oran's
                 </div>
 
+                <div class="topbar-spacer"></div>
 
-                <div class="top-actions">
+                <button
+                    id="notificationBtn"
+                    class="icon-button"
+                    aria-label="Notifications"
+                >
+                    ♧
+                    <span id="notifDot" class="notification-dot hidden"></span>
+                </button>
 
-                    <!-- Notifications -->
+                <button id="profileTop" class="profile-top">
 
-                    <button
-                        id="notificationBtn"
-                        type="button"
-                        class="icon-btn"
-                        title="Notifications"
-                        aria-label="Notifications"
-                    >
-                        ♢
+                    <span id="avatar" class="avatar">
+                        M
+                    </span>
 
-                        <b
-                            id="notifDot"
-                            aria-hidden="true"
-                        ></b>
+                    <span id="topName">
+                        Student
+                    </span>
 
-                    </button>
-
-
-                    <!-- Profile -->
-
-                    <button
-                        id="profileTop"
-                        type="button"
-                        class="profile-chip"
-                    >
-
-                        <span
-                            id="avatar"
-                            class="top-avatar"
-                        >
-                            M
-                        </span>
-
-                        <span id="topName">
-                            Maya
-                        </span>
-
-                    </button>
-
-                </div>
+                </button>
 
             </header>
 
 
-
-            <!-- =================================================
-                 DYNAMIC PAGE CONTENT
-                 JavaScript renders each page here.
-                 ================================================= -->
-
-            <div id="pageContent"></div>
+            <div id="pageContent" class="page-content"></div>
 
         </main>
 
-    </div>
+    </section>
 
 
-
-    <!-- =====================================================
+    <!-- =========================
          MODALS
-         JavaScript inserts modal content here.
-         ===================================================== -->
+    ========================== -->
 
     <div id="modalRoot"></div>
 
 
-    <!-- =====================================================
-         TOAST / NOTIFICATION MESSAGE
-         ===================================================== -->
+    <!-- =========================
+         TOAST
+    ========================== -->
 
-    <div
-        id="toast"
-        class="toast"
-        role="status"
-        aria-live="polite"
-    ></div>
+    <div id="toast" class="toast"></div>
 
 
-    <!-- =====================================================
-         JAVASCRIPT
-         ===================================================== -->
+    <!-- =========================
+         FOCUS MODE
+    ========================== -->
+
+    <div id="focusMode" class="focus-mode hidden">
+
+        <div class="focus-overlay"></div>
+
+        <div class="focus-top">
+
+            <div class="focus-brand">
+                🐉 St Roran
+            </div>
+
+            <button
+                id="exitFocusMode"
+                class="focus-exit"
+                type="button"
+            >
+                ✕ Exit Focus Mode
+            </button>
+
+        </div>
+
+
+        <div class="focus-content">
+
+            <div class="focus-roran" id="focusRoran">
+                🐉
+            </div>
+
+            <div class="focus-message" id="focusMessage">
+                St Roran is studying with you.
+            </div>
+
+            <div class="focus-mode-label" id="focusModeLabel">
+                FOCUS SESSION
+            </div>
+
+            <div class="focus-timer" id="focusTimerDisplay">
+                25:00
+            </div>
+
+            <div class="focus-progress">
+                <div id="focusProgressBar"></div>
+            </div>
+
+            <div class="focus-controls">
+
+                <button id="focusPause" class="focus-main-button">
+                    ▶ Start
+                </button>
+
+                <button id="focusReset" class="focus-secondary-button">
+                    ↻ Reset
+                </button>
+
+            </div>
+
+
+            <!-- BACKGROUNDS -->
+
+            <div class="focus-section">
+
+                <span class="focus-section-title">
+                    Focus Environment
+                </span>
+
+                <div class="background-options">
+
+                    <button
+                        class="background-option active"
+                        data-background="forest"
+                    >
+                        <span>🌲</span>
+                        Forest
+                    </button>
+
+                    <button
+                        class="background-option"
+                        data-background="rain"
+                    >
+                        <span>🌧</span>
+                        Rain
+                    </button>
+
+                    <button
+                        class="background-option"
+                        data-background="academia"
+                    >
+                        <span>📚</span>
+                        Academia
+                    </button>
+
+                    <button
+                        class="background-option"
+                        data-background="night"
+                    >
+                        <span>🌌</span>
+                        Night
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- SPOTIFY -->
+
+            <div class="focus-music">
+
+                <div>
+                    <span class="music-icon">♫</span>
+
+                    <div>
+                        <strong>Study Music</strong>
+                        <small>Keep the good vibes going.</small>
+                    </div>
+                </div>
+
+                <button id="spotifyButton" class="spotify-button">
+                    Connect Spotify
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
 
     <script src="script.js"></script>
 
