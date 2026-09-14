@@ -871,29 +871,27 @@ function renderHome(content) {
 
     const nextAssignments = assignments.slice(0, 4);
 
-    const firstName = escapeHTML(
-        currentUser.name.split(" ")[0]
-    );
+    content.innerHTML = `
 
-    const greeting = getGreeting();
-    const quote = getDailyQuote();
+        <div class="home-hero">
 
-    content.innerHTML =
-        '<div class="home-hero">' +
-            '<h1>' +
-                greeting + ', ' +
-                firstName +
-            '</h1>' +
+            <h1>
+                ${getGreeting()},
+                ${escapeHTML(
+                    currentUser.name.split(" ")[0]
+                )}
+            </h1>
 
-            '<p>' +
-                quote +
-            '</p>' +
+            <p>
+                ${getDailyQuote()}
+            </p>
 
-            '<div class="home-hero-dragon">' +
-                '🐉' +
-            '</div>' +
+            <div class="home-hero-dragon">
+                🐉
+            </div>
 
-        '</div>';
+        </div>
+
 
         <div class="stats-grid">
 
@@ -973,9 +971,7 @@ function renderHome(content) {
                         ${
                             nextAssignments.length
                                 ? nextAssignments
-                                    .map(
-                                        renderAssignmentItem
-                                    )
+                                    .map(renderAssignmentItem)
                                     .join("")
                                 : `
                                     <div class="empty-state">
@@ -1056,9 +1052,11 @@ function renderHome(content) {
             </div>
 
         </div>
+
     `;
 
     bindHomeEvents();
+}
 
 
 function renderAssignmentItem(assignment) {
