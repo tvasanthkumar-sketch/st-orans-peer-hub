@@ -295,7 +295,7 @@ function getRoranMessage() {
 function normaliseUser(user) {
 
     return {
-        id: user.id || `user-${Date.now()}`,
+        id: user.id || "user-" + Date.now(),
 
         name: user.name || "Student",
 
