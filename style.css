@@ -2331,4 +2331,215 @@ p {
         padding: 7px;
     }
 }
-```
+```/* =========================================================
+   ST RORAN + FOCUS MODE
+   SAFE ADD-ON
+   ========================================================= */
+
+.focus-mode-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+    overflow: auto;
+    background:
+        linear-gradient(
+            rgba(16, 44, 37, 0.45),
+            rgba(16, 44, 37, 0.72)
+        ),
+        #102c25;
+    color: #f7f4ec;
+}
+
+.focus-mode-overlay.active {
+    display: flex;
+}
+
+.focus-mode-overlay.forest {
+    background:
+        linear-gradient(
+            rgba(16, 44, 37, 0.35),
+            rgba(16, 44, 37, 0.72)
+        ),
+        url("https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=2200&q=85")
+        center / cover;
+}
+
+.focus-mode-overlay.rain {
+    background:
+        linear-gradient(
+            rgba(16, 44, 37, 0.35),
+            rgba(16, 44, 37, 0.7)
+        ),
+        url("https://images.unsplash.com/photo-1519692933481-e162a57d6721?auto=format&fit=crop&w=2200&q=85")
+        center / cover;
+}
+
+.focus-mode-overlay.academia {
+    background:
+        linear-gradient(
+            rgba(16, 44, 37, 0.4),
+            rgba(16, 44, 37, 0.75)
+        ),
+        url("https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=2200&q=85")
+        center / cover;
+}
+
+.focus-mode-overlay.night {
+    background:
+        linear-gradient(
+            rgba(10, 20, 18, 0.45),
+            rgba(10, 20, 18, 0.82)
+        ),
+        url("https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=2200&q=85")
+        center / cover;
+}
+
+.focus-mode-content {
+    width: min(720px, 100%);
+    text-align: center;
+}
+
+.focus-mode-close {
+    position: absolute;
+    top: 22px;
+    right: 28px;
+    border: 0;
+    background: transparent;
+    color: #f7f4ec;
+    font-size: 38px;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.focus-roran {
+    font-size: 62px;
+    margin-bottom: 12px;
+    animation: roranFloat 3s ease-in-out infinite;
+}
+
+.focus-mode-label {
+    font-size: 13px;
+    letter-spacing: 0.18em;
+    opacity: 0.8;
+    font-weight: 700;
+}
+
+.focus-mode-timer {
+    margin: 22px 0;
+    font-size: clamp(80px, 15vw, 150px);
+    font-weight: 700;
+    line-height: 0.95;
+    letter-spacing: -0.06em;
+}
+
+.focus-mode-message {
+    margin: 0 auto 24px;
+    max-width: 500px;
+    font-size: 16px;
+    opacity: 0.9;
+}
+
+.focus-progress {
+    width: min(520px, 90%);
+    height: 6px;
+    margin: 0 auto 25px;
+    border-radius: 999px;
+    overflow: hidden;
+    background: rgba(247, 244, 236, 0.2);
+}
+
+.focus-progress-bar {
+    width: 0%;
+    height: 100%;
+    background: #b79a62;
+    transition: width 0.4s ease;
+}
+
+.focus-mode-controls {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.focus-backgrounds {
+    margin-top: 28px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 7px;
+    flex-wrap: wrap;
+}
+
+.focus-backgrounds span {
+    width: 100%;
+    font-size: 12px;
+    opacity: 0.7;
+    margin-bottom: 3px;
+}
+
+.background-option {
+    border: 1px solid rgba(247, 244, 236, 0.25);
+    background: rgba(247, 244, 236, 0.1);
+    color: #f7f4ec;
+    border-radius: 999px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font: inherit;
+}
+
+.background-option.active {
+    border-color: #b79a62;
+    background: rgba(183, 154, 98, 0.22);
+}
+
+.focus-spotify-button {
+    margin-top: 22px;
+    border: 1px solid rgba(247, 244, 236, 0.3);
+    background: rgba(247, 244, 236, 0.1);
+    color: #f7f4ec;
+    border-radius: 999px;
+    padding: 10px 17px;
+    cursor: pointer;
+    font: inherit;
+}
+
+.focus-spotify-button:hover,
+.background-option:hover {
+    background: rgba(247, 244, 236, 0.18);
+}
+
+.st-roran {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@keyframes roranFloat {
+
+    0%, 100% {
+        transform: translateY(0) rotate(-2deg);
+    }
+
+    50% {
+        transform: translateY(-7px) rotate(2deg);
+    }
+
+}
+
+@media (max-width: 600px) {
+
+    .focus-mode-overlay {
+        padding: 20px;
+    }
+
+    .focus-mode-close {
+        top: 15px;
+        right: 18px;
+    }
+
+}
