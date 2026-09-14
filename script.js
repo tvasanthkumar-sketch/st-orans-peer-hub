@@ -1059,7 +1059,6 @@ function renderHome(content) {
     `;
 
     bindHomeEvents();
-}
 
 
 function renderAssignmentItem(assignment) {
