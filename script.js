@@ -3185,40 +3185,153 @@ function completeTimerMode() {
    FULLSCREEN FOCUS MODE
    ========================================================= */
 
+function createFocusMode() {
+
+    if ($("#focusMode")) return;
+
+    const focus = document.createElement("div");
+
+    focus.id = "focusMode";
+    focus.className = "focus-mode-overlay hidden";
+
+    focus.innerHTML = `
+        <button
+            id="exitFocusMode"
+            class="focus-mode-close"
+            aria-label="Exit focus mode"
+        >
+            ×
+        </button>
+
+        <div class="focus-mode-content">
+
+            <div class="st-roran focus-roran">
+                🐉
+            </div>
+
+            <div
+                id="focusModeLabel"
+                class="focus-mode-label"
+            >
+                FOCUS SESSION
+            </div>
+
+            <div
+                id="focusTimerDisplay"
+                class="focus-mode-timer"
+            >
+                25:00
+            </div>
+
+            <div
+                id="focusMessage"
+                class="focus-mode-message"
+            >
+                St Roran is studying with you.
+            </div>
+
+            <div class="focus-progress">
+                <div
+                    id="focusProgressBar"
+                    class="focus-progress-bar"
+                ></div>
+            </div>
+
+            <div class="focus-mode-controls">
+
+                <button
+                    id="focusPause"
+                    class="primary-button"
+                >
+                    ▶ Start
+                </button>
+
+                <button
+                    id="focusReset"
+                    class="secondary-button"
+                >
+                    Reset
+                </button>
+
+            </div>
+
+            <div class="focus-backgrounds">
+
+                <span>
+                    Focus background
+                </span>
+
+                <button
+                    class="background-option active"
+                    data-background="forest"
+                >
+                    🌲 Forest
+                </button>
+
+                <button
+                    class="background-option"
+                    data-background="rain"
+                >
+                    🌧 Rain
+                </button>
+
+                <button
+                    class="background-option"
+                    data-background="academia"
+                >
+                    📚 Study
+                </button>
+
+                <button
+                    class="background-option"
+                    data-background="night"
+                >
+                    🌙 Night
+                </button>
+
+            </div>
+
+            <button
+                id="spotifyButton"
+                class="focus-spotify-button"
+            >
+                🎵 Open Spotify
+            </button>
+
+        </div>
+    `;
+
+    document.body.appendChild(focus);
+}
+
+
 function openFocusMode() {
 
-    const focus =
-        $("#focusMode");
+    createFocusMode();
+
+    const focus = $("#focusMode");
 
     if (!focus) return;
 
-
-    focus.classList.remove(
-        "hidden"
-    );
-
-
-    const savedBackground =
-        currentUser.focusBackground ||
-        "forest";
-
+    focus.classList.remove("hidden");
+    focus.classList.add("active");
 
     setFocusBackground(
-        savedBackground
+        currentUser.focusBackground || "forest"
     );
-
 
     updateFocusMode();
 
+    document.body.style.overflow = "hidden";
 
-    document.body.style.overflow =
-        "hidden";
-
-
+    /*
+     * Browser fullscreen.
+     * If the browser refuses it, the overlay still works.
+     */
     if (
+        !document.fullscreenElement &&
         document.documentElement.requestFullscreen
     ) {
-
         document.documentElement
             .requestFullscreen()
             .catch(() => {});
@@ -3228,19 +3341,19 @@ function openFocusMode() {
 
 function closeFocusMode() {
 
-    $("#focusMode")
-        .classList.add("hidden");
+    const focus = $("#focusMode");
 
+    if (focus) {
+        focus.classList.remove("active");
+        focus.classList.add("hidden");
+    }
 
-    document.body.style.overflow =
-        "";
-
+    document.body.style.overflow = "";
 
     if (
         document.fullscreenElement &&
         document.exitFullscreen
     ) {
-
         document.exitFullscreen()
             .catch(() => {});
     }
@@ -3251,53 +3364,38 @@ function updateFocusMode() {
 
     updateTimerDisplay();
 
-
-    const button =
-        $("#focusPause");
+    const button = $("#focusPause");
 
     if (button) {
-
         button.textContent =
             timer.running
                 ? "⏸ Pause"
                 : "▶ Start";
     }
 
-
-    const label =
-        $("#focusModeLabel");
+    const label = $("#focusModeLabel");
 
     if (label) {
-
         label.textContent =
             timer.mode === "focus"
                 ? "FOCUS SESSION"
                 : "BREAK";
     }
 
-
     updateFocusMessage();
 }
 
 
-function updateFocusMessage(
-    customMessage = null
-) {
+function updateFocusMessage(customMessage = null) {
 
-    const message =
-        $("#focusMessage");
+    const message = $("#focusMessage");
 
     if (!message) return;
 
-
     if (customMessage) {
-
-        message.textContent =
-            customMessage;
-
+        message.textContent = customMessage;
         return;
     }
-
 
     message.textContent =
         timer.mode === "focus"
@@ -3308,37 +3406,30 @@ function updateFocusMessage(
 
 function setFocusBackground(background) {
 
-    const focus =
-        $("#focusMode");
+    createFocusMode();
+
+    const focus = $("#focusMode");
 
     if (!focus) return;
 
-
     focus.classList.remove(
+        "forest",
         "rain",
         "academia",
         "night"
     );
 
-
-    if (background !== "forest") {
-
-        focus.classList.add(
-            background
-        );
-    }
-
+    focus.classList.add(background);
 
     $$(".background-option")
         .forEach(button => {
 
             button.classList.toggle(
                 "active",
-                button.dataset.background ===
-                background
+                button.dataset.background === background
             );
-        });
 
+        });
 
     if (currentUser) {
 
@@ -3352,15 +3443,21 @@ function setFocusBackground(background) {
 
 function setupFocusMode() {
 
+    /*
+     * The focus screen is created by JavaScript,
+     * so it doesn't matter if the HTML doesn't
+     * already contain it.
+     */
+    createFocusMode();
+
     $("#exitFocusMode")
-        .addEventListener(
+        ?.addEventListener(
             "click",
             closeFocusMode
         );
 
-
     $("#focusPause")
-        .addEventListener(
+        ?.addEventListener(
             "click",
             () => {
 
@@ -3374,9 +3471,8 @@ function setupFocusMode() {
             }
         );
 
-
     $("#focusReset")
-        .addEventListener(
+        ?.addEventListener(
             "click",
             () => {
 
@@ -3385,7 +3481,6 @@ function setupFocusMode() {
                 updateFocusMode();
             }
         );
-
 
     $$(".background-option")
         .forEach(button => {
@@ -3397,16 +3492,34 @@ function setupFocusMode() {
                     setFocusBackground(
                         button.dataset.background
                     );
+
                 }
             );
         });
 
-
     $("#spotifyButton")
-        .addEventListener(
+        ?.addEventListener(
             "click",
             connectSpotify
         );
+
+
+    /*
+     * Escape closes the focus overlay.
+     */
+    document.addEventListener(
+        "keydown",
+        event => {
+
+            if (
+                event.key === "Escape" &&
+                $("#focusMode")?.classList.contains("active")
+            ) {
+                closeFocusMode();
+            }
+
+        }
+    );
 }
 
 
@@ -3417,7 +3530,7 @@ function setupFocusMode() {
 function connectSpotify() {
 
     showToast(
-        "Spotify connection is ready for OAuth setup. 🎵"
+        "Opening Spotify for your study music. 🎵"
     );
 
     window.open(
