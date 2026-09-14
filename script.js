@@ -590,7 +590,7 @@ function handleSignUp(event) {
 
     const newUser = normaliseUser({
 
-        id: `user-${Date.now()}`,
+        id: "user-" + Date.now(),
 
         name,
 
