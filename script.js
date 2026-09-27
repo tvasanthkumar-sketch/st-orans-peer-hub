@@ -1617,7 +1617,8 @@ function renderStudy(container) {
             title: "Rainy Focus",
             description: "Rain • Lo-fi • Ambient",
             spotify:
-                "https://open.spotify.com/playlist/37i9dQZF1DX8ymr6UES7vc?si=zHMR9PgqShChIsgGJ8enOA"
+                "https://open.spotify.com/playlist/37i9dQZF1DX8ymr6UES7vc?si=zHMR9PgqShChIsgGJ8enOA",
+            theme: "rain"
         },
         {
             id: "cafe",
@@ -1625,7 +1626,8 @@ function renderStudy(container) {
             title: "Study Café",
             description: "Café • Lo-fi • Soft jazz",
             spotify:
-                "https://open.spotify.com/playlist/37i9dQZF1DX9RwfGbeGQwP?si=2W5EvODHQ0iJW_w6YKC8xQ"
+                "https://open.spotify.com/playlist/37i9dQZF1DX9RwfGbeGQwP?si=2W5EvODHQ0iJW_w6YKC8xQ",
+            theme: "cafe"
         },
         {
             id: "forest",
@@ -1633,7 +1635,8 @@ function renderStudy(container) {
             title: "Forest Study",
             description: "Nature • Piano • Ambient",
             spotify:
-                "https://open.spotify.com/playlist/37i9dQZF1DX4PP3DA4J0N8?si=ZZ_WvJL-RCOaSCwiIrQi6Q"
+                "https://open.spotify.com/playlist/37i9dQZF1DX4PP3DA4J0N8?si=ZZ_WvJL-RCOaSCwiIrQi6Q",
+            theme: "forest"
         },
         {
             id: "academia",
@@ -1641,7 +1644,8 @@ function renderStudy(container) {
             title: "Dark Academia",
             description: "Classical • Piano • Orchestral",
             spotify:
-                "https://open.spotify.com/playlist/3MelsVnZV5g03wyiJsybHk?si=EI-1KuwXSjyczW84kfPppQ"
+                "https://open.spotify.com/playlist/3MelsVnZV5g03wyiJsybHk?si=EI-1KuwXSjyczW84kfPppQ",
+            theme: "academia"
         },
         {
             id: "midnight",
@@ -1649,7 +1653,8 @@ function renderStudy(container) {
             title: "Midnight Focus",
             description: "Dreamy • Ambient • Soft instrumental",
             spotify:
-                "https://open.spotify.com/playlist/6asedDPn710ueu5byDKXul?si=5LGw1r7FRz63_VfBKA4X4Q"
+                "https://open.spotify.com/playlist/6asedDPn710ueu5byDKXul?si=5LGw1r7FRz63_VfBKA4X4Q",
+            theme: "midnight"
         },
         {
             id: "lyrics",
@@ -1657,7 +1662,8 @@ function renderStudy(container) {
             title: "No Lyrics",
             description: "Instrumental • Minimal • Deep focus",
             spotify:
-                "https://open.spotify.com/playlist/37i9dQZF1DWVceT0UosQME?si=AEmZ_Pw7Ru-XFpuD4_YgvQ"
+                "https://open.spotify.com/playlist/37i9dQZF1DWVceT0UosQME?si=AEmZ_Pw7Ru-XFpuD4_YgvQ",
+            theme: "lyrics"
         }
     ];
 
@@ -1665,222 +1671,115 @@ function renderStudy(container) {
         <div class="page-header">
 
             <div>
-                <p class="eyebrow">FOCUS & PRODUCTIVITY</p>
+                <p class="eyebrow">
+                    FOCUS & PRODUCTIVITY
+                </p>
 
                 <h1>Study</h1>
 
                 <p>
-                    Give your brain one job at a time.
+                    Choose your atmosphere and settle in.
                 </p>
             </div>
 
         </div>
 
 
-        <div class="study-grid">
+        <div class="study-environment-grid">
 
-            <!-- TIMER -->
-
-            <div class="card timer-card card-padding">
-
-                <div
-                    class="timer-roran"
-                    aria-hidden="true"
+            ${studyPlaylists.map(playlist => `
+                <article
+                    class="study-environment-card theme-${playlist.theme}"
+                    data-playlist-id="${playlist.id}"
                 >
-                    🐉
-                </div>
 
-                <p class="timer-label">
-                    ${timerMode === "focus"
-                        ? "FOCUS SESSION"
-                        : "BREAK"}
-                </p>
+                    <div class="study-environment-overlay"></div>
 
-                <div
-                    id="timerDisplay"
-                    class="timer-display"
-                >
-                    ${formatTime(timerSeconds)}
-                </div>
+                    <div class="study-environment-content">
 
-                <div class="timer-controls">
-
-                    <button
-                        type="button"
-                        id="timerStart"
-                        class="primary-button"
-                    >
-                        ${timerRunning ? "Pause" : "Start"}
-                    </button>
-
-                    <button
-                        type="button"
-                        id="timerReset"
-                        class="secondary-button"
-                    >
-                        Reset
-                    </button>
-
-                    <button
-                        type="button"
-                        id="timerFocusMode"
-                        class="secondary-button"
-                    >
-                        Full Focus
-                    </button>
-
-                </div>
-
-
-                <div class="timer-settings">
-
-                    <button
-                        type="button"
-                        data-timer-mode="focus"
-                        class="${
-                            timerMode === "focus"
-                                ? "active"
-                                : ""
-                        }"
-                    >
-                        25 min
-                    </button>
-
-                    <button
-                        type="button"
-                        data-timer-mode="shortBreak"
-                        class="${
-                            timerMode === "shortBreak"
-                                ? "active"
-                                : ""
-                        }"
-                    >
-                        5 min break
-                    </button>
-
-                    <button
-                        type="button"
-                        data-timer-mode="longBreak"
-                        class="${
-                            timerMode === "longBreak"
-                                ? "active"
-                                : ""
-                        }"
-                    >
-                        15 min break
-                    </button>
-
-                </div>
-
-            </div>
-
-
-            <!-- MUSIC LIBRARY -->
-
-            <div class="card music-library-card card-padding">
-
-                <div class="music-library-header">
-
-                    <div>
-                        <p class="eyebrow">
-                            STUDY MUSIC
-                        </p>
-
-                        <h3>
-                            Choose your atmosphere.
-                        </h3>
-
-                        <p>
-                            Pick a playlist, settle in,
-                            and let Roran supervise.
-                        </p>
-                    </div>
-
-                    <div
-                        class="spotify-preview"
-                        aria-hidden="true"
-                    >
-
-                        <div class="spotify-circle">
-                            ♪
-                        </div>
-
-                        <div>
-                            <strong>
-                                Spotify Library
-                            </strong>
-
-                            <span class="spotify-note">
-                                Music for focused work
-                            </span>
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <div class="study-playlist-grid">
-
-                    ${studyPlaylists.map(playlist => `
-                        <article
-                            class="study-playlist-card"
-                            data-playlist="${playlist.id}"
-                        >
+                        <div class="study-environment-top">
 
                             <div
-                                class="playlist-icon"
+                                class="study-environment-icon"
                                 aria-hidden="true"
                             >
                                 ${playlist.icon}
                             </div>
 
-                            <div class="playlist-info">
+                            <button
+                                type="button"
+                                class="study-fullscreen-button"
+                                data-playlist-action="fullscreen"
+                                data-playlist-id="${playlist.id}"
+                                aria-label="Open ${playlist.title} in full screen"
+                                title="Full screen"
+                            >
+                                ⛶
+                            </button>
 
-                                <h4>
-                                    ${playlist.title}
-                                </h4>
-
-                                <p>
-                                    ${playlist.description}
-                                </p>
-
-                            </div>
+                        </div>
 
 
-                            <div class="playlist-actions">
+                        <div class="study-environment-title">
 
-                                <button
-                                    type="button"
-                                    class="primary-button playlist-button"
-                                    data-playlist-action="open"
-                                    data-playlist-id="${playlist.id}"
-                                >
-                                    Open Playlist
-                                </button>
+                            <p class="study-environment-label">
+                                STUDY ATMOSPHERE
+                            </p>
 
-                                <button
-                                    type="button"
-                                    class="secondary-button playlist-button"
-                                    data-playlist-action="fullscreen"
-                                    data-playlist-id="${playlist.id}"
-                                >
-                                    ⛶ Full Screen
-                                </button>
+                            <h3>
+                                ${playlist.title}
+                            </h3>
 
-                            </div>
+                            <p>
+                                ${playlist.description}
+                            </p>
 
-                        </article>
-                    `).join("")}
+                        </div>
 
-                </div>
 
-            </div>
+                        <div class="study-card-timer">
+
+                            <span class="study-card-timer-label">
+                                FOCUS
+                            </span>
+
+                            <strong>
+                                25:00
+                            </strong>
+
+                        </div>
+
+
+                        <div class="study-environment-actions">
+
+                            <button
+                                type="button"
+                                class="primary-button study-start-button"
+                                data-playlist-action="start"
+                                data-playlist-id="${playlist.id}"
+                            >
+                                ▶ Start
+                            </button>
+
+                            <button
+                                type="button"
+                                class="secondary-button study-playlist-button"
+                                data-playlist-action="open"
+                                data-playlist-id="${playlist.id}"
+                            >
+                                ♪ Playlist
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </article>
+            `).join("")}
 
         </div>
     `;
 }
-
 
 function formatTime(seconds) {
     const minutes = Math.floor(seconds / 60);
