@@ -2397,6 +2397,7 @@ function openAddAssignmentModal() {
 
 
 function openTutorModal(tutor) {
+
     if (!tutor) {
         return;
     }
@@ -2417,7 +2418,7 @@ function openTutorModal(tutor) {
             <button
                 type="button"
                 class="icon-button"
-                data-action="close-modal"
+                id="closeTutorModal"
                 aria-label="Close"
             >
                 ×
@@ -2432,7 +2433,9 @@ function openTutorModal(tutor) {
                 ${escapeHTML(tutor.bio)}
             </p>
 
+
             <div class="tutor-subjects">
+
                 ${tutor.subjects
                     .map(
                         subject =>
@@ -2441,7 +2444,9 @@ function openTutorModal(tutor) {
                             )}</span>`
                     )
                     .join("")}
+
             </div>
+
 
             <p>
                 <strong>Availability:</strong>
@@ -2454,7 +2459,7 @@ function openTutorModal(tutor) {
                 <button
                     type="button"
                     class="secondary-button"
-                    data-action="close-modal"
+                    id="closeTutorModalBottom"
                 >
                     Close
                 </button>
@@ -2472,6 +2477,17 @@ function openTutorModal(tutor) {
 
         </div>
     `);
+
+
+    $("#closeTutorModal")?.addEventListener(
+        "click",
+        closeModal
+    );
+
+    $("#closeTutorModalBottom")?.addEventListener(
+        "click",
+        closeModal
+    );
 }
 
 
