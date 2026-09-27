@@ -3369,6 +3369,84 @@ function attachPageEvents() {
             }
         );
     });
+   if (timerFocusMode) {
+    timerFocusMode.addEventListener("click", openFocusMode);
+}
+
+
+document.querySelectorAll(
+    "[data-playlist-action]"
+).forEach(button => {
+
+    button.addEventListener("click", event => {
+
+        event.stopPropagation();
+
+        const action =
+            button.dataset.playlistAction;
+
+        const playlistId =
+            button.dataset.playlistId;
+
+        const playlistMap = {
+            rain:
+                "https://open.spotify.com/playlist/37i9dQZF1DX8ymr6UES7vc?si=zHMR9PgqShChIsgGJ8enOA",
+
+            cafe:
+                "https://open.spotify.com/playlist/37i9dQZF1DX9RwfGbeGQwP?si=2W5EvODHQ0iJW_w6YKC8xQ",
+
+            forest:
+                "https://open.spotify.com/playlist/37i9dQZF1DX4PP3DA4J0N8?si=ZZ_WvJL-RCOaSCwiIrQi6Q",
+
+            academia:
+                "https://open.spotify.com/playlist/3MelsVnZV5g03wyiJsybHk?si=EI-1KuwXSjyczW84kfPppQ",
+
+            midnight:
+                "https://open.spotify.com/playlist/6asedDPn710ueu5byDKXul?si=5LGw1r7FRz63_VfBKA4X4Q",
+
+            lyrics:
+                "https://open.spotify.com/playlist/37i9dQZF1DWVceT0UosQME?si=AEmZ_Pw7Ru-XFpuD4_YgvQ"
+        };
+
+        if (action === "open") {
+
+            window.open(
+                playlistMap[playlistId],
+                "_blank",
+                "noopener,noreferrer"
+            );
+
+            return;
+        }
+
+        if (action === "start") {
+
+            if (timerMode !== "focus") {
+                setTimerMode("focus");
+            }
+
+            if (!timerRunning) {
+                startTimer();
+            }
+
+            showToast(
+                "Focus session started.",
+                "success"
+            );
+
+            return;
+        }
+
+        if (action === "fullscreen") {
+
+            openFocusMode();
+
+            return;
+        }
+
+    });
+
+});
 
 
     /* -------------------------
