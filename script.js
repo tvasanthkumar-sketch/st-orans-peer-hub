@@ -1610,12 +1610,65 @@ function filterTutors() {
    ========================================================= */
 
 function renderStudy(container) {
+    const studyPlaylists = [
+        {
+            id: "rain",
+            icon: "🌧️",
+            title: "Rainy Focus",
+            description: "Rain • Lo-fi • Ambient",
+            spotify:
+                "https://open.spotify.com/playlist/37i9dQZF1DX8ymr6UES7vc?si=zHMR9PgqShChIsgGJ8enOA"
+        },
+        {
+            id: "cafe",
+            icon: "☕",
+            title: "Study Café",
+            description: "Café • Lo-fi • Soft jazz",
+            spotify:
+                "https://open.spotify.com/playlist/37i9dQZF1DX9RwfGbeGQwP?si=2W5EvODHQ0iJW_w6YKC8xQ"
+        },
+        {
+            id: "forest",
+            icon: "🌲",
+            title: "Forest Study",
+            description: "Nature • Piano • Ambient",
+            spotify:
+                "https://open.spotify.com/playlist/37i9dQZF1DX4PP3DA4J0N8?si=ZZ_WvJL-RCOaSCwiIrQi6Q"
+        },
+        {
+            id: "academia",
+            icon: "📚",
+            title: "Dark Academia",
+            description: "Classical • Piano • Orchestral",
+            spotify:
+                "https://open.spotify.com/playlist/3MelsVnZV5g03wyiJsybHk?si=EI-1KuwXSjyczW84kfPppQ"
+        },
+        {
+            id: "midnight",
+            icon: "🌙",
+            title: "Midnight Focus",
+            description: "Dreamy • Ambient • Soft instrumental",
+            spotify:
+                "https://open.spotify.com/playlist/6asedDPn710ueu5byDKXul?si=5LGw1r7FRz63_VfBKA4X4Q"
+        },
+        {
+            id: "lyrics",
+            icon: "🧠",
+            title: "No Lyrics",
+            description: "Instrumental • Minimal • Deep focus",
+            spotify:
+                "https://open.spotify.com/playlist/37i9dQZF1DWVceT0UosQME?si=AEmZ_Pw7Ru-XFpuD4_YgvQ"
+        }
+    ];
+
     container.innerHTML = `
         <div class="page-header">
 
             <div>
                 <p class="eyebrow">FOCUS & PRODUCTIVITY</p>
+
                 <h1>Study</h1>
+
                 <p>
                     Give your brain one job at a time.
                 </p>
@@ -1626,9 +1679,14 @@ function renderStudy(container) {
 
         <div class="study-grid">
 
+            <!-- TIMER -->
+
             <div class="card timer-card card-padding">
 
-                <div class="timer-roran" aria-hidden="true">
+                <div
+                    class="timer-roran"
+                    aria-hidden="true"
+                >
                     🐉
                 </div>
 
@@ -1717,35 +1775,39 @@ function renderStudy(container) {
             </div>
 
 
-            <div class="card music-card card-padding">
+            <!-- MUSIC LIBRARY -->
 
-                <div class="music-card-main">
+            <div class="card music-library-card card-padding">
+
+                <div class="music-library-header">
 
                     <div>
-                        <p class="eyebrow">STUDY MUSIC</p>
+                        <p class="eyebrow">
+                            STUDY MUSIC
+                        </p>
 
                         <h3>
-                            Settle into the zone.
+                            Choose your atmosphere.
                         </h3>
 
                         <p>
-                            Put on something calming
+                            Pick a playlist, settle in,
                             and let Roran supervise.
                         </p>
                     </div>
 
-                    <div class="spotify-preview">
+                    <div
+                        class="spotify-preview"
+                        aria-hidden="true"
+                    >
 
-                        <div
-                            class="spotify-circle"
-                            aria-hidden="true"
-                        >
+                        <div class="spotify-circle">
                             ♪
                         </div>
 
                         <div>
                             <strong>
-                                Study playlist
+                                Spotify Library
                             </strong>
 
                             <span class="spotify-note">
@@ -1755,13 +1817,61 @@ function renderStudy(container) {
 
                     </div>
 
-                    <button
-                        type="button"
-                        class="primary-button"
-                        data-action="spotify"
-                    >
-                        Open Spotify
-                    </button>
+                </div>
+
+
+                <div class="study-playlist-grid">
+
+                    ${studyPlaylists.map(playlist => `
+                        <article
+                            class="study-playlist-card"
+                            data-playlist="${playlist.id}"
+                        >
+
+                            <div
+                                class="playlist-icon"
+                                aria-hidden="true"
+                            >
+                                ${playlist.icon}
+                            </div>
+
+                            <div class="playlist-info">
+
+                                <h4>
+                                    ${playlist.title}
+                                </h4>
+
+                                <p>
+                                    ${playlist.description}
+                                </p>
+
+                            </div>
+
+
+                            <div class="playlist-actions">
+
+                                <button
+                                    type="button"
+                                    class="primary-button playlist-button"
+                                    data-playlist-action="open"
+                                    data-playlist-id="${playlist.id}"
+                                >
+                                    Open Playlist
+                                </button>
+
+                                <button
+                                    type="button"
+                                    class="secondary-button playlist-button"
+                                    data-playlist-action="fullscreen"
+                                    data-playlist-id="${playlist.id}"
+                                >
+                                    ⛶ Full Screen
+                                </button>
+
+                            </div>
+
+                        </article>
+                    `).join("")}
 
                 </div>
 
