@@ -3369,11 +3369,7 @@ function attachPageEvents() {
             }
         );
     });
-   if (timerFocusMode) {
-    timerFocusMode.addEventListener("click", openFocusMode);
-}
-
-
+  
 document.querySelectorAll(
     "[data-playlist-action]"
 ).forEach(button => {
