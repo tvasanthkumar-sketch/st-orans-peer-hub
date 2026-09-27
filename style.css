@@ -2771,3 +2771,350 @@ textarea:focus {
         animation: none !important;
     }
 }
+
+/* =========================================================
+   STUDY ENVIRONMENT CARDS
+   ========================================================= */
+
+.study-environment-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+    margin-top: 24px;
+}
+
+
+.study-environment-card {
+    position: relative;
+    min-height: 285px;
+    overflow: hidden;
+    border-radius: 22px;
+    isolation: isolate;
+    background: var(--green-dark);
+    box-shadow: 0 12px 30px rgba(16, 44, 37, 0.12);
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+
+.study-environment-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 18px 38px rgba(16, 44, 37, 0.2);
+}
+
+
+/* ---------------------------------------------------------
+   THEMES
+   --------------------------------------------------------- */
+
+.study-environment-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    background-position: center;
+    background-size: cover;
+    transform: scale(1.03);
+    transition: transform 0.5s ease;
+}
+
+
+.study-environment-card:hover::before {
+    transform: scale(1.08);
+}
+
+
+/*
+   These are visual CSS atmospheres for now.
+   They keep the cards looking like environments without
+   requiring external image files.
+*/
+
+.theme-rain::before {
+    background:
+        linear-gradient(
+            135deg,
+            rgba(22, 45, 53, 0.92),
+            rgba(44, 74, 82, 0.72)
+        ),
+        repeating-linear-gradient(
+            105deg,
+            transparent 0,
+            transparent 12px,
+            rgba(255, 255, 255, 0.08) 13px,
+            transparent 14px
+        );
+}
+
+
+.theme-cafe::before {
+    background:
+        radial-gradient(
+            circle at 75% 25%,
+            rgba(215, 194, 143, 0.35),
+            transparent 30%
+        ),
+        linear-gradient(
+            135deg,
+            #4b3528,
+            #72533a 48%,
+            #2d241f
+        );
+}
+
+
+.theme-forest::before {
+    background:
+        radial-gradient(
+            circle at 20% 20%,
+            rgba(94, 132, 101, 0.42),
+            transparent 30%
+        ),
+        linear-gradient(
+            135deg,
+            #173c32,
+            #245548 50%,
+            #102c25
+        );
+}
+
+
+.theme-academia::before {
+    background:
+        radial-gradient(
+            circle at 75% 25%,
+            rgba(183, 154, 98, 0.3),
+            transparent 22%
+        ),
+        linear-gradient(
+            135deg,
+            #392d28,
+            #544238 45%,
+            #201c1a
+        );
+}
+
+
+.theme-midnight::before {
+    background:
+        radial-gradient(
+            circle at 20% 20%,
+            rgba(215, 194, 143, 0.2),
+            transparent 2px
+        ),
+        radial-gradient(
+            circle at 70% 30%,
+            rgba(215, 194, 143, 0.18),
+            transparent 2px
+        ),
+        radial-gradient(
+            circle at 50% 75%,
+            rgba(215, 194, 143, 0.15),
+            transparent 2px
+        ),
+        linear-gradient(
+            145deg,
+            #101d2e,
+            #172c3f 55%,
+            #0c1724
+        );
+}
+
+
+.theme-lyrics::before {
+    background:
+        radial-gradient(
+            circle at 80% 20%,
+            rgba(255, 255, 255, 0.12),
+            transparent 28%
+        ),
+        linear-gradient(
+            135deg,
+            #30463f,
+            #46645a 50%,
+            #1b302a
+        );
+}
+
+
+/* ---------------------------------------------------------
+   CARD CONTENT
+   --------------------------------------------------------- */
+
+.study-environment-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+        linear-gradient(
+            180deg,
+            rgba(8, 20, 17, 0.18),
+            rgba(8, 20, 17, 0.76)
+        );
+}
+
+
+.study-environment-content {
+    position: relative;
+    z-index: 2;
+    min-height: 285px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    color: #fffdf8;
+}
+
+
+.study-environment-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+
+.study-environment-icon {
+    width: 46px;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    background: rgba(255, 253, 248, 0.15);
+    backdrop-filter: blur(8px);
+    font-size: 23px;
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 253, 248, 0.12);
+}
+
+
+.study-fullscreen-button {
+    width: 36px;
+    height: 36px;
+    border: 0;
+    border-radius: 11px;
+    background: rgba(255, 253, 248, 0.13);
+    color: #fffdf8;
+    font-size: 18px;
+    cursor: pointer;
+    backdrop-filter: blur(8px);
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.study-fullscreen-button:hover {
+    background: rgba(255, 253, 248, 0.24);
+    transform: scale(1.05);
+}
+
+
+.study-environment-title {
+    margin-top: 12px;
+}
+
+
+.study-environment-label {
+    margin: 0 0 4px;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    opacity: 0.72;
+}
+
+
+.study-environment-title h3 {
+    margin: 0;
+    font-family: "Playfair Display", serif;
+    font-size: 24px;
+    line-height: 1.1;
+    color: #fffdf8;
+}
+
+
+.study-environment-title p:last-child {
+    margin: 6px 0 0;
+    font-size: 12px;
+    color: rgba(255, 253, 248, 0.76);
+}
+
+
+.study-card-timer {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+
+.study-card-timer-label {
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    opacity: 0.65;
+}
+
+
+.study-card-timer strong {
+    font-family: "DM Sans", sans-serif;
+    font-size: 30px;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    color: #fffdf8;
+}
+
+
+.study-environment-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 14px;
+}
+
+
+.study-environment-actions button {
+    min-height: 36px;
+    padding: 8px 13px;
+    font-size: 11px;
+}
+
+
+.study-start-button {
+    flex: 1;
+}
+
+
+.study-playlist-button {
+    flex: 0 0 auto;
+}
+
+
+/* ---------------------------------------------------------
+   RESPONSIVE
+   --------------------------------------------------------- */
+
+@media (max-width: 1050px) {
+
+    .study-environment-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+}
+
+
+@media (max-width: 680px) {
+
+    .study-environment-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .study-environment-card {
+        min-height: 270px;
+    }
+
+    .study-environment-content {
+        min-height: 270px;
+    }
+
+}
