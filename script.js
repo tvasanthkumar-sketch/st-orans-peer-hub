@@ -1,9 +1,13 @@
-```javascript
-"use strict";
-
 /* =========================================================
    ST ORAN'S PEER HUB
    MAIN JAVASCRIPT
+   ========================================================= */
+
+"use strict";
+
+
+/* =========================================================
+   STORAGE
    ========================================================= */
 
 const STORAGE_KEY = "stOransPeerHubPrototype";
@@ -11,767 +15,566 @@ const CURRENT_USER_KEY = "stOransPeerHubCurrentUser";
 
 
 /* =========================================================
-   DEFAULT DATA
+   DEMO DATA
    ========================================================= */
 
-const defaultData = {
+const DEFAULT_DATA = {
     users: [
         {
             id: "demo-maya",
             name: "Maya Smith",
-            email: "maya.smith@storans.school.nz",
+            email: "maya@storans.school.nz",
             password: "maya123",
-            year: "Year 8",
+            year: "8",
             className: "8WI",
-
             points: 240,
-
-            assignments: [],
-
-            events: [],
-
-            notifications: [],
-
-            bookings: [],
-
-            progress: [80, 110, 145, 175, 210, 240],
-
-            studySessions: 0,
-
-            settings: {
-                notifications: true,
-                motivation: true
-            },
-
-            focusBackground: "forest"
+            previousPoints: 80,
+            sessions: 0,
+            role: "student",
+            subjects: ["English", "Science"],
+            availability: ["Monday", "Wednesday"]
         }
-    ]
+    ],
+
+    assignments: [
+        {
+            id: 1,
+            title: "English persuasive writing",
+            subject: "English",
+            due: "Tomorrow",
+            importance: "high",
+            completed: false
+        },
+        {
+            id: 2,
+            title: "Science research report",
+            subject: "Science",
+            due: "Friday",
+            importance: "medium",
+            completed: false
+        },
+        {
+            id: 3,
+            title: "Mathematics practice questions",
+            subject: "Mathematics",
+            due: "Next Monday",
+            importance: "medium",
+            completed: false
+        },
+        {
+            id: 4,
+            title: "French vocabulary revision",
+            subject: "French",
+            due: "Next Tuesday",
+            importance: "low",
+            completed: true
+        }
+    ],
+
+    tutors: [
+        {
+            id: 1,
+            name: "Lucy Worthington",
+            year: "13LW",
+            subjects: ["English", "History"],
+            availability: "Mon • Wed • Fri",
+            initials: "LW",
+            bio: "English enthusiast who loves helping with essays and writing."
+        },
+        {
+            id: 2,
+            name: "Aisha",
+            year: "12",
+            subjects: ["Mathematics", "Science"],
+            availability: "Tue • Thu",
+            initials: "A",
+            bio: "Happy to help break complicated concepts into smaller steps."
+        },
+        {
+            id: 3,
+            name: "Sophie",
+            year: "12",
+            subjects: ["French", "English"],
+            availability: "Mon • Thu",
+            initials: "S",
+            bio: "Languages, writing and revision support."
+        },
+        {
+            id: 4,
+            name: "Mia",
+            year: "11",
+            subjects: ["Science", "Mathematics"],
+            availability: "Wed • Fri",
+            initials: "M",
+            bio: "Science and maths peer tutor."
+        },
+        {
+            id: 5,
+            name: "Noah",
+            year: "11",
+            subjects: ["Mathematics", "PE"],
+            availability: "Tue • Wed",
+            initials: "N",
+            bio: "Maths help without making maths feel like punishment."
+        },
+        {
+            id: 6,
+            name: "Ella",
+            year: "10",
+            subjects: ["English", "French"],
+            availability: "Mon • Fri",
+            initials: "E",
+            bio: "Happy to help with writing, reading and languages."
+        }
+    ],
+
+    calendarEvents: [],
+
+    settings: {
+        notifications: true,
+        reminders: true,
+        darkMode: false
+    }
 };
 
 
 /* =========================================================
-   STATIC TUTORS
+   APPLICATION STATE
    ========================================================= */
 
-const tutors = [
-    {
-        id: "lucy",
-        name: "Lucy Worthington",
-        year: "Year 13",
-        subjects: ["English", "Essay Writing", "Literacy"],
-        availability: "Mon–Thu after 3:30pm"
-    },
-    {
-        id: "aisha",
-        name: "Aisha Patel",
-        year: "Year 12",
-        subjects: ["Maths", "Algebra", "Statistics"],
-        availability: "Tue & Fri lunchtimes"
-    },
-    {
-        id: "sophie",
-        name: "Sophie Chen",
-        year: "Year 11",
-        subjects: ["Science", "Biology", "Chemistry"],
-        availability: "Mon & Wed after school"
-    },
-    {
-        id: "mia",
-        name: "Mia Thompson",
-        year: "Year 10",
-        subjects: ["French", "Te Reo Māori"],
-        availability: "Most lunchtimes"
-    },
-    {
-        id: "noah",
-        name: "Noah Wilson",
-        year: "Year 13",
-        subjects: ["Physics", "Maths", "Graphs"],
-        availability: "Evenings & weekends"
-    },
-    {
-        id: "ella",
-        name: "Ella Brown",
-        year: "Year 12",
-        subjects: ["History", "Social Studies"],
-        availability: "Thu after 4pm"
-    }
-];
-
-
-/* =========================================================
-   APP STATE
-   ========================================================= */
-
-let appData = null;
-let currentUser = null;
+let appData = loadData();
+let currentUser = loadCurrentUser();
 
 let currentPage = "home";
 
-let currentCalendarDate = new Date();
-
 let selectedCalendarDate = new Date();
 
-let timer = {
-    mode: "focus",
-    focusMinutes: 25,
-    breakMinutes: 5,
-    remainingSeconds: 25 * 60,
-    running: false,
-    interval: null
-};
+let timerInterval = null;
+let timerSeconds = 25 * 60;
+let timerRunning = false;
+let timerMode = "focus";
+
+let focusTimerInterval = null;
+let focusSeconds = 25 * 60;
+let focusRunning = false;
+
+let currentFocusBackground = "forest";
 
 
 /* =========================================================
    DOM HELPERS
    ========================================================= */
 
-const $ = selector => document.querySelector(selector);
+const $ = (selector, parent = document) => {
+    return parent.querySelector(selector);
+};
 
-const $$ = selector => [...document.querySelectorAll(selector)];
+const $$ = (selector, parent = document) => {
+    return [...parent.querySelectorAll(selector)];
+};
 
 
 /* =========================================================
-   GENERAL HELPERS
+   STORAGE FUNCTIONS
    ========================================================= */
 
-function escapeHTML(value) {
-    return String(value ?? "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+function loadData() {
+    try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+
+        if (!saved) {
+            return structuredClone(DEFAULT_DATA);
+        }
+
+        const parsed = JSON.parse(saved);
+
+        return {
+            ...structuredClone(DEFAULT_DATA),
+            ...parsed,
+            users: parsed.users || structuredClone(DEFAULT_DATA.users),
+            assignments:
+                parsed.assignments ||
+                structuredClone(DEFAULT_DATA.assignments),
+            tutors:
+                parsed.tutors ||
+                structuredClone(DEFAULT_DATA.tutors),
+            calendarEvents:
+                parsed.calendarEvents ||
+                [],
+            settings: {
+                ...DEFAULT_DATA.settings,
+                ...(parsed.settings || {})
+            }
+        };
+    } catch (error) {
+        console.error("Could not load Peer Hub data:", error);
+        return structuredClone(DEFAULT_DATA);
+    }
 }
 
 
-function getInitials(name) {
-    return String(name || "Student")
-        .split(" ")
-        .map(part => part[0])
+function saveData() {
+    try {
+        localStorage.setItem(
+            STORAGE_KEY,
+            JSON.stringify(appData)
+        );
+    } catch (error) {
+        console.error("Could not save Peer Hub data:", error);
+    }
+}
+
+
+function loadCurrentUser() {
+    try {
+        const saved = localStorage.getItem(CURRENT_USER_KEY);
+
+        if (!saved) {
+            return null;
+        }
+
+        return JSON.parse(saved);
+    } catch (error) {
+        console.error("Could not load current user:", error);
+        return null;
+    }
+}
+
+
+function saveCurrentUser() {
+    if (!currentUser) {
+        localStorage.removeItem(CURRENT_USER_KEY);
+        return;
+    }
+
+    localStorage.setItem(
+        CURRENT_USER_KEY,
+        JSON.stringify(currentUser)
+    );
+}
+
+
+/* =========================================================
+   USER HELPERS
+   ========================================================= */
+
+function getUserById(id) {
+    return appData.users.find(user => user.id === id);
+}
+
+
+function getCurrentUserFromData() {
+    if (!currentUser) {
+        return null;
+    }
+
+    return (
+        getUserById(currentUser.id) ||
+        currentUser
+    );
+}
+
+
+function updateCurrentUser(updates) {
+    if (!currentUser) {
+        return;
+    }
+
+    const userIndex = appData.users.findIndex(
+        user => user.id === currentUser.id
+    );
+
+    if (userIndex === -1) {
+        currentUser = {
+            ...currentUser,
+            ...updates
+        };
+    } else {
+        appData.users[userIndex] = {
+            ...appData.users[userIndex],
+            ...updates
+        };
+
+        currentUser = appData.users[userIndex];
+    }
+
+    saveData();
+    saveCurrentUser();
+}
+
+
+function getInitials(name = "") {
+    return name
+        .trim()
+        .split(/\s+/)
+        .map(part => part.charAt(0))
         .join("")
         .slice(0, 2)
         .toUpperCase();
 }
 
 
-function todayISO() {
-    return formatISODate(new Date());
-}
-
-
-function formatISODate(date) {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-
-    return year + "-" + month + "-" + day;
-}
-
-
-function parseISODate(value) {
-    if (!value) return new Date();
-
-    const parts = value.split("-");
-
-    return new Date(
-        Number(parts[0]),
-        Number(parts[1]) - 1,
-        Number(parts[2])
-    );
-}
-
-
-function formatPrettyDate(dateString) {
-    if (!dateString) return "";
-
-    const date = parseISODate(dateString);
-
-    return date.toLocaleDateString("en-NZ", {
-        weekday: "short",
-        day: "numeric",
-        month: "short"
-    });
-}
-
-
-function formatLongDate(dateString) {
-    if (!dateString) return "";
-
-    const date = parseISODate(dateString);
-
-    return date.toLocaleDateString("en-NZ", {
-        weekday: "long",
-        day: "numeric",
-        month: "long",
-        year: "numeric"
-    });
-}
-
-
-function getMonthName(date) {
-    return date.toLocaleDateString("en-NZ", {
-        month: "long",
-        year: "numeric"
-    });
+function escapeHTML(value = "") {
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 }
 
 
 /* =========================================================
-   TIME GREETING
+   INITIALISATION
    ========================================================= */
 
-function getGreeting() {
-    const hour = new Date().getHours();
-
-    if (hour >= 5 && hour < 12) {
-        return "Good morning";
-    }
-
-    if (hour >= 12 && hour < 17) {
-        return "Good afternoon";
-    }
-
-    if (hour >= 17 && hour < 21) {
-        return "Good evening";
-    }
-
-    return "Good night";
-}
+document.addEventListener("DOMContentLoaded", () => {
+    initialiseApp();
+});
 
 
-/* =========================================================
-   QUOTES
-   ========================================================= */
-
-const quotes = [
-    "Small progress is still progress.",
-    "You do not need to finish everything today.",
-    "Future you will be very grateful.",
-    "One focused session can change the whole afternoon.",
-    "Start before you feel ready.",
-    "Your brain is allowed to take breaks.",
-    "A little consistency beats a heroic last-minute panic."
-];
-
-
-function getDailyQuote() {
-    const day = Math.floor(
-        Date.now() / 86400000
-    );
-
-    return quotes[day % quotes.length];
-}
-
-
-/* =========================================================
-   RORAN
-   ========================================================= */
-
-const roranMessages = [
-    "One task at a time. Humans apparently work better that way.",
-    "You don't have to be perfect. You just have to start.",
-    "A focused 25 minutes is better than an hour of pretending to study.",
-    "Drink some water. Roran has spoken.",
-    "Your assignment is not going to complete itself. Tragic, really.",
-    "Tiny progress still counts.",
-    "Future you is quietly cheering."
-];
-
-
-function getRoranMessage() {
-    const index =
-        Math.floor(Date.now() / 86400000) %
-        roranMessages.length;
-
-    return roranMessages[index];
-}
-
-
-/* =========================================================
-   DATA NORMALISATION
-   ========================================================= */
-
-function normaliseUser(user) {
-
-    return {
-        id: user.id || "user-" + Date.now(),
-
-        name: user.name || "Student",
-
-        email: user.email || "",
-
-        password: user.password || "",
-
-        year: user.year || "Year 8",
-
-        className: user.className || "",
-
-        points: Number(user.points) || 0,
-
-        assignments: Array.isArray(user.assignments)
-            ? user.assignments
-            : [],
-
-        events: Array.isArray(user.events)
-            ? user.events
-            : [],
-
-        notifications: Array.isArray(user.notifications)
-            ? user.notifications
-            : [],
-
-        bookings: Array.isArray(user.bookings)
-            ? user.bookings
-            : [],
-
-        progress: Array.isArray(user.progress)
-            ? user.progress
-            : [0],
-
-        studySessions: Number(user.studySessions) || 0,
-
-        settings: {
-            notifications:
-                user.settings?.notifications !== false,
-
-            motivation:
-                user.settings?.motivation !== false
-        },
-
-        focusBackground:
-            user.focusBackground || "forest"
-    };
-}
-
-/* =========================================================
-   STORAGE
-   ========================================================= */
-
-function saveData() {
-
-    if (!appData) return;
-
-    localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify(appData)
-    );
+function initialiseApp() {
+    setupAuthTabs();
+    setupAuthentication();
+    setupNavigation();
+    setupTopbar();
+    setupGlobalClicks();
+    setupFocusMode();
 
     if (currentUser) {
-        localStorage.setItem(
-            CURRENT_USER_KEY,
-            currentUser.id
-        );
-    }
-}
-
-
-function loadData() {
-
-    try {
-
-        const saved =
-            localStorage.getItem(STORAGE_KEY);
-
-        if (!saved) {
-
-            return structuredClone(defaultData);
-        }
-
-        const parsed = JSON.parse(saved);
-
-        if (!parsed || !Array.isArray(parsed.users)) {
-
-            return structuredClone(defaultData);
-        }
-
-        parsed.users =
-            parsed.users.map(normaliseUser);
-
-        return parsed;
-
-    } catch (error) {
-
-        console.error(
-            "Could not load saved data:",
-            error
-        );
-
-        return structuredClone(defaultData);
+        showApplication();
+    } else {
+        showAuth();
     }
 }
 
 
 /* =========================================================
-   USER UPDATE
+   AUTHENTICATION
    ========================================================= */
 
-function updateCurrentUser(updates) {
+function setupAuthTabs() {
+    const tabs = $$(".auth-tab");
 
-    if (!currentUser || !appData) return;
-
-    const index =
-        appData.users.findIndex(
-            user => user.id === currentUser.id
-        );
-
-    if (index === -1) return;
-
-    appData.users[index] = {
-        ...normaliseUser(appData.users[index]),
-        ...updates
-    };
-
-    currentUser =
-        normaliseUser(appData.users[index]);
-
-    appData.users[index] =
-        currentUser;
-
-    saveData();
-}
-
-
-/* =========================================================
-   AUTH
-   ========================================================= */
-
-function setupAuth() {
-
-    $$(".auth-tab").forEach(tab => {
-
+    tabs.forEach(tab => {
         tab.addEventListener("click", () => {
+            const target = tab.dataset.authTab;
 
-            const type =
-                tab.dataset.auth;
-
-            $$(".auth-tab").forEach(button =>
-                button.classList.remove("active")
-            );
-
-            tab.classList.add("active");
-
-            $("#signinForm")
-                .classList.toggle(
-                    "hidden",
-                    type !== "signin"
+            tabs.forEach(item => {
+                item.classList.toggle(
+                    "active",
+                    item === tab
                 );
 
-            $("#signupForm")
-                .classList.toggle(
-                    "hidden",
-                    type !== "signup"
+                item.setAttribute(
+                    "aria-selected",
+                    item === tab ? "true" : "false"
                 );
+            });
+
+            const signinForm = $("#signinForm");
+            const signupForm = $("#signupForm");
+
+            if (target === "signup") {
+                signinForm?.classList.add("hidden");
+                signupForm?.classList.remove("hidden");
+            } else {
+                signupForm?.classList.add("hidden");
+                signinForm?.classList.remove("hidden");
+            }
         });
     });
-
-
-    $("#signinForm").addEventListener(
-        "submit",
-        handleSignIn
-    );
-
-
-    $("#signupForm").addEventListener(
-        "submit",
-        handleSignUp
-    );
-
-
-    $("#googleDemo").addEventListener(
-        "click",
-        () => {
-
-            const demo =
-                appData.users.find(
-                    user => user.id === "demo-maya"
-                );
-
-            if (demo) {
-                loginUser(demo);
-                showToast(
-                    "Demo Google sign-in successful."
-                );
-            }
-        }
-    );
 }
 
 
-function isValidSchoolEmail(email) {
+function setupAuthentication() {
+    const signinForm = $("#signinForm");
+    const signupForm = $("#signupForm");
+    const googleButton = $("#googleDemo");
 
-    return /^[a-zA-Z0-9._%+-]+@storans\.school\.nz$/i
-        .test(email);
+    signinForm?.addEventListener("submit", handleSignIn);
+    signupForm?.addEventListener("submit", handleSignUp);
+
+    googleButton?.addEventListener(
+        "click",
+        handleGoogleDemo
+    );
 }
 
 
 function handleSignIn(event) {
-
     event.preventDefault();
 
-    const email =
-        $("#loginEmail").value
-            .trim()
-            .toLowerCase();
+    const email = $("#signinEmail")?.value
+        .trim()
+        .toLowerCase();
 
-    const password =
-        $("#loginPassword").value;
+    const password = $("#signinPassword")?.value;
 
-    const user =
-        appData.users.find(
-            item =>
-                item.email.toLowerCase() === email &&
-                item.password === password
-        );
+    const error = $("#signinError");
 
-    if (!user) {
+    if (error) {
+        error.textContent = "";
+    }
 
-        showToast(
-            "Incorrect school email or password."
-        );
+    if (!email || !password) {
+        if (error) {
+            error.textContent =
+                "Please enter your school email and password.";
+        }
 
         return;
     }
 
-    loginUser(user);
+    const user = appData.users.find(
+        account =>
+            account.email.toLowerCase() === email &&
+            account.password === password
+    );
+
+    if (!user) {
+        if (error) {
+            error.textContent =
+                "We couldn't find an account with those details.";
+        }
+
+        return;
+    }
+
+    currentUser = user;
+
+    saveCurrentUser();
+
+    showToast("Welcome back, " + user.name.split(" ")[0] + " 🌿");
+
+    showApplication();
 }
 
 
 function handleSignUp(event) {
-
     event.preventDefault();
 
-    const name =
-        $("#signupName").value.trim();
+    const name = $("#signupName")?.value.trim();
+    const email = $("#signupEmail")?.value
+        .trim()
+        .toLowerCase();
 
-    const email =
-        $("#signupEmail").value
-            .trim()
-            .toLowerCase();
+    const year = $("#signupYear")?.value;
+    const password = $("#signupPassword")?.value;
 
-    const year =
-        $("#signupYear").value;
+    const error = $("#signupError");
 
-    const password =
-        $("#signupPassword").value;
+    if (error) {
+        error.textContent = "";
+    }
 
-    if (!isValidSchoolEmail(email)) {
+    if (!name || !email || !year || !password) {
+        if (error) {
+            error.textContent =
+                "Please complete all the fields.";
+        }
 
-        showToast(
-            "Please use your @storans.school.nz school email."
-        );
+        return;
+    }
+
+    if (!/storans\.school\.nz$/i.test(email)) {
+        if (error) {
+            error.textContent =
+                "Please use your St Oran's school email.";
+        }
 
         return;
     }
 
     if (password.length < 6) {
-
-        showToast(
-            "Password must be at least 6 characters."
-        );
-
-        return;
-    }
-
-    const exists =
-        appData.users.some(
-            user =>
-                user.email.toLowerCase() === email
-        );
-
-    if (exists) {
-
-        showToast(
-            "An account with that email already exists."
-        );
+        if (error) {
+            error.textContent =
+                "Your password needs at least 6 characters.";
+        }
 
         return;
     }
 
-    const newUser = normaliseUser({
+    const existing = appData.users.find(
+        user => user.email.toLowerCase() === email
+    );
 
-        id: "user-" + Date.now(),
+    if (existing) {
+        if (error) {
+            error.textContent =
+                "An account with that email already exists.";
+        }
+
+        return;
+    }
+
+    const newUser = {
+        id:
+            "user-" +
+            Date.now() +
+            "-" +
+            Math.random().toString(36).slice(2, 8),
 
         name,
-
         email,
-
         password,
-
         year,
-
-        className: "",
-
+        className: `${year}XX`,
         points: 0,
-
-        assignments: [],
-
-        events: [],
-
-        notifications: [],
-
-        bookings: [],
-
-        progress: [0],
-
-        studySessions: 0,
-
-        settings: {
-            notifications: true,
-            motivation: true
-        },
-
-        focusBackground: "forest"
-
-    });
+        previousPoints: 0,
+        sessions: 0,
+        role: "student",
+        subjects: [],
+        availability: []
+    };
 
     appData.users.push(newUser);
 
     saveData();
 
-    loginUser(newUser);
+    currentUser = newUser;
 
-    showToast(
-        "Account created. Welcome to St Oran's Peer Hub! 🌿"
-    );
+    saveCurrentUser();
+
+    showToast("Account created successfully 🌿");
+
+    showApplication();
 }
 
 
-function loginUser(user) {
-
-    currentUser =
-        normaliseUser(user);
-
-    const index =
-        appData.users.findIndex(
-            item => item.id === currentUser.id
-        );
-
-    if (index !== -1) {
-        appData.users[index] =
-            currentUser;
-    }
-
-    localStorage.setItem(
-        CURRENT_USER_KEY,
-        currentUser.id
+function handleGoogleDemo() {
+    const demo = appData.users.find(
+        user => user.id === "demo-maya"
     );
 
-    $("#authScreen")
-        .classList.add("hidden");
-
-    $("#app")
-        .classList.remove("hidden");
-
-    currentPage = "home";
-
-    renderPage();
-
-    updateTopBar();
-}
-
-
-function logout() {
-
-    if (timer.interval) {
-        clearInterval(timer.interval);
+    if (!demo) {
+        showToast("Demo account unavailable.");
+        return;
     }
 
-    timer.running = false;
-    timer.interval = null;
+    currentUser = demo;
 
-    currentUser = null;
+    saveCurrentUser();
 
-    localStorage.removeItem(
-        CURRENT_USER_KEY
-    );
+    showToast("Signed in with demo account 🐉");
 
-    $("#app")
-        .classList.add("hidden");
-
-    $("#authScreen")
-        .classList.remove("hidden");
-
-    $("#loginPassword").value = "";
-
-    showToast("Signed out.");
+    showApplication();
 }
 
 
-function restoreSession() {
-
-    appData = loadData();
-
-    const savedUserId =
-        localStorage.getItem(
-            CURRENT_USER_KEY
-        );
-
-    if (!savedUserId) return;
-
-    const user =
-        appData.users.find(
-            item => item.id === savedUserId
-        );
-
-    if (user) {
-
-        currentUser =
-            normaliseUser(user);
-
-        $("#authScreen")
-            .classList.add("hidden");
-
-        $("#app")
-            .classList.remove("hidden");
-
-        renderPage();
-
-        updateTopBar();
-    }
+function showAuth() {
+    $("#authScreen")?.classList.remove("hidden");
+    $("#app")?.classList.add("hidden");
 }
 
 
-/* =========================================================
-   TOP BAR
-   ========================================================= */
+function showApplication() {
+    $("#authScreen")?.classList.add("hidden");
+    $("#app")?.classList.remove("hidden");
 
-function updateTopBar() {
+    updateTopbar();
 
-    if (!currentUser) return;
-
-    $("#avatar").textContent =
-        getInitials(currentUser.name);
-
-    $("#topName").textContent =
-        currentUser.name.split(" ")[0];
-
-    const unread =
-        currentUser.notifications.some(
-            notification => !notification.read
-        );
-
-    $("#notifDot")
-        .classList.toggle(
-            "hidden",
-            !unread
-        );
-}
-
-
-function setupTopBar() {
-
-    $("#notificationBtn")
-        .addEventListener(
-            "click",
-            showNotifications
-        );
-
-    $("#profileTop")
-        .addEventListener(
-            "click",
-            () => navigate("profile")
-        );
+    navigateTo(currentPage);
 }
 
 
@@ -780,226 +583,294 @@ function setupTopBar() {
    ========================================================= */
 
 function setupNavigation() {
+    $$(".nav-item").forEach(item => {
+        item.addEventListener("click", () => {
+            const page = item.dataset.page;
 
-    $$(".nav-item").forEach(button => {
-
-        button.addEventListener(
-            "click",
-            () => {
-
-                navigate(
-                    button.dataset.page
-                );
+            if (!page) {
+                return;
             }
-        );
+
+            navigateTo(page);
+        });
     });
 }
 
 
-function navigate(page) {
-
+function navigateTo(page) {
     currentPage = page;
 
-    $$(".nav-item").forEach(button => {
-
-        button.classList.toggle(
+    $$(".nav-item").forEach(item => {
+        item.classList.toggle(
             "active",
-            button.dataset.page === page
+            item.dataset.page === page
         );
     });
 
-    renderPage();
+    renderPage(page);
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
 }
 
 
-function renderPage() {
+function renderPage(page) {
+    const container = $("#pageContent");
 
-    if (!currentUser) return;
+    if (!container) {
+        return;
+    }
 
-    const content =
-        $("#pageContent");
-
-    content.innerHTML = "";
-
-    switch (currentPage) {
-
+    switch (page) {
         case "home":
-            renderHome(content);
+            renderHome(container);
             break;
 
         case "calendar":
-            renderCalendarPage(content);
+            renderCalendar(container);
             break;
 
         case "assignments":
-            renderAssignmentsPage(content);
+            renderAssignments(container);
             break;
 
         case "tutors":
-            renderTutorsPage(content);
+            renderTutors(container);
             break;
 
         case "study":
-            renderStudyPage(content);
+            renderStudy(container);
             break;
 
         case "profile":
-            renderProfilePage(content);
+            renderProfile(container);
             break;
 
         case "settings":
-            renderSettingsPage(content);
+            renderSettings(container);
             break;
 
         default:
-            renderHome(content);
+            renderHome(container);
     }
 
-    updateTopBar();
+    attachPageEvents();
 }
 
 
 /* =========================================================
-   HOME
+   TOPBAR
    ========================================================= */
 
-function renderHome(content) {
+function setupTopbar() {
+    $("#profileTop")?.addEventListener(
+        "click",
+        () => navigateTo("profile")
+    );
 
-    const assignments = currentUser.assignments
-        .filter(item => !item.completed)
-        .sort((a, b) => a.dueDate.localeCompare(b.dueDate));
+    $("#notificationBtn")?.addEventListener(
+        "click",
+        showNotifications
+    );
+}
 
-    const nextAssignments = assignments.slice(0, 4);
 
-    content.innerHTML = `
+function updateTopbar() {
+    const user = getCurrentUserFromData();
 
-        <div class="home-hero">
+    if (!user) {
+        return;
+    }
 
-            <h1>
-                ${getGreeting()},
-                ${escapeHTML(
-                    currentUser.name.split(" ")[0]
-                )}
-            </h1>
+    const name = $("#topName");
+    const avatar = $("#topAvatar");
 
-            <p>
-                ${getDailyQuote()}
-            </p>
+    if (name) {
+        name.textContent = user.name.split(" ")[0];
+    }
 
-            <div class="home-hero-dragon">
+    if (avatar) {
+        avatar.textContent = getInitials(user.name);
+    }
+
+    const dot = $("#notifDot");
+
+    if (dot) {
+        dot.style.display =
+            appData.settings.notifications
+                ? "block"
+                : "none";
+    }
+}
+
+
+function showNotifications() {
+    const incomplete = appData.assignments.filter(
+        assignment => !assignment.completed
+    );
+
+    if (!appData.settings.notifications) {
+        showToast("Notifications are turned off.");
+        return;
+    }
+
+    if (incomplete.length === 0) {
+        showToast("You're all caught up ✦");
+        return;
+    }
+
+    showToast(
+        `${incomplete.length} assignment${
+            incomplete.length === 1 ? "" : "s"
+        } still need attention.`
+    );
+}
+
+
+/* =========================================================
+   HOME PAGE
+   ========================================================= */
+
+function renderHome(container) {
+    const user = getCurrentUserFromData();
+
+    const assignments = appData.assignments.filter(
+        assignment => !assignment.completed
+    );
+
+    const progress =
+        user && user.points
+            ? Math.min((user.points / 300) * 100, 100)
+            : 0;
+
+    container.innerHTML = `
+        <div class="page-header">
+            <div>
+                <p class="eyebrow">WELCOME BACK</p>
+                <h1>Good to see you, ${escapeHTML(
+                    user?.name?.split(" ")[0] || "Student"
+                )}.</h1>
+                <p>Let's make today a little more productive.</p>
+            </div>
+        </div>
+
+
+        <section class="home-hero card">
+
+            <div class="home-hero-content">
+                <p class="eyebrow">YOUR PEER HUB</p>
+
+                <h2>
+                    Learn together.<br>
+                    Grow together.
+                </h2>
+
+                <p>
+                    Find a peer, organise your work,
+                    or settle into a focused study session.
+                </p>
+
+                <button
+                    type="button"
+                    class="primary-button"
+                    data-action="find-peer"
+                >
+                    Find a Peer
+                </button>
+            </div>
+
+            <div
+                class="home-hero-dragon"
+                aria-hidden="true"
+            >
                 🐉
             </div>
 
-        </div>
+        </section>
 
 
-        <div class="stats-grid">
+        <section class="stats-grid">
 
-            <div class="card stat-card">
-                <div class="stat-icon">⭐</div>
-
-                <span class="stat-number">
-                    ${currentUser.points}
-                </span>
-
-                <span class="stat-label">
-                    Peer Points
-                </span>
+            <div class="stat-card card">
+                <div class="stat-icon">✦</div>
+                <div>
+                    <div class="stat-number">
+                        ${user?.points || 0}
+                    </div>
+                    <div class="stat-label">
+                        Peer Points
+                    </div>
+                </div>
             </div>
 
 
-            <div class="card stat-card">
-                <div class="stat-icon">📚</div>
-
-                <span class="stat-number">
-                    ${assignments.length}
-                </span>
-
-                <span class="stat-label">
-                    Open Assignments
-                </span>
+            <div class="stat-card card">
+                <div class="stat-icon">✓</div>
+                <div>
+                    <div class="stat-number">
+                        ${assignments.length}
+                    </div>
+                    <div class="stat-label">
+                        Tasks Remaining
+                    </div>
+                </div>
             </div>
 
 
-            <div class="card stat-card">
-                <div class="stat-icon">⏱</div>
-
-                <span class="stat-number">
-                    ${currentUser.studySessions}
-                </span>
-
-                <span class="stat-label">
-                    Study Sessions
-                </span>
+            <div class="stat-card card">
+                <div class="stat-icon">◷</div>
+                <div>
+                    <div class="stat-number">
+                        ${user?.sessions || 0}
+                    </div>
+                    <div class="stat-label">
+                        Study Sessions
+                    </div>
+                </div>
             </div>
 
 
-            <div class="card stat-card">
-                <div class="stat-icon">🐉</div>
-
-                <span class="stat-number">
-                    ${currentUser.bookings.length}
-                </span>
-
-                <span class="stat-label">
-                    Peer Sessions
-                </span>
+            <div class="stat-card card">
+                <div class="stat-icon">↗</div>
+                <div>
+                    <div class="stat-number">
+                        ${Math.round(progress)}%
+                    </div>
+                    <div class="stat-label">
+                        Progress
+                    </div>
+                </div>
             </div>
 
-        </div>
+        </section>
 
 
-        <div class="home-grid">
+        <section class="home-grid">
 
             <div class="home-left">
+
+                ${renderRoranCard()}
 
                 <div class="card card-padding">
 
                     <div class="card-header">
-                        <h2>Upcoming Work</h2>
+                        <div>
+                            <p class="eyebrow">UP NEXT</p>
+                            <h3>Your assignments</h3>
+                        </div>
 
                         <button
-                            class="secondary-button"
-                            id="homeAssignments"
+                            type="button"
+                            class="text-button"
+                            data-action="assignments"
                         >
                             View all
                         </button>
                     </div>
 
-                    <div class="assignment-list">
-
-                        ${
-                            nextAssignments.length
-                                ? nextAssignments
-                                    .map(renderAssignmentItem)
-                                    .join("")
-                                : `
-                                    <div class="empty-state">
-                                        🎉 No outstanding assignments.
-                                        Enjoy the rare moment.
-                                    </div>
-                                `
-                        }
-
-                    </div>
-
-                </div>
-
-
-                <div class="card card-padding">
-
-                    <div class="card-header">
-                        <h2>Mini Calendar</h2>
-
-                        <button
-                            class="secondary-button"
-                            id="homeCalendar"
-                        >
-                            Open Calendar
-                        </button>
-                    </div>
-
-                    ${renderMiniCalendar()}
+                    ${renderAssignmentPreview(assignments)}
 
                 </div>
 
@@ -1008,32 +879,27 @@ function renderHome(content) {
 
             <div class="home-right">
 
-                <div class="card roran-card">
+                <div class="card card-padding">
 
-                    <div class="roran-main">
-
-                        <div class="roran-art">
-                            🐉
+                    <div class="card-header">
+                        <div>
+                            <p class="eyebrow">NEED HELP?</p>
+                            <h3>Find a peer</h3>
                         </div>
-
-                        <div class="roran-content">
-
-                            <h3>
-                                Meet St Roran
-                            </h3>
-
-                            <p>
-                                Your personal study dragon.
-                                He takes studying very seriously.
-                            </p>
-
-                        </div>
-
                     </div>
 
-                    <div class="roran-quote">
-                        “${getRoranMessage()}”
-                    </div>
+                    <p class="card-description">
+                        Search for someone who can help
+                        with the subject you're working on.
+                    </p>
+
+                    <button
+                        type="button"
+                        class="primary-button"
+                        data-action="find-peer"
+                    >
+                        Browse Tutors
+                    </button>
 
                 </div>
 
@@ -1041,250 +907,83 @@ function renderHome(content) {
                 <div class="card card-padding">
 
                     <div class="card-header">
-                        <h2>Recommended Peers</h2>
+                        <div>
+                            <p class="eyebrow">FOCUS</p>
+                            <h3>Study smarter</h3>
+                        </div>
                     </div>
 
-                    ${renderPeerCard(tutors[0])}
-                    ${renderPeerCard(tutors[1])}
+                    <p class="card-description">
+                        Start a focused study session
+                        with Roran keeping watch.
+                    </p>
+
+                    <button
+                        type="button"
+                        class="secondary-button focus-launch"
+                        data-action="study"
+                    >
+                        Start Studying
+                    </button>
 
                 </div>
 
             </div>
 
-        </div>
-
-    `;
-
-    bindHomeEvents();
-}
-
-
-function renderAssignmentItem(assignment) {
-
-    return `
-        <div class="assignment-row">
-
-            <input
-                class="assignment-check"
-                type="checkbox"
-                data-assignment-check="${assignment.id}"
-                ${
-                    assignment.completed
-                        ? "checked"
-                        : ""
-                }
-            >
-
-            <div>
-
-                <div class="assignment-title">
-                    ${escapeHTML(
-                        assignment.title
-                    )}
-                </div>
-
-                <div class="assignment-meta">
-
-                    <span>
-                        Due ${formatPrettyDate(
-                            assignment.dueDate
-                        )}
-                    </span>
-
-                    <span class="importance ${
-                        assignment.importance || "medium"
-                    }">
-                        ${
-                            assignment.importance ||
-                            "Medium"
-                        }
-                    </span>
-
-                </div>
-
-            </div>
-
-        </div>
+        </section>
     `;
 }
 
 
-function renderPeerCard(tutor) {
-
-    return `
-        <div
-            class="assignment-row"
-            style="margin-bottom:9px;"
-        >
-
-            <div class="tutor-avatar"
-                style="width:40px;height:40px;margin:0;"
-            >
-                ${getInitials(tutor.name)}
+function renderAssignmentPreview(assignments) {
+    if (assignments.length === 0) {
+        return `
+            <div class="empty-state">
+                <div>✦</div>
+                <p>You're all caught up.</p>
             </div>
-
-            <div>
-
-                <div class="assignment-title">
-                    ${escapeHTML(tutor.name)}
-                </div>
-
-                <div class="assignment-meta">
-                    ${tutor.subjects
-                        .slice(0, 2)
-                        .map(
-                            subject =>
-                                `<span>${escapeHTML(subject)}</span>`
-                        )
-                        .join(" · ")}
-                </div>
-
-            </div>
-
-        </div>
-    `;
-}
-
-
-function renderMiniCalendar() {
-
-    const start =
-        new Date(currentCalendarDate);
-
-    const day =
-        start.getDay();
-
-    const diff =
-        day === 0 ? -6 : 1 - day;
-
-    start.setDate(
-        start.getDate() + diff
-    );
-
-    let html =
-        `<div class="calendar-grid">`;
-
-    [
-        "Mon",
-        "Tue",
-        "Wed",
-        "Thu",
-        "Fri",
-        "Sat",
-        "Sun"
-    ].forEach(dayName => {
-
-        html += `
-            <div class="calendar-weekday">
-                ${dayName}
-            </div>
-        `;
-    });
-
-
-    for (let i = 0; i < 14; i++) {
-
-        const date =
-            new Date(start);
-
-        date.setDate(
-            start.getDate() + i
-        );
-
-        const iso =
-            formatISODate(date);
-
-        const isToday =
-            iso === todayISO();
-
-        const hasEvent =
-            getItemsForDate(iso).length > 0;
-
-        html += `
-
-            <button
-                class="calendar-day ${
-                    isToday
-                        ? "today"
-                        : ""
-                }"
-                data-mini-date="${iso}"
-                style="min-height:58px;"
-            >
-
-                <span class="day-number">
-                    ${date.getDate()}
-                </span>
-
-                ${
-                    hasEvent
-                        ? `
-                            <div class="day-events">
-                                <span class="calendar-event-dot">
-                                    •
-                                </span>
-                            </div>
-                        `
-                        : ""
-                }
-
-            </button>
         `;
     }
 
-    html += `</div>`;
-
-    return html;
+    return `
+        <div class="assignment-list">
+            ${assignments
+                .slice(0, 3)
+                .map(renderAssignmentRow)
+                .join("")}
+        </div>
+    `;
 }
 
 
-function bindHomeEvents() {
+function renderRoranCard() {
+    return `
+        <div class="card roran-card">
 
-    $("#homeAssignments")
-        ?.addEventListener(
-            "click",
-            () => navigate("assignments")
-        );
+            <div class="roran-main">
 
-    $("#homeCalendar")
-        ?.addEventListener(
-            "click",
-            () => navigate("calendar")
-        );
+                <div class="roran-art" aria-hidden="true">
+                    🐉
+                </div>
 
+                <div class="roran-content">
 
-    $$("[data-assignment-check]")
-        .forEach(input => {
+                    <p class="eyebrow">
+                        RORAN SAYS
+                    </p>
 
-            input.addEventListener(
-                "change",
-                () => {
+                    <blockquote class="roran-quote">
+                        “Small progress is still progress.
+                        Now stop staring at the screen
+                        and do the thing.”
+                    </blockquote>
 
-                    completeAssignment(
-                        input.dataset.assignmentCheck,
-                        input.checked
-                    );
-                }
-            );
-        });
+                </div>
 
+            </div>
 
-    $$("[data-mini-date]")
-        .forEach(button => {
-
-            button.addEventListener(
-                "click",
-                () => {
-
-                    selectedCalendarDate =
-                        parseISODate(
-                            button.dataset.miniDate
-                        );
-
-                    navigate("calendar");
-                }
-            );
-        });
+        </div>
+    `;
 }
 
 
@@ -1292,17 +991,123 @@ function bindHomeEvents() {
    CALENDAR
    ========================================================= */
 
-function renderCalendarPage(content) {
+function renderCalendar(container) {
+    const month = selectedCalendarDate.getMonth();
+    const year = selectedCalendarDate.getFullYear();
 
-    content.innerHTML = `
+    const monthName = selectedCalendarDate.toLocaleDateString(
+        "en-NZ",
+        {
+            month: "long",
+            year: "numeric"
+        }
+    );
 
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+
+    let startingDay = firstDay.getDay();
+
+    if (startingDay === 0) {
+        startingDay = 7;
+    }
+
+    const previousMonthDays = new Date(
+        year,
+        month,
+        0
+    ).getDate();
+
+    let daysHTML = "";
+
+    for (let i = startingDay - 1; i > 0; i--) {
+        const date = previousMonthDays - i + 1;
+
+        daysHTML += `
+            <button
+                type="button"
+                class="calendar-day other-month"
+                disabled
+            >
+                <span class="day-number">${date}</span>
+            </button>
+        `;
+    }
+
+    for (let date = 1; date <= lastDay.getDate(); date++) {
+        const dateObject = new Date(
+            year,
+            month,
+            date
+        );
+
+        const today = isSameDate(
+            dateObject,
+            new Date()
+        );
+
+        const selected = isSameDate(
+            dateObject,
+            selectedCalendarDate
+        );
+
+        const events = getEventsForDate(dateObject);
+
+        daysHTML += `
+            <button
+                type="button"
+                class="calendar-day
+                    ${today ? "today" : ""}
+                    ${selected ? "selected" : ""}"
+                data-calendar-date="${formatDateKey(
+                    dateObject
+                )}"
+            >
+
+                <span class="day-number">
+                    ${date}
+                </span>
+
+                <span class="day-events">
+                    ${events
+                        .slice(0, 3)
+                        .map(
+                            () =>
+                                `<span class="calendar-event-dot"></span>`
+                        )
+                        .join("")}
+                </span>
+
+            </button>
+        `;
+    }
+
+    const totalCells =
+        startingDay - 1 + lastDay.getDate();
+
+    const remainingCells =
+        Math.ceil(totalCells / 7) * 7 - totalCells;
+
+    for (let i = 1; i <= remainingCells; i++) {
+        daysHTML += `
+            <button
+                type="button"
+                class="calendar-day other-month"
+                disabled
+            >
+                <span class="day-number">${i}</span>
+            </button>
+        `;
+    }
+
+    container.innerHTML = `
         <div class="page-header">
 
-            <h1>Calendar</h1>
-
-            <p>
-                Keep assignments, events and study sessions in one place.
-            </p>
+            <div>
+                <p class="eyebrow">PLAN AHEAD</p>
+                <h1>Calendar</h1>
+                <p>Keep track of your study life.</p>
+            </div>
 
         </div>
 
@@ -1311,32 +1116,34 @@ function renderCalendarPage(content) {
 
             <div class="calendar-nav">
 
-                <button id="prevMonth">
+                <button
+                    type="button"
+                    class="icon-button"
+                    data-calendar-action="previous"
+                    aria-label="Previous month"
+                >
                     ‹
                 </button>
 
-                <button id="nextMonth">
-                    ›
-                </button>
+                <h2>${monthName}</h2>
 
                 <button
-                    id="calendarToday"
-                    class="calendar-today"
+                    type="button"
+                    class="icon-button"
+                    data-calendar-action="next"
+                    aria-label="Next month"
                 >
-                    Today
+                    ›
                 </button>
 
             </div>
 
-            <h2>
-                ${getMonthName(currentCalendarDate)}
-            </h2>
-
             <button
-                id="addEventButton"
-                class="primary-button"
+                type="button"
+                class="calendar-today secondary-button"
+                data-calendar-action="today"
             >
-                + Add Event
+                Today
             </button>
 
         </div>
@@ -1346,536 +1153,119 @@ function renderCalendarPage(content) {
 
             <div class="card calendar-card">
 
-                ${renderFullCalendar()}
+                <div class="calendar-grid weekdays">
+
+                    ${[
+                        "Mon",
+                        "Tue",
+                        "Wed",
+                        "Thu",
+                        "Fri",
+                        "Sat",
+                        "Sun"
+                    ]
+                        .map(
+                            day =>
+                                `<div class="calendar-weekday">${day}</div>`
+                        )
+                        .join("")}
+
+                </div>
+
+
+                <div class="calendar-grid">
+                    ${daysHTML}
+                </div>
 
             </div>
 
 
             <div
-                id="selectedDayPanel"
+                id="selectedDayCard"
                 class="card selected-day-card"
             >
-
                 ${renderSelectedDay()}
-
             </div>
 
         </div>
-    `;
-
-    bindCalendarEvents();
-}
-
-
-function getItemsForDate(dateISO) {
-
-    const assignments =
-        currentUser.assignments
-            .filter(
-                assignment =>
-                    assignment.dueDate === dateISO
-            )
-            .map(assignment => ({
-                type: "assignment",
-                title: assignment.title,
-                time: "Due",
-                id: assignment.id
-            }));
-
-
-    const events =
-        currentUser.events
-            .filter(
-                event =>
-                    event.date === dateISO
-            )
-            .map(event => ({
-                type: "event",
-                title: event.title,
-                time: event.time || "",
-                id: event.id
-            }));
-
-
-    return [
-        ...assignments,
-        ...events
-    ];
-}
-
-
-function renderFullCalendar() {
-
-    const year =
-        currentCalendarDate.getFullYear();
-
-    const month =
-        currentCalendarDate.getMonth();
-
-    const firstDay =
-        new Date(year, month, 1);
-
-    const lastDay =
-        new Date(year, month + 1, 0);
-
-    let startingDay =
-        firstDay.getDay();
-
-    startingDay =
-        startingDay === 0
-            ? 6
-            : startingDay - 1;
-
-
-    const totalDays =
-        lastDay.getDate();
-
-    const previousMonthDays =
-        new Date(
-            year,
-            month,
-            0
-        ).getDate();
-
-
-    let html =
-        `<div class="calendar-grid">`;
-
-
-    [
-        "Mon",
-        "Tue",
-        "Wed",
-        "Thu",
-        "Fri",
-        "Sat",
-        "Sun"
-    ].forEach(dayName => {
-
-        html += `
-            <div class="calendar-weekday">
-                ${dayName}
-            </div>
-        `;
-    });
-
-
-    for (let i = startingDay - 1; i >= 0; i--) {
-
-        const date =
-            new Date(
-                year,
-                month - 1,
-                previousMonthDays - i
-            );
-
-        html += renderCalendarDay(
-            date,
-            true
-        );
-    }
-
-
-    for (let day = 1; day <= totalDays; day++) {
-
-        const date =
-            new Date(
-                year,
-                month,
-                day
-            );
-
-        html += renderCalendarDay(
-            date,
-            false
-        );
-    }
-
-
-    const totalCells =
-        startingDay + totalDays;
-
-    const remaining =
-        totalCells % 7 === 0
-            ? 0
-            : 7 - (totalCells % 7);
-
-
-    for (let day = 1; day <= remaining; day++) {
-
-        const date =
-            new Date(
-                year,
-                month + 1,
-                day
-            );
-
-        html += renderCalendarDay(
-            date,
-            true
-        );
-    }
-
-
-    html += `</div>`;
-
-    return html;
-}
-
-
-function renderCalendarDay(
-    date,
-    otherMonth
-) {
-
-    const iso =
-        formatISODate(date);
-
-    const items =
-        getItemsForDate(iso);
-
-    const isToday =
-        iso === todayISO();
-
-    const isSelected =
-        iso ===
-        formatISODate(
-            selectedCalendarDate
-        );
-
-
-    return `
-        <button
-            class="calendar-day
-                ${otherMonth ? "other-month" : ""}
-                ${isToday ? "today" : ""}
-                ${isSelected ? "selected" : ""}
-            "
-            data-calendar-date="${iso}"
-        >
-
-            <span class="day-number">
-                ${date.getDate()}
-            </span>
-
-            <div class="day-events">
-
-                ${items
-                    .slice(0, 3)
-                    .map(
-                        item => `
-                            <span
-                                class="calendar-event-dot"
-                            >
-                                ${escapeHTML(
-                                    item.title
-                                )}
-                            </span>
-                        `
-                    )
-                    .join("")}
-
-            </div>
-
-        </button>
     `;
 }
 
 
 function renderSelectedDay() {
+    const date = selectedCalendarDate;
 
-    const iso =
-        formatISODate(
-            selectedCalendarDate
-        );
+    const events = getEventsForDate(date);
 
-    const items =
-        getItemsForDate(iso);
+    const readableDate =
+        date.toLocaleDateString("en-NZ", {
+            weekday: "long",
+            day: "numeric",
+            month: "long"
+        });
 
+    if (events.length === 0) {
+        return `
+            <p class="eyebrow">SELECTED DAY</p>
+
+            <h3 class="selected-day-date">
+                ${readableDate}
+            </h3>
+
+            <div class="empty-state">
+                <div>✦</div>
+                <p>No events planned.</p>
+            </div>
+        `;
+    }
 
     return `
+        <p class="eyebrow">SELECTED DAY</p>
 
-        <div class="selected-day-date">
-            ${formatLongDate(iso)}
-        </div>
+        <h3 class="selected-day-date">
+            ${readableDate}
+        </h3>
 
-
-        ${
-            items.length
-                ? items
-                    .map(
-                        item => `
-                            <div class="day-item">
-
-                                <strong>
-                                    ${
-                                        item.type ===
-                                        "assignment"
-                                            ? "📚 "
-                                            : "🗓 "
-                                    }
-
-                                    ${escapeHTML(
-                                        item.title
-                                    )}
-                                </strong>
-
-                                <span>
-                                    ${escapeHTML(
-                                        item.time
-                                    )}
-                                </span>
-
-                            </div>
-                        `
-                    )
-                    .join("")
-                : `
-                    <div class="empty-state">
-                        🌿 Nothing scheduled.
-                        A suspiciously peaceful day.
+        ${events
+            .map(
+                event => `
+                    <div class="day-item">
+                        <strong>${escapeHTML(event.title)}</strong>
+                        <span>${escapeHTML(
+                            event.type || "Event"
+                        )}</span>
                     </div>
                 `
-        }
-
-    `;
-}
-
-
-function bindCalendarEvents() {
-
-    $("#prevMonth")
-        .addEventListener(
-            "click",
-            () => {
-
-                currentCalendarDate =
-                    new Date(
-                        currentCalendarDate.getFullYear(),
-                        currentCalendarDate.getMonth() - 1,
-                        1
-                    );
-
-                renderPage();
-            }
-        );
-
-
-    $("#nextMonth")
-        .addEventListener(
-            "click",
-            () => {
-
-                currentCalendarDate =
-                    new Date(
-                        currentCalendarDate.getFullYear(),
-                        currentCalendarDate.getMonth() + 1,
-                        1
-                    );
-
-                renderPage();
-            }
-        );
-
-
-    $("#calendarToday")
-        .addEventListener(
-            "click",
-            () => {
-
-                currentCalendarDate =
-                    new Date();
-
-                selectedCalendarDate =
-                    new Date();
-
-                renderPage();
-            }
-        );
-
-
-    $("#addEventButton")
-        .addEventListener(
-            "click",
-            () => openEventModal(
-                formatISODate(
-                    selectedCalendarDate
-                )
             )
-        );
-
-
-    $$("[data-calendar-date]")
-        .forEach(button => {
-
-            button.addEventListener(
-                "click",
-                () => {
-
-                    selectedCalendarDate =
-                        parseISODate(
-                            button.dataset.calendarDate
-                        );
-
-                    currentCalendarDate =
-                        new Date(
-                            selectedCalendarDate.getFullYear(),
-                            selectedCalendarDate.getMonth(),
-                            1
-                        );
-
-                    renderPage();
-                }
-            );
-        });
-}
-
-
-/* =========================================================
-   EVENT MODAL
-   ========================================================= */
-
-function openEventModal(defaultDate = todayISO()) {
-
-    $("#modalRoot").innerHTML = `
-
-        <div class="modal-backdrop">
-
-            <div class="modal">
-
-                <h2>Add Calendar Event</h2>
-
-                <form
-                    id="eventForm"
-                    class="modal-form"
-                >
-
-                    <label>
-                        Event name
-
-                        <input
-                            id="eventTitle"
-                            type="text"
-                            required
-                        >
-                    </label>
-
-                    <label>
-                        Date
-
-                        <input
-                            id="eventDate"
-                            type="date"
-                            value="${defaultDate}"
-                            required
-                        >
-                    </label>
-
-                    <label>
-                        Time
-
-                        <input
-                            id="eventTime"
-                            type="time"
-                        >
-                    </label>
-
-                    <div class="modal-actions">
-
-                        <button
-                            type="button"
-                            class="secondary-button"
-                            id="cancelModal"
-                        >
-                            Cancel
-                        </button>
-
-                        <button
-                            type="submit"
-                            class="primary-button"
-                        >
-                            Add Event
-                        </button>
-
-                    </div>
-
-                </form>
-
-            </div>
-
-        </div>
+            .join("")}
     `;
-
-
-    $("#cancelModal")
-        .addEventListener(
-            "click",
-            closeModal
-        );
-
-
-    $("#eventForm")
-        .addEventListener(
-            "submit",
-            event => {
-
-                event.preventDefault();
-
-                const eventItem = {
-
-                    id: `event-${Date.now()}`,
-
-                    title:
-                        $("#eventTitle")
-                            .value
-                            .trim(),
-
-                    date:
-                        $("#eventDate")
-                            .value,
-
-                    time:
-                        $("#eventTime")
-                            .value
-                };
-
-
-                if (!eventItem.title) return;
-
-
-                currentUser.events.push(
-                    eventItem
-                );
-
-                saveData();
-
-                closeModal();
-
-                selectedCalendarDate =
-                    parseISODate(
-                        eventItem.date
-                    );
-
-                currentCalendarDate =
-                    new Date(
-                        selectedCalendarDate.getFullYear(),
-                        selectedCalendarDate.getMonth(),
-                        1
-                    );
-
-                renderPage();
-
-                showToast(
-                    "Event added to your calendar."
-                );
-            }
-        );
 }
 
 
-function closeModal() {
+function getEventsForDate(date) {
+    const key = formatDateKey(date);
 
-    $("#modalRoot").innerHTML = "";
+    return appData.calendarEvents.filter(
+        event => event.date === key
+    );
+}
+
+
+function formatDateKey(date) {
+    return [
+        date.getFullYear(),
+        String(date.getMonth() + 1).padStart(2, "0"),
+        String(date.getDate()).padStart(2, "0")
+    ].join("-");
+}
+
+
+function isSameDate(a, b) {
+    return (
+        a.getFullYear() === b.getFullYear() &&
+        a.getMonth() === b.getMonth() &&
+        a.getDate() === b.getDate()
+    );
 }
 
 
@@ -1883,28 +1273,34 @@ function closeModal() {
    ASSIGNMENTS
    ========================================================= */
 
-function renderAssignmentsPage(content) {
+function renderAssignments(container) {
+    const completed = appData.assignments.filter(
+        assignment => assignment.completed
+    );
 
-    const assignments =
-        [...currentUser.assignments]
-            .sort(
-                (a, b) =>
-                    a.dueDate.localeCompare(
-                        b.dueDate
-                    )
-            );
+    const incomplete = appData.assignments.filter(
+        assignment => !assignment.completed
+    );
 
-
-    content.innerHTML = `
-
+    container.innerHTML = `
         <div class="page-header">
 
-            <h1>Assignments</h1>
+            <div>
+                <p class="eyebrow">STAY ON TRACK</p>
+                <h1>Assignments</h1>
+                <p>
+                    Keep your schoolwork organised
+                    without turning your life into a spreadsheet.
+                </p>
+            </div>
 
-            <p>
-                Keep track of what is due before the
-                classic “I forgot” incident.
-            </p>
+            <button
+                type="button"
+                class="primary-button"
+                data-action="add-assignment"
+            >
+                + Add Assignment
+            </button>
 
         </div>
 
@@ -1912,294 +1308,157 @@ function renderAssignmentsPage(content) {
         <div class="card card-padding">
 
             <div class="card-header">
-
-                <h2>
-                    Your Assignments
-                </h2>
-
-                <button
-                    id="addAssignmentButton"
-                    class="primary-button"
-                >
-                    + Add Assignment
-                </button>
-
+                <div>
+                    <p class="eyebrow">TO DO</p>
+                    <h3>${incomplete.length} remaining</h3>
+                </div>
             </div>
 
-
-            <div class="assignment-list">
-
-                ${
-                    assignments.length
-                        ? assignments
-                            .map(
-                                renderAssignmentItem
-                            )
-                            .join("")
-                        : `
-                            <div class="empty-state">
-                                📚 No assignments yet.
-                                Your future self approves.
-                            </div>
-                        `
-                }
-
-            </div>
-
-        </div>
-    `;
-
-
-    bindAssignmentEvents();
-}
-
-
-function bindAssignmentEvents() {
-
-    $("#addAssignmentButton")
-        ?.addEventListener(
-            "click",
-            () => openAssignmentModal()
-        );
-
-
-    $$("[data-assignment-check]")
-        .forEach(input => {
-
-            input.addEventListener(
-                "change",
-                () => {
-
-                    completeAssignment(
-                        input.dataset.assignmentCheck,
-                        input.checked
-                    );
-                }
-            );
-        });
-}
-
-
-function openAssignmentModal() {
-
-    $("#modalRoot").innerHTML = `
-
-        <div class="modal-backdrop">
-
-            <div class="modal">
-
-                <h2>
-                    Add Assignment
-                </h2>
-
-                <form
-                    id="assignmentForm"
-                    class="modal-form"
-                >
-
-                    <label>
-                        Assignment
-
-                        <input
-                            id="assignmentTitle"
-                            type="text"
-                            required
-                        >
-                    </label>
-
-                    <label>
-                        Due Date
-
-                        <input
-                            id="assignmentDate"
-                            type="date"
-                            required
-                        >
-                    </label>
-
-                    <label>
-                        Importance
-
-                        <select id="assignmentImportance">
-
-                            <option value="low">
-                                Low
-                            </option>
-
-                            <option value="medium" selected>
-                                Medium
-                            </option>
-
-                            <option value="high">
-                                High
-                            </option>
-
-                        </select>
-                    </label>
-
-
-                    <div class="modal-actions">
-
-                        <button
-                            type="button"
-                            class="secondary-button"
-                            id="cancelAssignment"
-                        >
-                            Cancel
-                        </button>
-
-                        <button
-                            type="submit"
-                            class="primary-button"
-                        >
-                            Add Assignment
-                        </button>
-
-                    </div>
-
-                </form>
-
-            </div>
-
-        </div>
-    `;
-
-
-    $("#cancelAssignment")
-        .addEventListener(
-            "click",
-            closeModal
-        );
-
-
-    $("#assignmentForm")
-        .addEventListener(
-            "submit",
-            event => {
-
-                event.preventDefault();
-
-
-                const assignment = {
-
-                    id:
-                        `assignment-${Date.now()}`,
-
-                    title:
-                        $("#assignmentTitle")
-                            .value
-                            .trim(),
-
-                    dueDate:
-                        $("#assignmentDate")
-                            .value,
-
-                    importance:
-                        $("#assignmentImportance")
-                            .value,
-
-                    completed: false
-                };
-
-
-                if (!assignment.title) return;
-
-
-                currentUser.assignments.push(
-                    assignment
-                );
-
-                saveData();
-
-                closeModal();
-
-                renderPage();
-
-                showToast(
-                    "Assignment added."
-                );
+            ${
+                incomplete.length
+                    ? `
+                        <div class="assignment-list">
+                            ${incomplete
+                                .map(renderAssignmentRow)
+                                .join("")}
+                        </div>
+                    `
+                    : `
+                        <div class="empty-state">
+                            <div>✓</div>
+                            <p>Nothing left to do. Suspiciously productive.</p>
+                        </div>
+                    `
             }
-        );
+
+        </div>
+
+
+        <div class="card card-padding">
+
+            <div class="card-header">
+                <div>
+                    <p class="eyebrow">COMPLETED</p>
+                    <h3>${completed.length} finished</h3>
+                </div>
+            </div>
+
+            ${
+                completed.length
+                    ? `
+                        <div class="assignment-list">
+                            ${completed
+                                .map(renderAssignmentRow)
+                                .join("")}
+                        </div>
+                    `
+                    : `
+                        <div class="empty-state">
+                            <p>No completed assignments yet.</p>
+                        </div>
+                    `
+            }
+
+        </div>
+    `;
 }
 
 
-function completeAssignment(
-    assignmentId,
-    completed
-) {
+function renderAssignmentRow(assignment) {
+    return `
+        <div
+            class="assignment-row
+                ${assignment.completed ? "completed" : ""}"
+            data-assignment-id="${assignment.id}"
+        >
 
-    const assignment =
-        currentUser.assignments.find(
-            item => item.id === assignmentId
-        );
+            <button
+                type="button"
+                class="assignment-check"
+                data-action="toggle-assignment"
+                data-id="${assignment.id}"
+                aria-label="${
+                    assignment.completed
+                        ? "Mark incomplete"
+                        : "Mark complete"
+                }"
+            >
+                ${assignment.completed ? "✓" : ""}
+            </button>
 
-    if (!assignment) return;
 
-    /*
-     * Don't award/remove points if the state
-     * hasn't actually changed.
-     */
-    if (assignment.completed === completed) {
+            <div class="assignment-info">
+
+                <strong class="assignment-title">
+                    ${escapeHTML(assignment.title)}
+                </strong>
+
+                <span class="assignment-meta">
+                    ${escapeHTML(assignment.subject)}
+                    ·
+                    ${escapeHTML(assignment.due)}
+                </span>
+
+            </div>
+
+
+            <span
+                class="importance ${escapeHTML(
+                    assignment.importance
+                )}"
+            >
+                ${escapeHTML(assignment.importance)}
+            </span>
+
+        </div>
+    `;
+}
+
+
+function toggleAssignment(id) {
+    const assignment = appData.assignments.find(
+        item => String(item.id) === String(id)
+    );
+
+    if (!assignment) {
         return;
     }
 
-    assignment.completed = completed;
+    assignment.completed = !assignment.completed;
 
-    if (completed) {
+    if (assignment.completed) {
+        updateCurrentUser({
+            points:
+                (getCurrentUserFromData()?.points || 0) + 10
+        });
 
-        currentUser.points += 5;
-
-        currentUser.progress.push(
-            currentUser.points
-        );
-
-        addNotification(
-            `Assignment completed: ${assignment.title}`,
-            "assignment"
-        );
-
-        showToast(
-            "Assignment completed! +5 Peer Points ⭐"
-        );
-
+        showToast("Assignment completed! +10 points ✦");
     } else {
-
-        currentUser.points =
-            Math.max(
-                0,
-                currentUser.points - 5
-            );
-
-        currentUser.progress.push(
-            currentUser.points
-        );
-
-        showToast(
-            "Assignment marked incomplete."
-        );
+        showToast("Assignment moved back to your list.");
     }
 
     saveData();
-
-    renderPage();
+    updateTopbar();
+    renderPage(currentPage);
 }
 
+
 /* =========================================================
-   TUTORS
+   TUTORS / FIND A PEER
    ========================================================= */
 
-function renderTutorsPage(content) {
-
-    content.innerHTML = `
-
+function renderTutors(container) {
+    container.innerHTML = `
         <div class="page-header">
 
-            <h1>Find a Peer</h1>
-
-            <p>
-                Find someone who can help with the
-                subject you're working on.
-            </p>
+            <div>
+                <p class="eyebrow">LEARN TOGETHER</p>
+                <h1>Find a Peer</h1>
+                <p>
+                    Find a student who can help
+                    with the subject you're working on.
+                </p>
+            </div>
 
         </div>
 
@@ -2207,45 +1466,20 @@ function renderTutorsPage(content) {
         <div class="filter-bar">
 
             <input
-                id="tutorSearch"
                 type="search"
-                placeholder="Search subject or tutor..."
+                id="tutorSearch"
+                placeholder="Search by name or subject..."
+                aria-label="Search tutors"
             >
 
-            <select id="tutorYear">
-
-                <option value="">All year levels</option>
-
-                <option>Year 10</option>
-                <option>Year 11</option>
-                <option>Year 12</option>
-                <option>Year 13</option>
-
-            </select>
-
-
-            <select id="tutorAvailability">
-
-                <option value="">
-                    Any availability
-                </option>
-
-                <option value="lunchtime">
-                    Lunchtime
-                </option>
-
-                <option value="after school">
-                    After school
-                </option>
-
-                <option value="evenings">
-                    Evenings
-                </option>
-
-                <option value="weekends">
-                    Weekends
-                </option>
-
+            <select id="subjectFilter">
+                <option value="">All subjects</option>
+                <option value="English">English</option>
+                <option value="Mathematics">Mathematics</option>
+                <option value="Science">Science</option>
+                <option value="French">French</option>
+                <option value="History">History</option>
+                <option value="PE">PE</option>
             </select>
 
         </div>
@@ -2254,433 +1488,120 @@ function renderTutorsPage(content) {
         <div
             id="tutorGrid"
             class="tutor-grid"
-        ></div>
-    `;
-
-
-    renderTutorCards(
-        tutors
-    );
-
-    bindTutorEvents();
-}
-
-
-function renderTutorCards(list) {
-
-    const grid =
-        $("#tutorGrid");
-
-    if (!list.length) {
-
-        grid.innerHTML = `
-            <div
-                class="card card-padding"
-                style="grid-column:1/-1;"
-            >
-                <div class="empty-state">
-                    🐉 Roran couldn't find anyone matching that.
-                </div>
-            </div>
-        `;
-
-        return;
-    }
-
-
-    grid.innerHTML =
-        list
-            .map(
-                tutor => `
-
-                    <div class="card tutor-card">
-
-                        <div class="tutor-avatar">
-                            ${getInitials(
-                                tutor.name
-                            )}
-                        </div>
-
-                        <h3>
-                            ${escapeHTML(
-                                tutor.name
-                            )}
-                        </h3>
-
-                        <div class="tutor-year">
-                            ${tutor.year}
-                        </div>
-
-                        <div class="tutor-subjects">
-
-                            ${tutor.subjects
-                                .map(
-                                    subject =>
-                                        `
-                                        <span class="subject-tag">
-                                            ${escapeHTML(
-                                                subject
-                                            )}
-                                        </span>
-                                        `
-                                )
-                                .join("")}
-
-                        </div>
-
-                        <div class="tutor-availability">
-                            🕐 ${escapeHTML(
-                                tutor.availability
-                            )}
-                        </div>
-
-                        <div class="tutor-buttons">
-
-                            <button
-                                class="primary-button"
-                                data-book-tutor="${tutor.id}"
-                            >
-                                Book Session
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                `
-            )
-            .join("");
-
-
-    bindTutorButtons();
-}
-
-
-function bindTutorEvents() {
-
-    const filterTutors = () => {
-
-        const search =
-            $("#tutorSearch")
-                .value
-                .trim()
-                .toLowerCase();
-
-        const year =
-            $("#tutorYear")
-                .value;
-
-        const availability =
-            $("#tutorAvailability")
-                .value;
-
-
-        const filtered =
-            tutors.filter(tutor => {
-
-                const searchable =
-                    [
-                        tutor.name,
-                        tutor.year,
-                        ...tutor.subjects
-                    ]
-                        .join(" ")
-                        .toLowerCase();
-
-
-                const matchesSearch =
-                    !search ||
-                    searchable.includes(search);
-
-
-                const matchesYear =
-                    !year ||
-                    tutor.year === year;
-
-
-                const availabilityText =
-                    tutor.availability
-                        .toLowerCase();
-
-
-                let matchesAvailability = true;
-
-
-                if (availability === "lunchtime") {
-
-                    matchesAvailability =
-                        availabilityText.includes(
-                            "lunch"
-                        );
-                }
-
-
-                if (availability === "after school") {
-
-                    matchesAvailability =
-                        availabilityText.includes(
-                            "after"
-                        );
-                }
-
-
-                if (availability === "evenings") {
-
-                    matchesAvailability =
-                        availabilityText.includes(
-                            "evening"
-                        );
-                }
-
-
-                if (availability === "weekends") {
-
-                    matchesAvailability =
-                        availabilityText.includes(
-                            "weekend"
-                        );
-                }
-
-
-                return (
-                    matchesSearch &&
-                    matchesYear &&
-                    matchesAvailability
-                );
-            });
-
-
-        renderTutorCards(filtered);
-    };
-
-
-    $("#tutorSearch")
-        .addEventListener(
-            "input",
-            filterTutors
-        );
-
-
-    $("#tutorYear")
-        .addEventListener(
-            "change",
-            filterTutors
-        );
-
-
-    $("#tutorAvailability")
-        .addEventListener(
-            "change",
-            filterTutors
-        );
-}
-
-
-function bindTutorButtons() {
-
-    $$("[data-book-tutor]")
-        .forEach(button => {
-
-            button.addEventListener(
-                "click",
-                () => {
-
-                    const tutor =
-                        tutors.find(
-                            item =>
-                                item.id ===
-                                button.dataset.bookTutor
-                        );
-
-                    if (tutor) {
-                        openBookingModal(tutor);
-                    }
-                }
-            );
-        });
-}
-
-
-/* =========================================================
-   BOOKING
-   ========================================================= */
-
-function openBookingModal(tutor) {
-
-    $("#modalRoot").innerHTML = `
-
-        <div class="modal-backdrop">
-
-            <div class="modal">
-
-                <h2>
-                    Book a Session
-                </h2>
-
-                <p style="color:var(--muted);margin-bottom:18px;">
-                    With ${escapeHTML(
-                        tutor.name
-                    )}
-                </p>
-
-                <form
-                    id="bookingForm"
-                    class="modal-form"
-                >
-
-                    <label>
-                        Subject
-
-                        <select id="bookingSubject">
-
-                            ${tutor.subjects
-                                .map(
-                                    subject =>
-                                        `
-                                        <option>
-                                            ${escapeHTML(
-                                                subject
-                                            )}
-                                        </option>
-                                        `
-                                )
-                                .join("")}
-
-                        </select>
-                    </label>
-
-
-                    <label>
-                        Date
-
-                        <input
-                            id="bookingDate"
-                            type="date"
-                            min="${todayISO()}"
-                            required
-                        >
-                    </label>
-
-
-                    <label>
-                        Time
-
-                        <input
-                            id="bookingTime"
-                            type="time"
-                            required
-                        >
-                    </label>
-
-
-                    <div class="modal-actions">
-
-                        <button
-                            type="button"
-                            class="secondary-button"
-                            id="cancelBooking"
-                        >
-                            Cancel
-                        </button>
-
-                        <button
-                            type="submit"
-                            class="primary-button"
-                        >
-                            Book Session
-                        </button>
-
-                    </div>
-
-                </form>
-
-            </div>
-
+        >
+            ${appData.tutors
+                .map(renderTutorCard)
+                .join("")}
         </div>
     `;
+}
 
 
-    $("#cancelBooking")
-        .addEventListener(
-            "click",
-            closeModal
-        );
+function renderTutorCard(tutor) {
+    return `
+        <article
+            class="tutor-card card"
+            data-tutor-name="${escapeHTML(
+                tutor.name.toLowerCase()
+            )}"
+            data-tutor-subjects="${escapeHTML(
+                tutor.subjects.join(" ").toLowerCase()
+            )}"
+        >
+
+            <div class="tutor-avatar">
+                ${escapeHTML(tutor.initials)}
+            </div>
+
+            <div class="tutor-year">
+                ${escapeHTML(tutor.year)}
+            </div>
+
+            <h3>
+                ${escapeHTML(tutor.name)}
+            </h3>
+
+            <div class="tutor-subjects">
+
+                ${tutor.subjects
+                    .map(
+                        subject =>
+                            `<span class="subject-tag">${escapeHTML(
+                                subject
+                            )}</span>`
+                    )
+                    .join("")}
+
+            </div>
+
+            <p>
+                ${escapeHTML(tutor.bio)}
+            </p>
+
+            <div class="tutor-availability">
+                <span>◷</span>
+                ${escapeHTML(tutor.availability)}
+            </div>
+
+            <div class="tutor-buttons">
+
+                <button
+                    type="button"
+                    class="primary-button"
+                    data-action="book-tutor"
+                    data-id="${tutor.id}"
+                >
+                    Request Session
+                </button>
+
+                <button
+                    type="button"
+                    class="secondary-button"
+                    data-action="view-tutor"
+                    data-id="${tutor.id}"
+                >
+                    View
+                </button>
+
+            </div>
+
+        </article>
+    `;
+}
 
 
-    $("#bookingForm")
-        .addEventListener(
-            "submit",
-            event => {
+function filterTutors() {
+    const search =
+        ($("#tutorSearch")?.value || "")
+            .trim()
+            .toLowerCase();
 
-                event.preventDefault();
+    const subject =
+        ($("#subjectFilter")?.value || "")
+            .trim()
+            .toLowerCase();
 
+    $$(".tutor-card").forEach(card => {
+        const name =
+            card.dataset.tutorName || "";
 
-                const subject =
-                    $("#bookingSubject").value;
+        const subjects =
+            card.dataset.tutorSubjects || "";
 
-                const date =
-                    $("#bookingDate").value;
+        const matchesSearch =
+            !search ||
+            name.includes(search) ||
+            subjects.includes(search);
 
-                const time =
-                    $("#bookingTime").value;
+        const matchesSubject =
+            !subject ||
+            subjects.includes(subject);
 
-
-                const booking = {
-
-                    id:
-                        `booking-${Date.now()}`,
-
-                    tutorId:
-                        tutor.id,
-
-                    tutorName:
-                        tutor.name,
-
-                    subject,
-
-                    date,
-
-                    time
-                };
-
-
-                currentUser.bookings.push(
-                    booking
-                );
-
-
-                currentUser.events.push({
-
-                    id:
-                        `booking-event-${Date.now()}`,
-
-                    title:
-                        `Peer session: ${subject}`,
-
-                    date,
-
-                    time
-
-                });
-
-
-                addNotification(
-                    `Peer session booked with ${tutor.name}.`,
-                    "booking"
-                );
-
-
-                saveData();
-
-                closeModal();
-
-                renderPage();
-
-                showToast(
-                    "Peer session booked! 📚"
-                );
-            }
-        );
+        card.style.display =
+            matchesSearch && matchesSubject
+                ? ""
+                : "none";
+    });
 }
 
 
@@ -2688,66 +1609,66 @@ function openBookingModal(tutor) {
    STUDY PAGE
    ========================================================= */
 
-function renderStudyPage(content) {
-
-    updateTimerDisplay();
-
-
-    content.innerHTML = `
-
+function renderStudy(container) {
+    container.innerHTML = `
         <div class="page-header">
 
-            <h1>Study Session</h1>
-
-            <p>
-                Focus, breathe, study. Roran is supervising.
-            </p>
+            <div>
+                <p class="eyebrow">FOCUS & PRODUCTIVITY</p>
+                <h1>Study</h1>
+                <p>
+                    Give your brain one job at a time.
+                </p>
+            </div>
 
         </div>
 
 
         <div class="study-grid">
 
-            <div class="card timer-card">
+            <div class="card timer-card card-padding">
 
-                <div class="timer-roran">
+                <div class="timer-roran" aria-hidden="true">
                     🐉
                 </div>
 
-                <div class="timer-label">
-                    ${timer.mode === "focus"
+                <p class="timer-label">
+                    ${timerMode === "focus"
                         ? "FOCUS SESSION"
                         : "BREAK"}
-                </div>
+                </p>
 
                 <div
                     id="timerDisplay"
                     class="timer-display"
                 >
-                    ${formatTimer(
-                        timer.remainingSeconds
-                    )}
+                    ${formatTime(timerSeconds)}
                 </div>
-
 
                 <div class="timer-controls">
 
                     <button
-                        id="startTimer"
+                        type="button"
+                        id="timerStart"
                         class="primary-button"
                     >
-                        ${
-                            timer.running
-                                ? "Pause"
-                                : "Start"
-                        }
+                        ${timerRunning ? "Pause" : "Start"}
                     </button>
 
                     <button
-                        id="resetTimer"
+                        type="button"
+                        id="timerReset"
                         class="secondary-button"
                     >
                         Reset
+                    </button>
+
+                    <button
+                        type="button"
+                        id="timerFocusMode"
+                        class="secondary-button"
+                    >
+                        Full Focus
                     </button>
 
                 </div>
@@ -2756,97 +1677,91 @@ function renderStudyPage(content) {
                 <div class="timer-settings">
 
                     <button
-                        id="focusLength"
+                        type="button"
+                        data-timer-mode="focus"
+                        class="${
+                            timerMode === "focus"
+                                ? "active"
+                                : ""
+                        }"
                     >
-                        Focus: ${timer.focusMinutes}m
+                        25 min
                     </button>
 
                     <button
-                        id="breakLength"
+                        type="button"
+                        data-timer-mode="shortBreak"
+                        class="${
+                            timerMode === "shortBreak"
+                                ? "active"
+                                : ""
+                        }"
                     >
-                        Break: ${timer.breakMinutes}m
+                        5 min break
+                    </button>
+
+                    <button
+                        type="button"
+                        data-timer-mode="longBreak"
+                        class="${
+                            timerMode === "longBreak"
+                                ? "active"
+                                : ""
+                        }"
+                    >
+                        15 min break
                     </button>
 
                 </div>
-
-
-                <button
-                    id="enterFocusMode"
-                    class="focus-launch"
-                >
-                    ⛶ Enter Full-Screen Focus Mode
-                </button>
 
             </div>
 
 
-            <div class="home-right">
+            <div class="card music-card card-padding">
 
-                <div class="card roran-card">
+                <div class="music-card-main">
 
-                    <div class="roran-main">
+                    <div>
+                        <p class="eyebrow">STUDY MUSIC</p>
 
-                        <div class="roran-art">
-                            🐉
-                        </div>
+                        <h3>
+                            Settle into the zone.
+                        </h3>
 
-                        <div class="roran-content">
-
-                            <h3>
-                                St Roran
-                            </h3>
-
-                            <p>
-                                Your study buddy.
-                            </p>
-
-                        </div>
-
+                        <p>
+                            Put on something calming
+                            and let Roran supervise.
+                        </p>
                     </div>
 
-                    <div class="roran-quote">
-                        “${getRoranMessage()}”
-                    </div>
+                    <div class="spotify-preview">
 
-                </div>
-
-
-                <div class="card music-card">
-
-                    <div class="card-header">
-                        <h2>Study Music</h2>
-                    </div>
-
-                    <div class="music-card-main">
-
-                        <div class="spotify-preview">
-
-                            <div class="spotify-circle">
-                                ♫
-                            </div>
-
-                            <div>
-
-                                <strong>
-                                    Spotify
-                                </strong>
-
-                                <div class="spotify-note">
-                                    Connect your music for study sessions.
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                        <button
-                            id="spotifyStudyButton"
-                            class="primary-button"
+                        <div
+                            class="spotify-circle"
+                            aria-hidden="true"
                         >
-                            Connect
-                        </button>
+                            ♪
+                        </div>
+
+                        <div>
+                            <strong>
+                                Study playlist
+                            </strong>
+
+                            <span class="spotify-note">
+                                Music for focused work
+                            </span>
+                        </div>
 
                     </div>
+
+                    <button
+                        type="button"
+                        class="primary-button"
+                        data-action="spotify"
+                    >
+                        Open Spotify
+                    </button>
 
                 </div>
 
@@ -2854,19 +1769,12 @@ function renderStudyPage(content) {
 
         </div>
     `;
-
-
-    bindStudyEvents();
 }
 
 
-function formatTimer(seconds) {
-
-    const minutes =
-        Math.floor(seconds / 60);
-
-    const remaining =
-        seconds % 60;
+function formatTime(seconds) {
+    const minutes = Math.floor(seconds / 60);
+    const remaining = seconds % 60;
 
     return `${String(minutes).padStart(2, "0")}:${String(
         remaining
@@ -2874,660 +1782,128 @@ function formatTimer(seconds) {
 }
 
 
-function updateTimerDisplay() {
+function setTimerMode(mode) {
+    timerRunning = false;
+    clearInterval(timerInterval);
 
-    const display =
-        $("#timerDisplay");
+    timerMode = mode;
 
-    if (display) {
-
-        display.textContent =
-            formatTimer(
-                timer.remainingSeconds
-            );
+    if (mode === "focus") {
+        timerSeconds = 25 * 60;
+    } else if (mode === "shortBreak") {
+        timerSeconds = 5 * 60;
+    } else {
+        timerSeconds = 15 * 60;
     }
 
+    renderPage("study");
+}
 
-    const focusDisplay =
-        $("#focusTimerDisplay");
 
-    if (focusDisplay) {
-
-        focusDisplay.textContent =
-            formatTimer(
-                timer.remainingSeconds
-            );
+function toggleTimer() {
+    if (timerRunning) {
+        pauseTimer();
+    } else {
+        startTimer();
     }
-
-
-    updateFocusProgress();
 }
 
-
-function updateFocusProgress() {
-
-    const bar =
-        $("#focusProgressBar");
-
-    if (!bar) return;
-
-
-    const total =
-        timer.mode === "focus"
-            ? timer.focusMinutes * 60
-            : timer.breakMinutes * 60;
-
-
-    const completed =
-        total - timer.remainingSeconds;
-
-
-    const percentage =
-        Math.min(
-            100,
-            Math.max(
-                0,
-                (completed / total) * 100
-            )
-        );
-
-
-    bar.style.width =
-        `${percentage}%`;
-}
-
-
-function bindStudyEvents() {
-
-    $("#startTimer")
-        ?.addEventListener(
-            "click",
-            () => {
-
-                if (timer.running) {
-                    pauseTimer();
-                } else {
-                    startTimer();
-                }
-
-                renderPage();
-            }
-        );
-
-
-    $("#resetTimer")
-        ?.addEventListener(
-            "click",
-            () => {
-
-                resetTimer();
-
-                renderPage();
-            }
-        );
-
-
-    $("#focusLength")
-        ?.addEventListener(
-            "click",
-            () => {
-
-                const value =
-                    Number(
-                        prompt(
-                            "Focus length in minutes:",
-                            timer.focusMinutes
-                        )
-                    );
-
-                if (
-                    Number.isFinite(value) &&
-                    value >= 1 &&
-                    value <= 120
-                ) {
-
-                    timer.focusMinutes =
-                        Math.round(value);
-
-                    if (!timer.running &&
-                        timer.mode === "focus") {
-
-                        timer.remainingSeconds =
-                            timer.focusMinutes * 60;
-                    }
-
-                    renderPage();
-                }
-            }
-        );
-
-
-    $("#breakLength")
-        ?.addEventListener(
-            "click",
-            () => {
-
-                const value =
-                    Number(
-                        prompt(
-                            "Break length in minutes:",
-                            timer.breakMinutes
-                        )
-                    );
-
-                if (
-                    Number.isFinite(value) &&
-                    value >= 1 &&
-                    value <= 60
-                ) {
-
-                    timer.breakMinutes =
-                        Math.round(value);
-
-                    if (!timer.running &&
-                        timer.mode === "break") {
-
-                        timer.remainingSeconds =
-                            timer.breakMinutes * 60;
-                    }
-
-                    renderPage();
-                }
-            }
-        );
-
-
-    $("#enterFocusMode")
-        ?.addEventListener(
-            "click",
-            openFocusMode
-        );
-
-
-    $("#spotifyStudyButton")
-        ?.addEventListener(
-            "click",
-            connectSpotify
-        );
-}
-
-
-/* =========================================================
-   TIMER
-   ========================================================= */
 
 function startTimer() {
+    timerRunning = true;
 
-    if (timer.running) return;
+    clearInterval(timerInterval);
 
-    timer.running = true;
+    timerInterval = setInterval(() => {
+        timerSeconds--;
 
+        updateTimerDisplay();
 
-    timer.interval =
-        setInterval(() => {
+        if (timerSeconds <= 0) {
+            finishTimer();
+        }
+    }, 1000);
 
-            timer.remainingSeconds--;
-
-            updateTimerDisplay();
-
-
-            if (
-                timer.remainingSeconds <= 0
-            ) {
-
-                completeTimerMode();
-            }
-
-        }, 1000);
+    updateTimerDisplay();
 }
 
 
 function pauseTimer() {
+    timerRunning = false;
 
-    timer.running = false;
+    clearInterval(timerInterval);
 
-    if (timer.interval) {
-
-        clearInterval(
-            timer.interval
-        );
-
-        timer.interval = null;
-    }
-}
-
-
-function stopTimer() {
-
-    pauseTimer();
+    updateTimerDisplay();
 }
 
 
 function resetTimer() {
+    clearInterval(timerInterval);
 
-    pauseTimer();
+    timerRunning = false;
 
-    timer.mode = "focus";
+    if (timerMode === "focus") {
+        timerSeconds = 25 * 60;
+    } else if (timerMode === "shortBreak") {
+        timerSeconds = 5 * 60;
+    } else {
+        timerSeconds = 15 * 60;
+    }
 
-    timer.remainingSeconds =
-        timer.focusMinutes * 60;
+    updateTimerDisplay();
 }
 
 
-function completeTimerMode() {
+function updateTimerDisplay() {
+    const display = $("#timerDisplay");
 
-    pauseTimer();
+    if (display) {
+        display.textContent =
+            formatTime(timerSeconds);
+    }
+
+    const start = $("#timerStart");
+
+    if (start) {
+        start.textContent =
+            timerRunning
+                ? "Pause"
+                : "Start";
+    }
+}
 
 
-    if (timer.mode === "focus") {
+function finishTimer() {
+    clearInterval(timerInterval);
 
-        currentUser.studySessions++;
+    timerRunning = false;
+    timerSeconds = 0;
 
-        currentUser.points += 10;
+    updateTimerDisplay();
 
-        currentUser.progress.push(
-            currentUser.points
-        );
+    if (timerMode === "focus") {
+        const user = getCurrentUserFromData();
 
-
-        addNotification(
-            "Study session completed! +10 Peer Points.",
-            "study"
-        );
-
+        updateCurrentUser({
+            points: (user?.points || 0) + 20,
+            sessions: (user?.sessions || 0) + 1
+        });
 
         showToast(
-            "Focus session complete! +10 Peer Points 🐉⭐"
+            "Focus session complete! +20 points ✦"
         );
-
-
-        timer.mode = "break";
-
-        timer.remainingSeconds =
-            timer.breakMinutes * 60;
-
-
-        updateFocusMessage(
-            "You did it. Roran is impressed."
-        );
-
     } else {
-
-        timer.mode = "focus";
-
-        timer.remainingSeconds =
-            timer.focusMinutes * 60;
-
-
-        updateFocusMessage(
+        showToast(
             "Break finished. Back to it."
         );
     }
 
-
-    saveData();
-
-    renderPage();
-}
-
-
-/* =========================================================
-   FULLSCREEN FOCUS MODE
-   ========================================================= */
-
-function createFocusMode() {
-
-    if ($("#focusMode")) return;
-
-    const focus = document.createElement("div");
-
-    focus.id = "focusMode";
-    focus.className = "focus-mode-overlay hidden";
-
-    focus.innerHTML = `
-        <button
-            id="exitFocusMode"
-            class="focus-mode-close"
-            aria-label="Exit focus mode"
-        >
-            ×
-        </button>
-
-        <div class="focus-mode-content">
-
-            <div class="st-roran focus-roran">
-                🐉
-            </div>
-
-            <div
-                id="focusModeLabel"
-                class="focus-mode-label"
-            >
-                FOCUS SESSION
-            </div>
-
-            <div
-                id="focusTimerDisplay"
-                class="focus-mode-timer"
-            >
-                25:00
-            </div>
-
-            <div
-                id="focusMessage"
-                class="focus-mode-message"
-            >
-                St Roran is studying with you.
-            </div>
-
-            <div class="focus-progress">
-                <div
-                    id="focusProgressBar"
-                    class="focus-progress-bar"
-                ></div>
-            </div>
-
-            <div class="focus-mode-controls">
-
-                <button
-                    id="focusPause"
-                    class="primary-button"
-                >
-                    ▶ Start
-                </button>
-
-                <button
-                    id="focusReset"
-                    class="secondary-button"
-                >
-                    Reset
-                </button>
-
-            </div>
-
-            <div class="focus-backgrounds">
-
-                <span>
-                    Focus background
-                </span>
-
-                <button
-                    class="background-option active"
-                    data-background="forest"
-                >
-                    🌲 Forest
-                </button>
-
-                <button
-                    class="background-option"
-                    data-background="rain"
-                >
-                    🌧 Rain
-                </button>
-
-                <button
-                    class="background-option"
-                    data-background="academia"
-                >
-                    📚 Study
-                </button>
-
-                <button
-                    class="background-option"
-                    data-background="night"
-                >
-                    🌙 Night
-                </button>
-
-            </div>
-
-            <button
-                id="spotifyButton"
-                class="focus-spotify-button"
-            >
-                🎵 Open Spotify
-            </button>
-
-        </div>
-    `;
-
-    document.body.appendChild(focus);
-}
-
-
-function openFocusMode() {
-
-    createFocusMode();
-
-    const focus = $("#focusMode");
-
-    if (!focus) return;
-
-    focus.classList.remove("hidden");
-    focus.classList.add("active");
-
-    setFocusBackground(
-        currentUser.focusBackground || "forest"
-    );
-
-    updateFocusMode();
-
-    document.body.style.overflow = "hidden";
-
-    /*
-     * Browser fullscreen.
-     * If the browser refuses it, the overlay still works.
-     */
-    if (
-        !document.fullscreenElement &&
-        document.documentElement.requestFullscreen
-    ) {
-        document.documentElement
-            .requestFullscreen()
-            .catch(() => {});
-    }
-}
-
-
-function closeFocusMode() {
-
-    const focus = $("#focusMode");
-
-    if (focus) {
-        focus.classList.remove("active");
-        focus.classList.add("hidden");
-    }
-
-    document.body.style.overflow = "";
-
-    if (
-        document.fullscreenElement &&
-        document.exitFullscreen
-    ) {
-        document.exitFullscreen()
-            .catch(() => {});
-    }
-}
-
-
-function updateFocusMode() {
-
-    updateTimerDisplay();
-
-    const button = $("#focusPause");
-
-    if (button) {
-        button.textContent =
-            timer.running
-                ? "⏸ Pause"
-                : "▶ Start";
-    }
-
-    const label = $("#focusModeLabel");
-
-    if (label) {
-        label.textContent =
-            timer.mode === "focus"
-                ? "FOCUS SESSION"
-                : "BREAK";
-    }
-
-    updateFocusMessage();
-}
-
-
-function updateFocusMessage(customMessage = null) {
-
-    const message = $("#focusMessage");
-
-    if (!message) return;
-
-    if (customMessage) {
-        message.textContent = customMessage;
-        return;
-    }
-
-    message.textContent =
-        timer.mode === "focus"
-            ? "St Roran is studying with you."
-            : "Take a breath. You've earned the break.";
-}
-
-
-function setFocusBackground(background) {
-
-    createFocusMode();
-
-    const focus = $("#focusMode");
-
-    if (!focus) return;
-
-    focus.classList.remove(
-        "forest",
-        "rain",
-        "academia",
-        "night"
-    );
-
-    focus.classList.add(background);
-
-    $$(".background-option")
-        .forEach(button => {
-
-            button.classList.toggle(
-                "active",
-                button.dataset.background === background
-            );
-
-        });
-
-    if (currentUser) {
-
-        currentUser.focusBackground =
-            background;
-
-        saveData();
-    }
-}
-
-
-function setupFocusMode() {
-
-    /*
-     * The focus screen is created by JavaScript,
-     * so it doesn't matter if the HTML doesn't
-     * already contain it.
-     */
-    createFocusMode();
-
-    $("#exitFocusMode")
-        ?.addEventListener(
-            "click",
-            closeFocusMode
-        );
-
-    $("#focusPause")
-        ?.addEventListener(
-            "click",
-            () => {
-
-                if (timer.running) {
-                    pauseTimer();
-                } else {
-                    startTimer();
-                }
-
-                updateFocusMode();
-            }
-        );
-
-    $("#focusReset")
-        ?.addEventListener(
-            "click",
-            () => {
-
-                resetTimer();
-
-                updateFocusMode();
-            }
-        );
-
-    $$(".background-option")
-        .forEach(button => {
-
-            button.addEventListener(
-                "click",
-                () => {
-
-                    setFocusBackground(
-                        button.dataset.background
-                    );
-
-                }
-            );
-        });
-
-    $("#spotifyButton")
-        ?.addEventListener(
-            "click",
-            connectSpotify
-        );
-
-
-    /*
-     * Escape closes the focus overlay.
-     */
-    document.addEventListener(
-        "keydown",
-        event => {
-
-            if (
-                event.key === "Escape" &&
-                $("#focusMode")?.classList.contains("active")
-            ) {
-                closeFocusMode();
-            }
-
+    setTimeout(() => {
+        if (currentPage === "study") {
+            renderStudy($("#pageContent"));
+            attachPageEvents();
         }
-    );
-}
-
-
-/* =========================================================
-   SPOTIFY
-   ========================================================= */
-
-function connectSpotify() {
-
-    showToast(
-        "Opening Spotify for your study music. 🎵"
-    );
-
-    window.open(
-        "https://open.spotify.com/",
-        "_blank",
-        "noopener,noreferrer"
-    );
+    }, 100);
 }
 
 
@@ -3535,174 +1911,126 @@ function connectSpotify() {
    PROFILE
    ========================================================= */
 
-function renderProfilePage(content) {
+function renderProfile(container) {
+    const user = getCurrentUserFromData();
 
-    const completed =
-        currentUser.assignments
-            .filter(
-                assignment =>
-                    assignment.completed
-            )
-            .length;
+    const points = user?.points || 0;
 
+    const progress = Math.min(
+        Math.round((points / 300) * 100),
+        100
+    );
 
-    content.innerHTML = `
-
+    container.innerHTML = `
         <div class="page-header">
 
-            <h1>My Profile</h1>
-
-            <p>
-                Your study progress and Peer Hub activity.
-            </p>
+            <div>
+                <p class="eyebrow">YOUR SPACE</p>
+                <h1>Profile</h1>
+                <p>
+                    Your Peer Hub progress and activity.
+                </p>
+            </div>
 
         </div>
 
 
-        <div class="card profile-header">
+        <div class="profile-header card">
 
             <div class="profile-large-avatar">
-                ${getInitials(
-                    currentUser.name
-                )}
+                ${getInitials(user?.name || "Student")}
             </div>
 
             <div>
-
-                <h2>
-                    ${escapeHTML(
-                        currentUser.name
-                    )}
-                </h2>
-
-                <p style="color:var(--muted);">
-                    ${escapeHTML(
-                        currentUser.year
-                    )}
-                    ${
-                        currentUser.className
-                            ? ` · ${escapeHTML(
-                                currentUser.className
-                            )}`
-                            : ""
-                    }
+                <p class="eyebrow">
+                    STUDENT
                 </p>
 
+                <h2>
+                    ${escapeHTML(user?.name || "Student")}
+                </h2>
+
+                <p>
+                    Year ${escapeHTML(user?.year || "-")}
+                    ·
+                    ${escapeHTML(
+                        user?.className || "-"
+                    )}
+                </p>
             </div>
+
+        </div>
+
+
+        <div class="progress-card card card-padding">
+
+            <div class="card-header">
+
+                <div>
+                    <p class="eyebrow">
+                        PEER POINTS
+                    </p>
+
+                    <h3>
+                        ${points} points
+                    </h3>
+                </div>
+
+                <strong>
+                    ${progress}%
+                </strong>
+
+            </div>
+
+
+            <div class="progress-chart">
+
+                <div
+                    class="progress-bar"
+                    aria-label="${progress}% progress"
+                >
+                    <span
+                        style="width: ${progress}%"
+                    ></span>
+                </div>
+
+            </div>
+
+
+            <p class="card-description">
+                Keep completing assignments and
+                study sessions to build your points.
+            </p>
 
         </div>
 
 
         <div class="stats-grid">
 
-            <div class="card stat-card">
-
-                <span class="stat-number">
-                    ${currentUser.points}
-                </span>
-
-                <span class="stat-label">
-                    Peer Points
-                </span>
-
+            <div class="stat-card card">
+                <div class="stat-icon">✦</div>
+                <div>
+                    <div class="stat-number">
+                        ${points}
+                    </div>
+                    <div class="stat-label">
+                        Total Points
+                    </div>
+                </div>
             </div>
 
 
-            <div class="card stat-card">
-
-                <span class="stat-number">
-                    ${currentUser.studySessions}
-                </span>
-
-                <span class="stat-label">
-                    Study Sessions
-                </span>
-
+            <div class="stat-card card">
+                <div class="stat-icon">◷</div>
+                <div>
+                    <div class="stat-number">
+                        ${user?.sessions || 0}
+                    </div>
+                    <div class="stat-label">
+                        Study Sessions
+                    </div>
+                </div>
             </div>
-
-
-            <div class="card stat-card">
-
-                <span class="stat-number">
-                    ${completed}
-                </span>
-
-                <span class="stat-label">
-                    Completed Assignments
-                </span>
-
-            </div>
-
-
-            <div class="card stat-card">
-
-                <span class="stat-number">
-                    ${currentUser.bookings.length}
-                </span>
-
-                <span class="stat-label">
-                    Peer Sessions
-                </span>
-
-            </div>
-
-        </div>
-
-
-        <div class="card progress-card">
-
-            <div class="card-header">
-                <h2>Peer Points Progress</h2>
-            </div>
-
-            ${renderProgressChart()}
-
-        </div>
-    `;
-}
-
-
-function renderProgressChart() {
-
-    const values =
-        currentUser.progress.length
-            ? currentUser.progress
-            : [0];
-
-
-    const max =
-        Math.max(
-            10,
-            ...values
-        );
-
-
-    return `
-        <div class="progress-chart">
-
-            ${values
-                .map(
-                    value => {
-
-                        const height =
-                            Math.max(
-                                4,
-                                (value / max) * 100
-                            );
-
-                        return `
-                            <div
-                                class="progress-bar"
-                                style="height:${height}%"
-                            >
-                                <span>
-                                    ${value}
-                                </span>
-                            </div>
-                        `;
-                    }
-                )
-                .join("")}
 
         </div>
     `;
@@ -3713,25 +2041,19 @@ function renderProgressChart() {
    SETTINGS
    ========================================================= */
 
-function renderSettingsPage(content) {
+function renderSettings(container) {
+    const settings = appData.settings;
 
-    const settings =
-        currentUser.settings ||
-        {
-            notifications: true,
-            motivation: true
-        };
-
-
-    content.innerHTML = `
-
+    container.innerHTML = `
         <div class="page-header">
 
-            <h1>Settings</h1>
-
-            <p>
-                Control your Peer Hub experience.
-            </p>
+            <div>
+                <p class="eyebrow">PERSONALISE</p>
+                <h1>Settings</h1>
+                <p>
+                    Choose how the Peer Hub behaves.
+                </p>
+            </div>
 
         </div>
 
@@ -3743,25 +2065,29 @@ function renderSettingsPage(content) {
                 <div class="setting-row">
 
                     <div>
-
                         <strong>
                             Notifications
                         </strong>
 
-                        <small>
+                        <span>
                             Receive Peer Hub notifications.
-                        </small>
-
+                        </span>
                     </div>
 
                     <button
+                        type="button"
                         class="toggle ${
                             settings.notifications
                                 ? "active"
                                 : ""
                         }"
                         data-setting="notifications"
-                    ></button>
+                        aria-pressed="${
+                            settings.notifications
+                        }"
+                    >
+                        <span></span>
+                    </button>
 
                 </div>
 
@@ -3769,50 +2095,28 @@ function renderSettingsPage(content) {
                 <div class="setting-row">
 
                     <div>
-
                         <strong>
-                            Roran Motivation
+                            Assignment reminders
                         </strong>
 
-                        <small>
-                            Show St Roran's study tips.
-                        </small>
-
+                        <span>
+                            Keep upcoming work visible.
+                        </span>
                     </div>
 
                     <button
+                        type="button"
                         class="toggle ${
-                            settings.motivation
+                            settings.reminders
                                 ? "active"
                                 : ""
                         }"
-                        data-setting="motivation"
-                    ></button>
-
-                </div>
-
-
-                <div class="setting-row">
-
-                    <div>
-
-                        <strong>
-                            Account
-                        </strong>
-
-                        <small>
-                            ${escapeHTML(
-                                currentUser.email
-                            )}
-                        </small>
-
-                    </div>
-
-                    <button
-                        id="logoutButton"
-                        class="secondary-button"
+                        data-setting="reminders"
+                        aria-pressed="${
+                            settings.reminders
+                        }"
                     >
-                        Sign Out
+                        <span></span>
                     </button>
 
                 </div>
@@ -3820,212 +2124,915 @@ function renderSettingsPage(content) {
             </div>
 
         </div>
+
+
+        <div class="card card-padding">
+
+            <div class="card-header">
+                <div>
+                    <p class="eyebrow">
+                        ACCOUNT
+                    </p>
+
+                    <h3>
+                        ${escapeHTML(
+                            getCurrentUserFromData()
+                                ?.email || ""
+                        )}
+                    </h3>
+                </div>
+            </div>
+
+
+            <button
+                type="button"
+                class="secondary-button"
+                data-action="sign-out"
+            >
+                Sign Out
+            </button>
+
+        </div>
+
+
+        <div class="card card-padding">
+
+            <div class="card-header">
+                <div>
+                    <p class="eyebrow">
+                        DEMO DATA
+                    </p>
+
+                    <h3>
+                        Reset Peer Hub
+                    </h3>
+                </div>
+            </div>
+
+            <p class="card-description">
+                Restore the original demo assignments,
+                tutors and settings.
+            </p>
+
+            <button
+                type="button"
+                class="secondary-button"
+                data-action="reset-data"
+            >
+                Reset Demo Data
+            </button>
+
+        </div>
     `;
-
-
-    bindSettingsEvents();
-}
-
-
-function bindSettingsEvents() {
-
-    $$("[data-setting]")
-        .forEach(button => {
-
-            button.addEventListener(
-                "click",
-                () => {
-
-                    const setting =
-                        button.dataset.setting;
-
-
-                    currentUser.settings[setting] =
-                        !currentUser.settings[setting];
-
-
-                    saveData();
-
-                    renderPage();
-
-                    showToast(
-                        "Setting updated."
-                    );
-                }
-            );
-        });
-
-
-    $("#logoutButton")
-        .addEventListener(
-            "click",
-            logout
-        );
 }
 
 
 /* =========================================================
-   NOTIFICATIONS
+   MODALS
    ========================================================= */
 
-function addNotification(
-    message,
-    type = "general"
-) {
+function openModal(content) {
+    const root = $("#modalRoot");
 
-    if (
-        !currentUser.settings.notifications
-    ) {
+    if (!root) {
         return;
     }
 
+    root.innerHTML = `
+        <div
+            class="modal-backdrop"
+            data-action="close-modal"
+        >
 
-    currentUser.notifications.unshift({
+            <div
+                class="modal"
+                role="dialog"
+                aria-modal="true"
+                data-modal-content
+            >
 
-        id:
-            `notification-${Date.now()}`,
-
-        message,
-
-        type,
-
-        createdAt:
-            new Date().toISOString(),
-
-        read: false
-    });
-
-
-    currentUser.notifications =
-        currentUser.notifications.slice(
-            0,
-            30
-        );
-
-
-    saveData();
-
-    updateTopBar();
-}
-
-
-function showNotifications() {
-
-    const notifications =
-        currentUser.notifications;
-
-
-    $("#modalRoot").innerHTML = `
-
-        <div class="modal-backdrop">
-
-            <div class="modal">
-
-                <div class="card-header">
-
-                    <h2>
-                        Notifications
-                    </h2>
-
-                    <button
-                        id="closeNotifications"
-                        class="secondary-button"
-                    >
-                        Close
-                    </button>
-
-                </div>
-
-
-                ${
-                    notifications.length
-                        ? notifications
-                            .map(
-                                notification => `
-                                    <div class="day-item">
-
-                                        <strong>
-                                            ${
-                                                notification.type === "study"
-                                                    ? "⏱ "
-                                                    : notification.type === "booking"
-                                                        ? "📚 "
-                                                        : "🔔 "
-                                            }
-
-                                            ${escapeHTML(
-                                                notification.message
-                                            )}
-                                        </strong>
-
-                                        <span>
-                                            ${
-                                                notification.read
-                                                    ? "Read"
-                                                    : "New"
-                                            }
-                                        </span>
-
-                                    </div>
-                                `
-                            )
-                            .join("")
-                        : `
-                            <div class="empty-state">
-                                🔔 No notifications.
-                            </div>
-                        `
-                }
-
-
-                ${
-                    notifications.length
-                        ? `
-                            <div class="modal-actions">
-
-                                <button
-                                    id="markNotificationsRead"
-                                    class="primary-button"
-                                >
-                                    Mark all as read
-                                </button>
-
-                            </div>
-                        `
-                        : ""
-                }
+                ${content}
 
             </div>
 
         </div>
     `;
 
+    const modal = $("[data-modal-content]", root);
 
-    $("#closeNotifications")
-        .addEventListener(
-            "click",
-            closeModal
-        );
+    modal?.addEventListener("click", event => {
+        event.stopPropagation();
+    });
+}
 
 
-    $("#markNotificationsRead")
-        ?.addEventListener(
+function closeModal() {
+    const root = $("#modalRoot");
+
+    if (root) {
+        root.innerHTML = "";
+    }
+}
+
+
+function openAddAssignmentModal() {
+    openModal(`
+        <div class="card-header">
+
+            <div>
+                <p class="eyebrow">
+                    NEW TASK
+                </p>
+
+                <h2>
+                    Add Assignment
+                </h2>
+            </div>
+
+            <button
+                type="button"
+                class="icon-button"
+                data-action="close-modal"
+                aria-label="Close"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <form
+            id="assignmentForm"
+            class="modal-form"
+        >
+
+            <div class="form-group">
+
+                <label for="newAssignmentTitle">
+                    Assignment
+                </label>
+
+                <input
+                    id="newAssignmentTitle"
+                    type="text"
+                    required
+                    placeholder="e.g. Science report"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="newAssignmentSubject">
+                    Subject
+                </label>
+
+                <input
+                    id="newAssignmentSubject"
+                    type="text"
+                    required
+                    placeholder="e.g. Science"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="newAssignmentDue">
+                    Due
+                </label>
+
+                <input
+                    id="newAssignmentDue"
+                    type="text"
+                    required
+                    placeholder="e.g. Friday"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="newAssignmentImportance">
+                    Importance
+                </label>
+
+                <select id="newAssignmentImportance">
+                    <option value="low">Low</option>
+                    <option value="medium" selected>
+                        Medium
+                    </option>
+                    <option value="high">High</option>
+                </select>
+
+            </div>
+
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    class="secondary-button"
+                    data-action="close-modal"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="primary-button"
+                >
+                    Add Assignment
+                </button>
+
+            </div>
+
+        </form>
+    `);
+
+    $("#assignmentForm")?.addEventListener(
+        "submit",
+        event => {
+            event.preventDefault();
+
+            const title =
+                $("#newAssignmentTitle").value.trim();
+
+            const subject =
+                $("#newAssignmentSubject").value.trim();
+
+            const due =
+                $("#newAssignmentDue").value.trim();
+
+            const importance =
+                $("#newAssignmentImportance").value;
+
+            if (!title || !subject || !due) {
+                return;
+            }
+
+            appData.assignments.push({
+                id: Date.now(),
+                title,
+                subject,
+                due,
+                importance,
+                completed: false
+            });
+
+            saveData();
+            closeModal();
+
+            showToast(
+                "Assignment added successfully."
+            );
+
+            renderPage("assignments");
+        }
+    );
+}
+
+
+function openTutorModal(tutor) {
+    if (!tutor) {
+        return;
+    }
+
+    openModal(`
+        <div class="card-header">
+
+            <div>
+                <p class="eyebrow">
+                    PEER TUTOR
+                </p>
+
+                <h2>
+                    ${escapeHTML(tutor.name)}
+                </h2>
+            </div>
+
+            <button
+                type="button"
+                class="icon-button"
+                data-action="close-modal"
+                aria-label="Close"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <div class="modal-form">
+
+            <p>
+                ${escapeHTML(tutor.bio)}
+            </p>
+
+            <div class="tutor-subjects">
+                ${tutor.subjects
+                    .map(
+                        subject =>
+                            `<span class="subject-tag">${escapeHTML(
+                                subject
+                            )}</span>`
+                    )
+                    .join("")}
+            </div>
+
+            <p>
+                <strong>Availability:</strong>
+                ${escapeHTML(tutor.availability)}
+            </p>
+
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    class="secondary-button"
+                    data-action="close-modal"
+                >
+                    Close
+                </button>
+
+                <button
+                    type="button"
+                    class="primary-button"
+                    data-action="request-tutor"
+                    data-id="${tutor.id}"
+                >
+                    Request Session
+                </button>
+
+            </div>
+
+        </div>
+    `);
+}
+
+
+/* =========================================================
+   FOCUS MODE
+   ========================================================= */
+
+function setupFocusMode() {
+    $("#focusModeClose")?.addEventListener(
+        "click",
+        closeFocusMode
+    );
+
+    $("#focusStart")?.addEventListener(
+        "click",
+        startFocusTimer
+    );
+
+    $("#focusPause")?.addEventListener(
+        "click",
+        pauseFocusTimer
+    );
+
+    $("#focusReset")?.addEventListener(
+        "click",
+        resetFocusTimer
+    );
+
+    $$(".background-option").forEach(option => {
+        option.addEventListener(
             "click",
             () => {
+                setFocusBackground(
+                    option.dataset.background
+                );
+            }
+        );
+    });
 
-                currentUser.notifications
-                    .forEach(
-                        notification =>
-                            notification.read = true
+    $("#focusSpotifyButton")?.addEventListener(
+        "click",
+        openSpotify
+    );
+}
+
+
+function openFocusMode() {
+    const overlay = $("#focusModeOverlay");
+
+    if (!overlay) {
+        return;
+    }
+
+    overlay.classList.add("active");
+    overlay.setAttribute("aria-hidden", "false");
+
+    focusSeconds = 25 * 60;
+    focusRunning = false;
+
+    updateFocusDisplay();
+}
+
+
+function closeFocusMode() {
+    const overlay = $("#focusModeOverlay");
+
+    if (!overlay) {
+        return;
+    }
+
+    overlay.classList.remove("active");
+    overlay.setAttribute("aria-hidden", "true");
+
+    clearInterval(focusTimerInterval);
+
+    focusRunning = false;
+}
+
+
+function startFocusTimer() {
+    if (focusRunning) {
+        return;
+    }
+
+    focusRunning = true;
+
+    clearInterval(focusTimerInterval);
+
+    focusTimerInterval = setInterval(() => {
+        focusSeconds--;
+
+        updateFocusDisplay();
+
+        if (focusSeconds <= 0) {
+            finishFocusTimer();
+        }
+    }, 1000);
+
+    updateFocusDisplay();
+}
+
+
+function pauseFocusTimer() {
+    focusRunning = false;
+
+    clearInterval(focusTimerInterval);
+
+    updateFocusDisplay();
+}
+
+
+function resetFocusTimer() {
+    focusRunning = false;
+
+    clearInterval(focusTimerInterval);
+
+    focusSeconds = 25 * 60;
+
+    updateFocusDisplay();
+}
+
+
+function updateFocusDisplay() {
+    const display = $("#focusModeTimer");
+
+    if (display) {
+        display.textContent =
+            formatTime(focusSeconds);
+    }
+
+    const start = $("#focusStart");
+
+    if (start) {
+        start.textContent =
+            focusRunning
+                ? "Running"
+                : "Start";
+    }
+
+    const progress = $("#focusProgressBar");
+
+    if (progress) {
+        const percentage =
+            ((25 * 60 - focusSeconds) /
+                (25 * 60)) *
+            100;
+
+        progress.style.width =
+            `${Math.max(
+                0,
+                Math.min(100, percentage)
+            )}%`;
+    }
+}
+
+
+function finishFocusTimer() {
+    clearInterval(focusTimerInterval);
+
+    focusRunning = false;
+    focusSeconds = 0;
+
+    updateFocusDisplay();
+
+    const user = getCurrentUserFromData();
+
+    updateCurrentUser({
+        points: (user?.points || 0) + 20,
+        sessions: (user?.sessions || 0) + 1
+    });
+
+    showToast(
+        "Focus session complete! +20 points ✦"
+    );
+}
+
+
+function setFocusBackground(background) {
+    const overlay = $("#focusModeOverlay");
+
+    if (!overlay) {
+        return;
+    }
+
+    currentFocusBackground = background;
+
+    overlay.classList.remove(
+        "forest",
+        "rain",
+        "academia",
+        "night"
+    );
+
+    overlay.classList.add(background);
+
+    $$(".background-option").forEach(option => {
+        option.classList.toggle(
+            "active",
+            option.dataset.background === background
+        );
+    });
+}
+
+
+/* =========================================================
+   GLOBAL CLICK HANDLING
+   ========================================================= */
+
+function setupGlobalClicks() {
+    document.addEventListener("click", event => {
+        const actionElement =
+            event.target.closest("[data-action]");
+
+        if (!actionElement) {
+            return;
+        }
+
+        const action =
+            actionElement.dataset.action;
+
+        switch (action) {
+
+            case "find-peer":
+                navigateTo("tutors");
+                break;
+
+            case "assignments":
+                navigateTo("assignments");
+                break;
+
+            case "study":
+                navigateTo("study");
+                break;
+
+            case "toggle-assignment":
+                toggleAssignment(
+                    actionElement.dataset.id
+                );
+                break;
+
+            case "add-assignment":
+                openAddAssignmentModal();
+                break;
+
+            case "close-modal":
+                closeModal();
+                break;
+
+            case "view-tutor": {
+                const tutor =
+                    appData.tutors.find(
+                        item =>
+                            String(item.id) ===
+                            String(actionElement.dataset.id)
                     );
+
+                openTutorModal(tutor);
+                break;
+            }
+
+            case "book-tutor":
+            case "request-tutor": {
+                const tutor =
+                    appData.tutors.find(
+                        item =>
+                            String(item.id) ===
+                            String(actionElement.dataset.id)
+                    );
+
+                requestTutor(tutor);
+                break;
+            }
+
+            case "spotify":
+                openSpotify();
+                break;
+
+            case "sign-out":
+                signOut();
+                break;
+
+            case "reset-data":
+                resetApplicationData();
+                break;
+        }
+    });
+
+
+    document.addEventListener(
+        "keydown",
+        event => {
+            if (event.key === "Escape") {
+                closeModal();
+
+                if (
+                    $("#focusModeOverlay")?.classList.contains(
+                        "active"
+                    )
+                ) {
+                    closeFocusMode();
+                }
+            }
+        }
+    );
+}
+
+
+/* =========================================================
+   PAGE EVENT ATTACHMENT
+   ========================================================= */
+
+function attachPageEvents() {
+
+    /* -------------------------
+       Calendar
+       ------------------------- */
+
+    $$("[data-calendar-action]").forEach(button => {
+        button.addEventListener("click", () => {
+
+            const action =
+                button.dataset.calendarAction;
+
+            if (action === "previous") {
+                selectedCalendarDate =
+                    new Date(
+                        selectedCalendarDate.getFullYear(),
+                        selectedCalendarDate.getMonth() - 1,
+                        1
+                    );
+
+                renderPage("calendar");
+            }
+
+            if (action === "next") {
+                selectedCalendarDate =
+                    new Date(
+                        selectedCalendarDate.getFullYear(),
+                        selectedCalendarDate.getMonth() + 1,
+                        1
+                    );
+
+                renderPage("calendar");
+            }
+
+            if (action === "today") {
+                selectedCalendarDate =
+                    new Date();
+
+                renderPage("calendar");
+            }
+        });
+    });
+
+
+    $$("[data-calendar-date]").forEach(button => {
+        button.addEventListener("click", () => {
+
+            const dateString =
+                button.dataset.calendarDate;
+
+            const parts =
+                dateString.split("-").map(Number);
+
+            selectedCalendarDate =
+                new Date(
+                    parts[0],
+                    parts[1] - 1,
+                    parts[2]
+                );
+
+            renderPage("calendar");
+        });
+    });
+
+
+    /* -------------------------
+       Tutor filtering
+       ------------------------- */
+
+    $("#tutorSearch")?.addEventListener(
+        "input",
+        filterTutors
+    );
+
+    $("#subjectFilter")?.addEventListener(
+        "change",
+        filterTutors
+    );
+
+
+    /* -------------------------
+       Study timer
+       ------------------------- */
+
+    $("#timerStart")?.addEventListener(
+        "click",
+        toggleTimer
+    );
+
+    $("#timerReset")?.addEventListener(
+        "click",
+        resetTimer
+    );
+
+    $("#timerFocusMode")?.addEventListener(
+        "click",
+        openFocusMode
+    );
+
+    $$("[data-timer-mode]").forEach(button => {
+        button.addEventListener(
+            "click",
+            () => {
+                setTimerMode(
+                    button.dataset.timerMode
+                );
+            }
+        );
+    });
+
+
+    /* -------------------------
+       Settings
+       ------------------------- */
+
+    $$("[data-setting]").forEach(button => {
+        button.addEventListener(
+            "click",
+            () => {
+                const setting =
+                    button.dataset.setting;
+
+                if (
+                    !Object.prototype.hasOwnProperty.call(
+                        appData.settings,
+                        setting
+                    )
+                ) {
+                    return;
+                }
+
+                appData.settings[setting] =
+                    !appData.settings[setting];
 
                 saveData();
 
-                updateTopBar();
+                updateTopbar();
 
-                closeModal();
+                renderPage("settings");
+
+                showToast(
+                    `${setting
+                        .charAt(0)
+                        .toUpperCase() +
+                        setting.slice(1)
+                    } ${
+                        appData.settings[setting]
+                            ? "enabled"
+                            : "disabled"
+                    }.`
+                );
             }
         );
+    });
+}
+
+
+/* =========================================================
+   TUTOR REQUEST
+   ========================================================= */
+
+function requestTutor(tutor) {
+    if (!tutor) {
+        return;
+    }
+
+    closeModal();
+
+    showToast(
+        `Session request sent to ${tutor.name}. ✦`
+    );
+}
+
+
+/* =========================================================
+   SPOTIFY
+   ========================================================= */
+
+function openSpotify() {
+    window.open(
+        "https://open.spotify.com/",
+        "_blank",
+        "noopener,noreferrer"
+    );
+}
+
+
+/* =========================================================
+   SIGN OUT
+   ========================================================= */
+
+function signOut() {
+    clearInterval(timerInterval);
+    clearInterval(focusTimerInterval);
+
+    timerRunning = false;
+    focusRunning = false;
+
+    currentUser = null;
+
+    localStorage.removeItem(
+        CURRENT_USER_KEY
+    );
+
+    currentPage = "home";
+
+    closeModal();
+    closeFocusMode();
+
+    showAuth();
+
+    showToast("You've been signed out.");
+}
+
+
+/* =========================================================
+   RESET DATA
+   ========================================================= */
+
+function resetApplicationData() {
+    const confirmed =
+        window.confirm(
+            "Reset the Peer Hub demo data?"
+        );
+
+    if (!confirmed) {
+        return;
+    }
+
+    appData =
+        structuredClone(DEFAULT_DATA);
+
+    saveData();
+
+    const demo =
+        appData.users.find(
+            user => user.id === "demo-maya"
+        );
+
+    currentUser = demo;
+
+    saveCurrentUser();
+
+    showToast(
+        "Demo data has been reset."
+    );
+
+    updateTopbar();
+
+    navigateTo("home");
 }
 
 
@@ -4035,57 +3042,74 @@ function showNotifications() {
 
 let toastTimeout = null;
 
-
 function showToast(message) {
+    const toast = $("#toast");
 
-    const toast =
-        $("#toast");
+    if (!toast) {
+        return;
+    }
 
-    toast.textContent =
-        message;
+    toast.textContent = message;
 
     toast.classList.add("show");
 
+    clearTimeout(toastTimeout);
 
-    clearTimeout(
-        toastTimeout
-    );
-
-
-    toastTimeout =
-        setTimeout(
-            () => {
-
-                toast.classList.remove(
-                    "show"
-                );
-
-            },
-            2800
-        );
+    toastTimeout = setTimeout(() => {
+        toast.classList.remove("show");
+    }, 3200);
 }
 
 
 /* =========================================================
-   INITIALISATION
+   ACCESSIBILITY
    ========================================================= */
 
-function initialiseApp() {
+document.addEventListener(
+    "keydown",
+    event => {
 
-    setupAuth();
+        if (
+            event.key === "/" &&
+            !["INPUT", "TEXTAREA", "SELECT"].includes(
+                document.activeElement?.tagName
+            )
+        ) {
+            event.preventDefault();
 
-    setupNavigation();
+            if (currentPage !== "tutors") {
+                navigateTo("tutors");
+            }
 
-    setupTopBar();
+            setTimeout(() => {
+                $("#tutorSearch")?.focus();
+            }, 100);
+        }
 
-    setupFocusMode();
+    }
+);
 
-    restoreSession();
-}
 
+/* =========================================================
+   PREVENT ACCIDENTAL FORM SUBMISSIONS
+   ========================================================= */
 
 document.addEventListener(
-    "DOMContentLoaded",
-    initialiseApp
+    "submit",
+    event => {
+        const form = event.target;
+
+        if (
+            form.id !== "signinForm" &&
+            form.id !== "signupForm" &&
+            form.id !== "assignmentForm"
+        ) {
+            event.preventDefault();
+        }
+    }
 );
-```
+
+
+/* =========================================================
+   END OF SCRIPT
+   ========================================================= */
