@@ -3119,6 +3119,119 @@ function stopFocusRain() {
    END FOCUS MODE
    ========================================================= */
 /* =========================================================
+   GLOBAL CLICK HANDLING
+   ========================================================= */
+
+function setupGlobalClicks() {
+
+    document.addEventListener("click", event => {
+
+        const actionElement =
+            event.target.closest("[data-action]");
+
+        if (!actionElement) {
+            return;
+        }
+
+        const action =
+            actionElement.dataset.action;
+
+        switch (action) {
+
+            case "find-peer":
+                navigateTo("tutors");
+                break;
+
+            case "assignments":
+                navigateTo("assignments");
+                break;
+
+            case "study":
+                navigateTo("study");
+                break;
+
+            case "toggle-assignment":
+                toggleAssignment(
+                    actionElement.dataset.id
+                );
+                break;
+
+            case "add-assignment":
+                openAddAssignmentModal();
+                break;
+
+            case "close-modal":
+                closeModal();
+                break;
+
+            case "view-tutor": {
+
+                const tutor =
+                    appData.tutors.find(
+                        item =>
+                            String(item.id) ===
+                            String(
+                                actionElement.dataset.id
+                            )
+                    );
+
+                openTutorModal(tutor);
+
+                break;
+            }
+
+            case "book-tutor":
+            case "request-tutor": {
+
+                const tutor =
+                    appData.tutors.find(
+                        item =>
+                            String(item.id) ===
+                            String(
+                                actionElement.dataset.id
+                            )
+                    );
+
+                requestTutor(tutor);
+
+                break;
+            }
+
+            case "spotify":
+                openSpotify();
+                break;
+
+            case "sign-out":
+                signOut();
+                break;
+
+            case "reset-data":
+                resetApplicationData();
+                break;
+        }
+    });
+
+
+    document.addEventListener(
+        "keydown",
+        event => {
+
+            if (event.key === "Escape") {
+
+                closeModal();
+
+                if (
+                    $("#focusModeOverlay")?.classList.contains(
+                        "active"
+                    )
+                ) {
+                    closeFocusMode();
+                }
+            }
+        }
+    );
+}
+/* =========================================================
    PAGE EVENT ATTACHMENT
    ========================================================= */
 
