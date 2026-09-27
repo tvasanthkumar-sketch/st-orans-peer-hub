@@ -2222,3 +2222,221 @@ p {
         animation-duration: 0.01ms !important;
     }
 }
+
+/* =========================================================
+   AESTHETIC POLISH
+   Safe visual enhancements only
+   ========================================================= */
+
+:root {
+    --shadow-soft: 0 10px 30px rgba(16, 44, 37, 0.08);
+    --shadow-card: 0 8px 24px rgba(16, 44, 37, 0.07);
+    --shadow-hover: 0 14px 34px rgba(16, 44, 37, 0.12);
+}
+
+/* Smoother overall feel */
+body {
+    background:
+        radial-gradient(circle at 10% 10%, rgba(183, 154, 98, 0.06), transparent 25%),
+        radial-gradient(circle at 90% 85%, rgba(122, 38, 56, 0.035), transparent 25%),
+        var(--cream);
+}
+
+/* Sidebar polish */
+.sidebar {
+    box-shadow: 4px 0 24px rgba(16, 44, 37, 0.08);
+}
+
+.sidebar-brand {
+    letter-spacing: -0.02em;
+}
+
+.nav-item {
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.nav-item:hover {
+    transform: translateX(3px);
+}
+
+.nav-item.active {
+    box-shadow: inset 3px 0 0 var(--gold);
+}
+
+/* Cards feel slightly more premium */
+.card,
+.stat-card,
+.tutor-card,
+.assignment-row,
+.calendar-card,
+.selected-day-card,
+.timer-card,
+.music-card,
+.progress-card {
+    box-shadow: var(--shadow-card);
+    border-color: rgba(183, 154, 98, 0.16);
+}
+
+.card:hover,
+.stat-card:hover,
+.tutor-card:hover,
+.music-card:hover {
+    box-shadow: var(--shadow-hover);
+}
+
+/* Softer card transitions */
+.card,
+.stat-card,
+.tutor-card,
+.music-card {
+    transition:
+        transform 0.22s ease,
+        box-shadow 0.22s ease,
+        border-color 0.22s ease;
+}
+
+.card:hover,
+.tutor-card:hover,
+.music-card:hover {
+    transform: translateY(-2px);
+}
+
+/* Stat cards */
+.stat-number {
+    letter-spacing: -0.04em;
+}
+
+.stat-icon {
+    box-shadow: 0 5px 14px rgba(183, 154, 98, 0.12);
+}
+
+/* Hero section */
+.home-hero {
+    box-shadow: 0 14px 34px rgba(16, 44, 37, 0.13);
+    border: 1px solid rgba(183, 154, 98, 0.18);
+}
+
+.home-hero h1 {
+    letter-spacing: -0.035em;
+}
+
+/* Buttons */
+.primary-button,
+.secondary-button,
+.google-button {
+    transition:
+        transform 0.18s ease,
+        box-shadow 0.18s ease,
+        background-color 0.18s ease;
+}
+
+.primary-button:hover,
+.secondary-button:hover,
+.google-button:hover {
+    transform: translateY(-1px);
+}
+
+.primary-button:hover {
+    box-shadow: 0 7px 18px rgba(23, 60, 50, 0.18);
+}
+
+/* Tutor avatars */
+.tutor-avatar,
+.avatar,
+.profile-large-avatar {
+    box-shadow: 0 5px 14px rgba(16, 44, 37, 0.1);
+}
+
+/* Calendar */
+.calendar-day {
+    transition:
+        background-color 0.18s ease,
+        transform 0.18s ease;
+}
+
+.calendar-day:hover {
+    transform: translateY(-1px);
+}
+
+/* Assignment rows */
+.assignment-row {
+    transition:
+        background-color 0.18s ease,
+        box-shadow 0.18s ease,
+        transform 0.18s ease;
+}
+
+.assignment-row:hover {
+    transform: translateX(2px);
+}
+
+/* Page headings */
+.page-header h1 {
+    letter-spacing: -0.035em;
+}
+
+.page-header p {
+    max-width: 680px;
+}
+
+/* Roran cards */
+.roran-card,
+.roran-sidebar-card {
+    overflow: hidden;
+}
+
+.roran-card {
+    box-shadow: 0 12px 30px rgba(16, 44, 37, 0.09);
+}
+
+/* Inputs */
+input,
+select,
+textarea {
+    transition:
+        border-color 0.18s ease,
+        box-shadow 0.18s ease,
+        background-color 0.18s ease;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    box-shadow: 0 0 0 3px rgba(183, 154, 98, 0.13);
+}
+
+/* Gold details */
+.card-header h2,
+.selected-day-date,
+.timer-display {
+    color: var(--green-dark);
+}
+
+/* Subtle scrollbar */
+::-webkit-scrollbar {
+    width: 9px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--cream-dark);
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(23, 60, 50, 0.28);
+    border-radius: 999px;
+    border: 2px solid var(--cream-dark);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(23, 60, 50, 0.45);
+}
+
+/* Selection */
+::selection {
+    background: rgba(183, 154, 98, 0.28);
+    color: var(--green-dark);
+}
