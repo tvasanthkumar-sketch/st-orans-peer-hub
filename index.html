@@ -1,25 +1,37 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>St Oran's Peer Hub</title>
 
+    <meta
+        name="description"
+        content="St Oran's Peer Hub - Learn together, help each other, grow together."
+    >
+
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap"
+        rel="stylesheet"
+    >
 
+    <!-- Main stylesheet -->
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-    <!-- =========================
-         AUTH SCREEN
-    ========================== -->
+    <!-- =========================================================
+         AUTHENTICATION SCREEN
+         ========================================================= -->
 
     <section id="authScreen" class="auth-screen">
 
@@ -28,127 +40,238 @@
 
         <div class="auth-card">
 
+            <!-- Brand -->
             <div class="auth-brand">
-                <div class="brand-dragon">🐉</div>
+
+                <div class="brand-dragon" aria-hidden="true">
+                    🐉
+                </div>
 
                 <div>
                     <h1>St Oran's</h1>
                     <span>Peer Hub</span>
                 </div>
+
             </div>
 
             <p class="auth-intro">
-                Study smarter. Help each other. Grow together.
+                Learn together. Help each other. Grow together.
             </p>
 
-            <div class="auth-tabs">
-                <button class="auth-tab active" data-auth="signin">
+
+            <!-- Authentication Tabs -->
+            <div class="auth-tabs" role="tablist">
+
+                <button
+                    type="button"
+                    class="auth-tab active"
+                    data-auth-tab="signin"
+                    role="tab"
+                    aria-selected="true"
+                >
                     Sign In
                 </button>
 
-                <button class="auth-tab" data-auth="signup">
+                <button
+                    type="button"
+                    class="auth-tab"
+                    data-auth-tab="signup"
+                    role="tab"
+                    aria-selected="false"
+                >
                     Create Account
                 </button>
+
             </div>
 
-            <!-- SIGN IN -->
 
-            <form id="signinForm" class="auth-form">
+            <!-- =========================
+                 SIGN IN
+                 ========================= -->
 
-                <label>
-                    School Email
+            <form
+                id="signinForm"
+                class="auth-form"
+                novalidate
+            >
+
+                <div class="form-group">
+
+                    <label for="signinEmail">
+                        School Email
+                    </label>
+
                     <input
-                        id="loginEmail"
                         type="email"
+                        id="signinEmail"
+                        name="email"
                         placeholder="you@storans.school.nz"
                         autocomplete="email"
                         required
                     >
-                </label>
 
-                <label>
-                    Password
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="signinPassword">
+                        Password
+                    </label>
+
                     <input
-                        id="loginPassword"
                         type="password"
+                        id="signinPassword"
+                        name="password"
                         placeholder="Enter your password"
                         autocomplete="current-password"
                         required
                     >
-                </label>
 
-                <button class="primary-button auth-submit" type="submit">
+                </div>
+
+
+                <p
+                    id="signinError"
+                    class="form-error"
+                    role="alert"
+                    aria-live="polite"
+                ></p>
+
+
+                <button
+                    type="submit"
+                    class="primary-button auth-submit"
+                >
                     Sign In
                 </button>
 
             </form>
 
-            <!-- SIGN UP -->
 
-            <form id="signupForm" class="auth-form hidden">
+            <!-- =========================
+                 SIGN UP
+                 ========================= -->
 
-                <label>
-                    Full Name
+            <form
+                id="signupForm"
+                class="auth-form hidden"
+                novalidate
+            >
+
+                <div class="form-group">
+
+                    <label for="signupName">
+                        Full Name
+                    </label>
+
                     <input
-                        id="signupName"
                         type="text"
-                        placeholder="Your name"
+                        id="signupName"
+                        name="name"
+                        placeholder="Your full name"
+                        autocomplete="name"
                         required
                     >
-                </label>
 
-                <label>
-                    School Email
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="signupEmail">
+                        School Email
+                    </label>
+
                     <input
-                        id="signupEmail"
                         type="email"
+                        id="signupEmail"
+                        name="email"
                         placeholder="you@storans.school.nz"
+                        autocomplete="email"
                         required
                     >
-                </label>
 
-                <label>
-                    Year Level
-                    <select id="signupYear" required>
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="signupYear">
+                        Year Level
+                    </label>
+
+                    <select
+                        id="signupYear"
+                        name="year"
+                        required
+                    >
                         <option value="">Select your year</option>
-                        <option>Year 7</option>
-                        <option>Year 8</option>
-                        <option>Year 9</option>
-                        <option>Year 10</option>
-                        <option>Year 11</option>
-                        <option>Year 12</option>
-                        <option>Year 13</option>
+                        <option value="7">Year 7</option>
+                        <option value="8">Year 8</option>
+                        <option value="9">Year 9</option>
+                        <option value="10">Year 10</option>
+                        <option value="11">Year 11</option>
+                        <option value="12">Year 12</option>
+                        <option value="13">Year 13</option>
                     </select>
-                </label>
 
-                <label>
-                    Password
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="signupPassword">
+                        Password
+                    </label>
+
                     <input
-                        id="signupPassword"
                         type="password"
+                        id="signupPassword"
+                        name="password"
                         placeholder="Create a password"
-                        minlength="6"
+                        autocomplete="new-password"
                         required
                     >
-                </label>
 
-                <button class="primary-button auth-submit" type="submit">
+                </div>
+
+
+                <p
+                    id="signupError"
+                    class="form-error"
+                    role="alert"
+                    aria-live="polite"
+                ></p>
+
+
+                <button
+                    type="submit"
+                    class="primary-button auth-submit"
+                >
                     Create Account
                 </button>
 
             </form>
+
 
             <div class="auth-divider">
                 <span>or</span>
             </div>
 
-            <button id="googleDemo" class="google-button" type="button">
-                <span>G</span>
+
+            <button
+                type="button"
+                id="googleDemo"
+                class="google-button"
+            >
+                <span class="google-icon" aria-hidden="true">G</span>
                 Continue with Google
             </button>
 
+
             <p class="demo-note">
-                Google sign-in is currently a prototype feature.
+                Demo mode is available for testing the Peer Hub.
             </p>
 
         </div>
@@ -156,19 +279,24 @@
     </section>
 
 
-    <!-- =========================
-         MAIN APP
-    ========================== -->
 
-    <section id="app" class="app hidden">
+    <!-- =========================================================
+         MAIN APPLICATION
+         ========================================================= -->
 
-        <!-- SIDEBAR -->
+    <div id="app" class="app hidden">
+
+        <!-- =========================
+             SIDEBAR
+             ========================= -->
 
         <aside class="sidebar">
 
             <div class="sidebar-brand">
 
-                <div class="sidebar-dragon">🐉</div>
+                <div class="sidebar-dragon" aria-hidden="true">
+                    🐉
+                </div>
 
                 <div>
                     <strong>St Oran's</strong>
@@ -178,104 +306,188 @@
             </div>
 
 
-            <nav class="main-nav">
+            <!-- Navigation -->
 
-                <button class="nav-item active" data-page="home">
-                    <span>⌂</span>
-                    Home
+            <nav class="main-nav" aria-label="Main navigation">
+
+                <button
+                    type="button"
+                    class="nav-item active"
+                    data-page="home"
+                    title="Home"
+                >
+                    <span class="nav-icon">⌂</span>
+                    <span class="nav-text">Home</span>
                 </button>
 
-                <button class="nav-item" data-page="calendar">
-                    <span>▣</span>
-                    Calendar
+
+                <button
+                    type="button"
+                    class="nav-item"
+                    data-page="calendar"
+                    title="Calendar"
+                >
+                    <span class="nav-icon">◫</span>
+                    <span class="nav-text">Calendar</span>
                 </button>
 
-                <button class="nav-item" data-page="assignments">
-                    <span>▤</span>
-                    Assignments
+
+                <button
+                    type="button"
+                    class="nav-item"
+                    data-page="assignments"
+                    title="Assignments"
+                >
+                    <span class="nav-icon">✓</span>
+                    <span class="nav-text">Assignments</span>
                 </button>
 
-                <button class="nav-item" data-page="tutors">
-                    <span>♧</span>
-                    Find a Peer
+
+                <button
+                    type="button"
+                    class="nav-item"
+                    data-page="tutors"
+                    title="Find a Peer"
+                >
+                    <span class="nav-icon">♧</span>
+                    <span class="nav-text">Find a Peer</span>
                 </button>
 
-                <button class="nav-item" data-page="study">
-                    <span>◷</span>
-                    Study
+
+                <button
+                    type="button"
+                    class="nav-item"
+                    data-page="study"
+                    title="Study"
+                >
+                    <span class="nav-icon">✦</span>
+                    <span class="nav-text">Study</span>
                 </button>
 
-                <button class="nav-item" data-page="profile">
-                    <span>○</span>
-                    My Profile
+
+                <button
+                    type="button"
+                    class="nav-item"
+                    data-page="profile"
+                    title="Profile"
+                >
+                    <span class="nav-icon">○</span>
+                    <span class="nav-text">Profile</span>
                 </button>
 
-                <button class="nav-item" data-page="settings">
-                    <span>⚙</span>
-                    Settings
+
+                <button
+                    type="button"
+                    class="nav-item"
+                    data-page="settings"
+                    title="Settings"
+                >
+                    <span class="nav-icon">⚙</span>
+                    <span class="nav-text">Settings</span>
                 </button>
 
             </nav>
 
 
-            <!-- RORAN SIDEBAR CARD -->
+            <!-- Roran Sidebar Card -->
 
             <div class="roran-sidebar-card">
 
-                <div class="roran-sidebar-art">
+                <div class="roran-sidebar-art" aria-hidden="true">
                     🐉
                 </div>
 
                 <div class="roran-sidebar-text">
-                    <strong>St Roran</strong>
+                    <strong>Roran</strong>
                     <span>Your study buddy</span>
                 </div>
 
-                <div class="roran-sparkles">
-                    ✦
+                <div class="roran-sparkles" aria-hidden="true">
+                    ✦ · ✧
                 </div>
 
             </div>
 
 
+            <!-- Sidebar Footer -->
+
             <div class="sidebar-footer">
                 <span>St Oran's College</span>
-                <span>Study together 🌿</span>
             </div>
 
         </aside>
 
 
-        <!-- MAIN CONTENT -->
+
+        <!-- =========================
+             MAIN CONTENT
+             ========================= -->
 
         <main class="main">
+
+            <!-- Topbar -->
 
             <header class="topbar">
 
                 <div class="mobile-brand">
-                    <span>🐉</span>
-                    St Oran's
+
+                    <div class="sidebar-dragon" aria-hidden="true">
+                        🐉
+                    </div>
+
+                    <div>
+                        <strong>Peer Hub</strong>
+                    </div>
+
                 </div>
+
 
                 <div class="topbar-spacer"></div>
 
+
+                <!-- Notifications -->
+
                 <button
+                    type="button"
                     id="notificationBtn"
                     class="icon-button"
+                    title="Notifications"
                     aria-label="Notifications"
                 >
-                    ♧
-                    <span id="notifDot" class="notification-dot hidden"></span>
+
+                    <span aria-hidden="true">♢</span>
+
+                    <span
+                        id="notifDot"
+                        class="notification-dot"
+                        aria-hidden="true"
+                    ></span>
+
                 </button>
 
-                <button id="profileTop" class="profile-top">
 
-                    <span id="avatar" class="avatar">
+                <!-- Profile -->
+
+                <button
+                    type="button"
+                    id="profileTop"
+                    class="profile-top"
+                    title="Open profile"
+                >
+
+                    <span
+                        id="topAvatar"
+                        class="avatar"
+                        aria-hidden="true"
+                    >
                         M
                     </span>
 
-                    <span id="topName">
-                        Student
+                    <span
+                        id="topName"
+                        class="top-name"
+                    >
+                        Maya
                     </span>
 
                 </button>
@@ -283,160 +495,207 @@
             </header>
 
 
-            <div id="pageContent" class="page-content"></div>
+            <!-- Dynamic page content -->
+
+            <div
+                id="pageContent"
+                class="page-content"
+            >
+                <!--
+                    script.js renders the individual pages here.
+                    Keeping this container empty prevents duplicated
+                    markup and keeps the JavaScript as the single
+                    source of truth for page rendering.
+                -->
+            </div>
 
         </main>
 
-    </section>
+    </div>
 
 
-    <!-- =========================
-         MODALS
-    ========================== -->
 
-    <div id="modalRoot"></div>
+    <!-- =========================================================
+         MODAL ROOT
+         ========================================================= -->
+
+    <div
+        id="modalRoot"
+        aria-live="polite"
+    ></div>
 
 
-    <!-- =========================
+
+    <!-- =========================================================
          TOAST
-    ========================== -->
+         ========================================================= -->
 
-    <div id="toast" class="toast"></div>
+    <div
+        id="toast"
+        class="toast"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+    ></div>
 
 
-    <!-- =========================
+
+    <!-- =========================================================
          FOCUS MODE
-    ========================== -->
+         ========================================================= -->
 
-    <div id="focusMode" class="focus-mode hidden">
+    <div
+        id="focusModeOverlay"
+        class="focus-mode-overlay"
+        aria-hidden="true"
+    >
 
-        <div class="focus-overlay"></div>
+        <button
+            type="button"
+            id="focusModeClose"
+            class="focus-mode-close"
+            aria-label="Close focus mode"
+        >
+            ×
+        </button>
 
-        <div class="focus-top">
 
-            <div class="focus-brand">
-                🐉 St Roran
-            </div>
+        <div class="focus-mode-content">
 
-            <button
-                id="exitFocusMode"
-                class="focus-exit"
-                type="button"
+            <div
+                id="focusRoran"
+                class="focus-roran"
+                aria-hidden="true"
             >
-                ✕ Exit Focus Mode
-            </button>
-
-        </div>
-
-
-        <div class="focus-content">
-
-            <div class="focus-roran" id="focusRoran">
                 🐉
             </div>
 
-            <div class="focus-message" id="focusMessage">
-                St Roran is studying with you.
+
+            <div class="focus-mode-label">
+                FOCUS MODE
             </div>
 
-            <div class="focus-mode-label" id="focusModeLabel">
-                FOCUS SESSION
-            </div>
 
-            <div class="focus-timer" id="focusTimerDisplay">
+            <div
+                id="focusModeTimer"
+                class="focus-mode-timer"
+            >
                 25:00
             </div>
 
+
+            <p
+                id="focusModeMessage"
+                class="focus-mode-message"
+            >
+                One task. One timer. You've got this.
+            </p>
+
+
             <div class="focus-progress">
-                <div id="focusProgressBar"></div>
+
+                <div
+                    id="focusProgressBar"
+                    class="focus-progress-bar"
+                ></div>
+
             </div>
 
-            <div class="focus-controls">
 
-                <button id="focusPause" class="focus-main-button">
-                    ▶ Start
+            <div class="focus-mode-controls">
+
+                <button
+                    type="button"
+                    id="focusStart"
+                    class="primary-button"
+                >
+                    Start
                 </button>
 
-                <button id="focusReset" class="focus-secondary-button">
-                    ↻ Reset
+                <button
+                    type="button"
+                    id="focusPause"
+                    class="secondary-button"
+                >
+                    Pause
                 </button>
 
-            </div>
-
-
-            <!-- BACKGROUNDS -->
-
-            <div class="focus-section">
-
-                <span class="focus-section-title">
-                    Focus Environment
-                </span>
-
-                <div class="background-options">
-
-                    <button
-                        class="background-option active"
-                        data-background="forest"
-                    >
-                        <span>🌲</span>
-                        Forest
-                    </button>
-
-                    <button
-                        class="background-option"
-                        data-background="rain"
-                    >
-                        <span>🌧</span>
-                        Rain
-                    </button>
-
-                    <button
-                        class="background-option"
-                        data-background="academia"
-                    >
-                        <span>📚</span>
-                        Academia
-                    </button>
-
-                    <button
-                        class="background-option"
-                        data-background="night"
-                    >
-                        <span>🌌</span>
-                        Night
-                    </button>
-
-                </div>
-
-            </div>
-
-
-            <!-- SPOTIFY -->
-
-            <div class="focus-music">
-
-                <div>
-                    <span class="music-icon">♫</span>
-
-                    <div>
-                        <strong>Study Music</strong>
-                        <small>Keep the good vibes going.</small>
-                    </div>
-                </div>
-
-                <button id="spotifyButton" class="spotify-button">
-                    Connect Spotify
+                <button
+                    type="button"
+                    id="focusReset"
+                    class="secondary-button"
+                >
+                    Reset
                 </button>
 
             </div>
+
+
+            <!-- Background choices -->
+
+            <div class="focus-backgrounds">
+
+                <button
+                    type="button"
+                    class="background-option active"
+                    data-background="forest"
+                >
+                    <span aria-hidden="true">🌲</span>
+                    Forest
+                </button>
+
+
+                <button
+                    type="button"
+                    class="background-option"
+                    data-background="rain"
+                >
+                    <span aria-hidden="true">☔</span>
+                    Rain
+                </button>
+
+
+                <button
+                    type="button"
+                    class="background-option"
+                    data-background="academia"
+                >
+                    <span aria-hidden="true">📖</span>
+                    Academia
+                </button>
+
+
+                <button
+                    type="button"
+                    class="background-option"
+                    data-background="night"
+                >
+                    <span aria-hidden="true">☾</span>
+                    Night
+                </button>
+
+            </div>
+
+
+            <button
+                type="button"
+                id="focusSpotifyButton"
+                class="focus-spotify-button"
+            >
+                ♫ Open Study Music
+            </button>
 
         </div>
 
     </div>
 
 
-    <script src="script.js"></script>
+
+    <!-- =========================================================
+         JAVASCRIPT
+         ========================================================= -->
+
+    <script src="script.js" defer></script>
 
 </body>
 </html>
-```
