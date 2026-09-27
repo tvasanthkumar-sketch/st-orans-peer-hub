@@ -2440,3 +2440,334 @@ textarea:focus {
     background: rgba(183, 154, 98, 0.28);
     color: var(--green-dark);
 }
+/* =========================================================
+   IMMERSIVE FOCUS MODE BACKGROUNDS
+   ========================================================= */
+
+.focus-background-layer {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+
+    background-size: cover;
+    background-position: center;
+    transition:
+        background-image 0.8s ease,
+        filter 0.8s ease;
+}
+
+/* FOREST */
+
+.focus-mode-overlay.forest
+.focus-background-layer {
+    background-image:
+        linear-gradient(
+            rgba(10, 31, 25, 0.34),
+            rgba(10, 31, 25, 0.5)
+        ),
+        url("https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=2400&q=85");
+
+    background-position: center;
+    animation: forestBreath 14s ease-in-out infinite alternate;
+}
+
+@keyframes forestBreath {
+    from {
+        transform: scale(1);
+    }
+
+    to {
+        transform: scale(1.035);
+    }
+}
+
+
+/* RAIN */
+
+.focus-mode-overlay.rain
+.focus-background-layer {
+    background-image:
+        linear-gradient(
+            rgba(12, 21, 28, 0.35),
+            rgba(12, 21, 28, 0.55)
+        ),
+        url("https://images.unsplash.com/photo-1428592953211-077101b2021b?auto=format&fit=crop&w=2400&q=85");
+
+    background-position: center;
+    animation: rainScene 8s ease-in-out infinite alternate;
+}
+
+@keyframes rainScene {
+    from {
+        transform: scale(1);
+        filter: brightness(0.9);
+    }
+
+    to {
+        transform: scale(1.025);
+        filter: brightness(1);
+    }
+}
+
+
+/* NIGHT */
+
+.focus-mode-overlay.night
+.focus-background-layer {
+    background-image:
+        linear-gradient(
+            rgba(5, 10, 24, 0.28),
+            rgba(5, 10, 24, 0.62)
+        ),
+        url("https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=2400&q=85");
+
+    background-position: center;
+    animation: nightScene 18s ease-in-out infinite alternate;
+}
+
+@keyframes nightScene {
+    from {
+        transform: scale(1);
+    }
+
+    to {
+        transform: scale(1.035);
+    }
+}
+
+
+/* ACADEMIA */
+
+.focus-mode-overlay.academia
+.focus-background-layer {
+    background-image:
+        linear-gradient(
+            rgba(30, 24, 19, 0.18),
+            rgba(30, 24, 19, 0.52)
+        ),
+        url("https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=2400&q=85");
+
+    background-position: center;
+    animation: academiaScene 16s ease-in-out infinite alternate;
+}
+
+@keyframes academiaScene {
+    from {
+        transform: scale(1);
+    }
+
+    to {
+        transform: scale(1.025);
+    }
+}
+
+
+/* =========================================================
+   ATMOSPHERE LAYER
+   ========================================================= */
+
+.focus-atmosphere {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   RAIN ANIMATION
+   ========================================================= */
+
+.rain-animation {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+}
+
+.rain-drop {
+    position: absolute;
+    top: -20%;
+    width: 1px;
+    height: 70px;
+
+    background: linear-gradient(
+        to bottom,
+        transparent,
+        rgba(255, 255, 255, 0.7)
+    );
+
+    transform: rotate(13deg);
+
+    animation:
+        rainFall linear infinite;
+}
+
+@keyframes rainFall {
+    from {
+        transform:
+            translate3d(0, -100px, 0)
+            rotate(13deg);
+    }
+
+    to {
+        transform:
+            translate3d(-120px, 120vh, 0)
+            rotate(13deg);
+    }
+}
+
+
+/* =========================================================
+   NIGHT STARS
+   ========================================================= */
+
+.stars-animation {
+    position: absolute;
+    inset: 0;
+}
+
+.focus-star {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+
+    background: rgba(255, 255, 255, 0.9);
+
+    box-shadow:
+        0 0 7px rgba(255, 255, 255, 0.7);
+
+    animation:
+        starTwinkle ease-in-out infinite alternate;
+}
+
+@keyframes starTwinkle {
+    from {
+        opacity: 0.2;
+        transform: scale(0.7);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1.35);
+    }
+}
+
+
+/* =========================================================
+   FOREST ATMOSPHERE
+   ========================================================= */
+
+.forest-animation {
+    position: absolute;
+    inset: 0;
+}
+
+.forest-leaf {
+    position: absolute;
+
+    color: rgba(215, 194, 143, 0.25);
+    font-size: 14px;
+
+    animation:
+        forestFloat ease-in-out infinite alternate;
+}
+
+@keyframes forestFloat {
+    from {
+        transform:
+            translate3d(0, 0, 0)
+            rotate(0deg);
+        opacity: 0.15;
+    }
+
+    to {
+        transform:
+            translate3d(18px, -22px, 0)
+            rotate(90deg);
+        opacity: 0.5;
+    }
+}
+
+
+/* =========================================================
+   ACADEMIA DUST
+   ========================================================= */
+
+.academia-animation {
+    position: absolute;
+    inset: 0;
+}
+
+.academia-particle {
+    position: absolute;
+
+    width: 3px;
+    height: 3px;
+
+    border-radius: 50%;
+
+    background: rgba(255, 244, 213, 0.35);
+
+    animation:
+        academiaDust ease-in-out infinite alternate;
+}
+
+@keyframes academiaDust {
+    from {
+        transform:
+            translate3d(0, 0, 0);
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+
+    to {
+        transform:
+            translate3d(15px, -35px, 0);
+        opacity: 0;
+    }
+}
+
+
+/* =========================================================
+   KEEP FOCUS CONTENT ABOVE THE SCENE
+   ========================================================= */
+
+.focus-mode-content,
+.focus-mode-close {
+    position: relative;
+    z-index: 5;
+}
+
+
+/* Make the actual focus scene fill the screen */
+.focus-mode-overlay {
+    overflow: hidden;
+}
+
+
+/* Slight glass effect over the scene */
+.focus-mode-content {
+    backdrop-filter: blur(1px);
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+    .focus-background-layer,
+    .rain-drop,
+    .focus-star,
+    .forest-leaf,
+    .academia-particle {
+        animation: none !important;
+    }
+}
