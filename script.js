@@ -2479,6 +2479,15 @@ function openTutorModal(tutor) {
    FOCUS MODE
    ========================================================= */
 
+let focusAudioContext = null;
+let focusRainSource = null;
+let focusRainGain = null;
+
+
+/* -------------------------
+   Focus Mode Setup
+   ------------------------- */
+
 function setupFocusMode() {
     $("#focusModeClose")?.addEventListener(
         "click",
@@ -2515,8 +2524,61 @@ function setupFocusMode() {
         "click",
         openSpotify
     );
+
+    createFocusBackground();
 }
 
+
+/* -------------------------
+   Create Background Layer
+   ------------------------- */
+
+function createFocusBackground() {
+    const overlay = $("#focusModeOverlay");
+
+    if (!overlay) {
+        return;
+    }
+
+    let backgroundLayer =
+        $("#focusBackgroundLayer");
+
+    if (!backgroundLayer) {
+        backgroundLayer =
+            document.createElement("div");
+
+        backgroundLayer.id =
+            "focusBackgroundLayer";
+
+        backgroundLayer.className =
+            "focus-background-layer";
+
+        overlay.prepend(backgroundLayer);
+    }
+
+    let atmosphere =
+        $("#focusAtmosphere");
+
+    if (!atmosphere) {
+        atmosphere =
+            document.createElement("div");
+
+        atmosphere.id =
+            "focusAtmosphere";
+
+        atmosphere.className =
+            "focus-atmosphere";
+
+        overlay.prepend(atmosphere);
+    }
+
+    setFocusBackground(currentFocusBackground);
+}
+
+
+/* -------------------------
+   Open Focus Mode
+   ------------------------- */
 
 function openFocusMode() {
     const overlay = $("#focusModeOverlay");
@@ -2525,6 +2587,8 @@ function openFocusMode() {
         return;
     }
 
+    createFocusBackground();
+
     overlay.classList.add("active");
     overlay.setAttribute("aria-hidden", "false");
 
@@ -2532,8 +2596,14 @@ function openFocusMode() {
     focusRunning = false;
 
     updateFocusDisplay();
+
+    setFocusBackground(currentFocusBackground);
 }
 
+
+/* -------------------------
+   Close Focus Mode
+   ------------------------- */
 
 function closeFocusMode() {
     const overlay = $("#focusModeOverlay");
@@ -2548,8 +2618,16 @@ function closeFocusMode() {
     clearInterval(focusTimerInterval);
 
     focusRunning = false;
+
+    stopFocusRain();
+
+    updateFocusDisplay();
 }
 
+
+/* -------------------------
+   Focus Timer
+   ------------------------- */
 
 function startFocusTimer() {
     if (focusRunning) {
@@ -2595,14 +2673,16 @@ function resetFocusTimer() {
 
 
 function updateFocusDisplay() {
-    const display = $("#focusModeTimer");
+    const display =
+        $("#focusModeTimer");
 
     if (display) {
         display.textContent =
             formatTime(focusSeconds);
     }
 
-    const start = $("#focusStart");
+    const start =
+        $("#focusStart");
 
     if (start) {
         start.textContent =
@@ -2611,7 +2691,8 @@ function updateFocusDisplay() {
                 : "Start";
     }
 
-    const progress = $("#focusProgressBar");
+    const progress =
+        $("#focusProgressBar");
 
     if (progress) {
         const percentage =
@@ -2628,6 +2709,10 @@ function updateFocusDisplay() {
 }
 
 
+/* -------------------------
+   Finish Focus Session
+   ------------------------- */
+
 function finishFocusTimer() {
     clearInterval(focusTimerInterval);
 
@@ -2636,7 +2721,8 @@ function finishFocusTimer() {
 
     updateFocusDisplay();
 
-    const user = getCurrentUserFromData();
+    const user =
+        getCurrentUserFromData();
 
     updateCurrentUser({
         points: (user?.points || 0) + 20,
@@ -2649,14 +2735,20 @@ function finishFocusTimer() {
 }
 
 
+/* -------------------------
+   Background Switching
+   ------------------------- */
+
 function setFocusBackground(background) {
-    const overlay = $("#focusModeOverlay");
+    const overlay =
+        $("#focusModeOverlay");
 
     if (!overlay) {
         return;
     }
 
-    currentFocusBackground = background;
+    currentFocusBackground =
+        background;
 
     overlay.classList.remove(
         "forest",
@@ -2665,16 +2757,334 @@ function setFocusBackground(background) {
         "night"
     );
 
-    overlay.classList.add(background);
+    overlay.classList.add(
+        background
+    );
 
-    $$(".background-option").forEach(option => {
-        option.classList.toggle(
-            "active",
-            option.dataset.background === background
-        );
-    });
+    $$(".background-option").forEach(
+        option => {
+            option.classList.toggle(
+                "active",
+                option.dataset.background ===
+                    background
+            );
+        }
+    );
+
+    createFocusBackground();
+
+    const atmosphere =
+        $("#focusAtmosphere");
+
+    if (atmosphere) {
+        atmosphere.className =
+            `focus-atmosphere ${background}`;
+    }
+
+    updateFocusAtmosphere(
+        background
+    );
 }
 
+
+/* -------------------------
+   Background Atmosphere
+   ------------------------- */
+
+function updateFocusAtmosphere(
+    background
+) {
+    const atmosphere =
+        $("#focusAtmosphere");
+
+    if (!atmosphere) {
+        return;
+    }
+
+    atmosphere.innerHTML = "";
+
+    stopFocusRain();
+
+    if (background === "rain") {
+        createRainAnimation(
+            atmosphere
+        );
+
+        startFocusRain();
+    }
+
+    if (background === "night") {
+        createStarsAnimation(
+            atmosphere
+        );
+    }
+
+    if (background === "forest") {
+        createForestAnimation(
+            atmosphere
+        );
+    }
+
+    if (background === "academia") {
+        createAcademiaAnimation(
+            atmosphere
+        );
+    }
+}
+
+
+/* -------------------------
+   Rain Animation
+   ------------------------- */
+
+function createRainAnimation(
+    container
+) {
+    const rain =
+        document.createElement("div");
+
+    rain.className =
+        "rain-animation";
+
+    for (let i = 0; i < 90; i++) {
+        const drop =
+            document.createElement("span");
+
+        drop.className =
+            "rain-drop";
+
+        drop.style.left =
+            `${Math.random() * 100}%`;
+
+        drop.style.animationDelay =
+            `${Math.random() * 1.8}s`;
+
+        drop.style.animationDuration =
+            `${0.65 + Math.random() * 0.7}s`;
+
+        drop.style.opacity =
+            `${0.25 + Math.random() * 0.5}`;
+
+        rain.appendChild(drop);
+    }
+
+    container.appendChild(rain);
+}
+
+
+/* -------------------------
+   Night Sky
+   ------------------------- */
+
+function createStarsAnimation(
+    container
+) {
+    const stars =
+        document.createElement("div");
+
+    stars.className =
+        "stars-animation";
+
+    for (let i = 0; i < 90; i++) {
+        const star =
+            document.createElement("span");
+
+        star.className =
+            "focus-star";
+
+        star.style.left =
+            `${Math.random() * 100}%`;
+
+        star.style.top =
+            `${Math.random() * 75}%`;
+
+        star.style.animationDelay =
+            `${Math.random() * 4}s`;
+
+        star.style.animationDuration =
+            `${2 + Math.random() * 3}s`;
+
+        stars.appendChild(star);
+    }
+
+    container.appendChild(stars);
+}
+
+
+/* -------------------------
+   Forest Atmosphere
+   ------------------------- */
+
+function createForestAnimation(
+    container
+) {
+    const leaves =
+        document.createElement("div");
+
+    leaves.className =
+        "forest-animation";
+
+    for (let i = 0; i < 18; i++) {
+        const leaf =
+            document.createElement("span");
+
+        leaf.className =
+            "forest-leaf";
+
+        leaf.textContent = "✦";
+
+        leaf.style.left =
+            `${Math.random() * 100}%`;
+
+        leaf.style.top =
+            `${20 + Math.random() * 70}%`;
+
+        leaf.style.animationDelay =
+            `${Math.random() * 5}s`;
+
+        leaf.style.animationDuration =
+            `${5 + Math.random() * 5}s`;
+
+        leaves.appendChild(leaf);
+    }
+
+    container.appendChild(leaves);
+}
+
+
+/* -------------------------
+   Academia Atmosphere
+   ------------------------- */
+
+function createAcademiaAnimation(
+    container
+) {
+    const dust =
+        document.createElement("div");
+
+    dust.className =
+        "academia-animation";
+
+    for (let i = 0; i < 25; i++) {
+        const particle =
+            document.createElement("span");
+
+        particle.className =
+            "academia-particle";
+
+        particle.style.left =
+            `${Math.random() * 100}%`;
+
+        particle.style.top =
+            `${Math.random() * 100}%`;
+
+        particle.style.animationDelay =
+            `${Math.random() * 5}s`;
+
+        particle.style.animationDuration =
+            `${4 + Math.random() * 5}s`;
+
+        dust.appendChild(particle);
+    }
+
+    container.appendChild(dust);
+}
+
+
+/* =========================================================
+   RAIN SOUND
+   ========================================================= */
+
+function startFocusRain() {
+    if (focusAudioContext) {
+        if (
+            focusAudioContext.state ===
+            "suspended"
+        ) {
+            focusAudioContext.resume();
+        }
+
+        return;
+    }
+
+    try {
+        focusAudioContext =
+            new (
+                window.AudioContext ||
+                window.webkitAudioContext
+            )();
+
+        const bufferSize =
+            focusAudioContext.sampleRate * 2;
+
+        const buffer =
+            focusAudioContext.createBuffer(
+                1,
+                bufferSize,
+                focusAudioContext.sampleRate
+            );
+
+        const data =
+            buffer.getChannelData(0);
+
+        for (
+            let i = 0;
+            i < bufferSize;
+            i++
+        ) {
+            data[i] =
+                Math.random() * 2 - 1;
+        }
+
+        focusRainSource =
+            focusAudioContext.createBufferSource();
+
+        focusRainSource.buffer =
+            buffer;
+
+        focusRainSource.loop = true;
+
+        const filter =
+            focusAudioContext.createBiquadFilter();
+
+        filter.type = "lowpass";
+        filter.frequency.value = 3200;
+
+        focusRainGain =
+            focusAudioContext.createGain();
+
+        focusRainGain.gain.value =
+            0.035;
+
+        focusRainSource
+            .connect(filter)
+            .connect(focusRainGain)
+            .connect(
+                focusAudioContext.destination
+            );
+
+        focusRainSource.start();
+
+    } catch (error) {
+        console.warn(
+            "Rain audio could not start:",
+            error
+        );
+    }
+}
+
+
+function stopFocusRain() {
+    if (focusRainGain) {
+        focusRainGain.gain.value =
+            0;
+    }
+}
+
+
+/* =========================================================
+   END OF FOCUS MODE
+   ========================================================= */
 
 /* =========================================================
    GLOBAL CLICK HANDLING
