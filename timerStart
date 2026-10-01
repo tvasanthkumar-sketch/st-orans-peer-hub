@@ -661,7 +661,8 @@ function renderPage(page) {
             break;
 
         case "settings":
-            renderSettings(container);
+          
+         renderSettings(container);
             break;
 
         default:
@@ -1709,8 +1710,24 @@ function renderStudy(container) {
             </div>
 
         </div>
+<div class="timer-settings">
+    <label for="focusMinutes">
+        Focus length
+    </label>
 
+    <input
+        type="number"
+        id="focusMinutes"
+        min="1"
+        max="120"
+        value="${customFocusMinutes}"
+    >
+
+    <span>minutes</span>
+</div>
         <div class="study-environment-grid">
+
+
 
             ${studyPlaylists.map(playlist => `
                 <article
@@ -1800,6 +1817,25 @@ function renderStudy(container) {
      * into the correct card.
      */
     updateTimerDisplay();
+
+
+const focusInput = document.querySelector("#focusMinutes");
+
+if (focusInput) {
+    focusInput.addEventListener("change", () => {
+
+        customFocusMinutes =
+            Number(focusInput.value);
+
+        if (timerMode === "focus" && !timerRunning) {
+            timerSeconds =
+                customFocusMinutes * 60;
+
+            updateTimerDisplay();
+        }
+
+    });
+}
 }
 
 
