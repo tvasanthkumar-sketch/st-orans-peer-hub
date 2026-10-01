@@ -2372,7 +2372,7 @@ function setupDraggableSpotify() {
     let offsetY = 0;
 
     player.addEventListener("pointerdown", event => {
-        if (event.target.closest("iframe")) return;
+    if (!event.target.closest(".spotify-drag-handle")) return;
 
         isDragging = true;
 
