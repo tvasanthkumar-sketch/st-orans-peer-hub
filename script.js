@@ -2360,8 +2360,65 @@ function setupFocusMode() {
     );
 
     createFocusBackground();
+   setupDraggableSpotify();
 }
+function setupDraggableSpotify() {
+    const player = $("#focusSpotifyEmbed");
 
+    if (!player) return;
+
+    let isDragging = false;
+    let offsetX = 0;
+    let offsetY = 0;
+
+    player.addEventListener("pointerdown", event => {
+        if (event.target.closest("iframe")) return;
+
+        isDragging = true;
+
+        const rect = player.getBoundingClientRect();
+
+        offsetX = event.clientX - rect.left;
+        offsetY = event.clientY - rect.top;
+
+        player.setPointerCapture(event.pointerId);
+    });
+
+    player.addEventListener("pointermove", event => {
+        if (!isDragging) return;
+
+        const overlay = $("#focusModeOverlay");
+
+        if (!overlay) return;
+
+        const overlayRect = overlay.getBoundingClientRect();
+
+        let left = event.clientX - overlayRect.left - offsetX;
+        let top = event.clientY - overlayRect.top - offsetY;
+
+        const maxLeft = overlayRect.width - player.offsetWidth;
+        const maxTop = overlayRect.height - player.offsetHeight;
+
+        left = Math.max(0, Math.min(left, maxLeft));
+        top = Math.max(0, Math.min(top, maxTop));
+
+        player.style.left = `${left}px`;
+        player.style.top = `${top}px`;
+        player.style.right = "auto";
+    });
+
+    player.addEventListener("pointerup", event => {
+        isDragging = false;
+
+        if (player.hasPointerCapture(event.pointerId)) {
+            player.releasePointerCapture(event.pointerId);
+        }
+    });
+
+    player.addEventListener("pointercancel", () => {
+        isDragging = false;
+    });
+}
 
 /* -------------------------
    OPEN FOCUS MODE
