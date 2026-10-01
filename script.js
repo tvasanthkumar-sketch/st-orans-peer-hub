@@ -153,6 +153,8 @@ let timerInterval = null;
 let timerSeconds = 25 * 60;
 let timerRunning = false;
 let timerMode = "focus";
+let customFocusMinutes = 25;
+
 
 /*
  * Which Study card currently owns the timer.
@@ -1828,9 +1830,9 @@ function setTimerMode(mode) {
 
     timerMode = mode;
 
-    if (mode === "focus") {
-        timerSeconds = 25 * 60;
-    } else if (mode === "shortBreak") {
+if (mode === "focus") {
+    timerSeconds = customFocusMinutes * 60;
+} else if (mode === "shortBreak") {
         timerSeconds = 5 * 60;
     } else {
         timerSeconds = 15 * 60;
@@ -1913,9 +1915,9 @@ function resetTimer() {
 
     stopStudySound();
 
-    if (timerMode === "focus") {
-        timerSeconds = 25 * 60;
-    } else if (timerMode === "shortBreak") {
+   if (timerMode === "focus") {
+    timerSeconds = customFocusMinutes * 60;
+} else if (timerMode === "shortBreak") {
         timerSeconds = 5 * 60;
     } else {
         timerSeconds = 15 * 60;
