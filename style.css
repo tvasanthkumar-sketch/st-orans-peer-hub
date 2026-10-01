@@ -1702,11 +1702,35 @@ p {
     text-align: center;
 }
 .focus-spotify-embed {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    z-index: 20;
     width: min(420px, 90vw);
-    margin: 18px auto 8px;
     border-radius: 16px;
     overflow: hidden;
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+    cursor: grab;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+    user-select: none;
+}
+
+.focus-spotify-embed:active {
+    cursor: grabbing;
+}
+
+.focus-spotify-embed iframe {
+    display: block;
+    width: 100%;
+    height: 152px;
+    border: 0;
+    pointer-events: none;
+}
+
+.focus-spotify-placeholder {
+    margin: 0;
+    padding: 16px;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.8);
 }
 
 .focus-spotify-embed iframe {
@@ -2866,7 +2890,7 @@ textarea:focus {
 
 .study-environment-card {
     position: relative;
-    min-height: 470px;
+    min-height: 285px;
     overflow: hidden;
     border-radius: 22px;
     isolation: isolate;
