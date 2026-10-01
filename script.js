@@ -2417,40 +2417,43 @@ function openFocusMode(
    OPEN STUDY ENVIRONMENT
    ------------------------- */
 
-function openStudyEnvironmentFullscreen(
-    playlistId
-) {
+function openStudyEnvironmentFullscreen(playlistId) {
+    const playlist = getStudyPlaylists().find(
+        item => item.id === playlistId
+    );
 
-    const playlist =
-        getStudyPlaylists().find(
-            item => item.id === playlistId
-        );
+    if (!playlist) return;
 
-    if (!playlist) {
-        return;
+    currentFocusBackground = playlist.fullscreenBackground;
+    currentFocusSound = playlist.sound;
+
+    const spotifyContainer = $("#focusSpotifyEmbed");
+
+    if (spotifyContainer) {
+        const embedUrl = getSpotifyEmbedUrl(playlist.spotify);
+
+        spotifyContainer.innerHTML = embedUrl
+            ? `
+                <iframe
+                    src="${embedUrl}"
+                    width="100%"
+                    height="152"
+                    frameborder="0"
+                    allowfullscreen=""
+                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                    loading="lazy"
+                    title="${playlist.title} Spotify playlist"
+                ></iframe>
+            `
+            : `
+                <p class="focus-spotify-placeholder">
+                    🎵 Study music unavailable
+                </p>
+            `;
     }
 
-    currentFocusBackground =
-        playlist.fullscreenBackground;
-
-    currentFocusSound =
-        playlist.sound;
-
-    openFocusMode(
-        playlist.fullscreenBackground,
-        playlist.sound
-    );
-
-    /*
-     * If the user clicked Full Screen, start the
-     * selected environment's ambient sound after
-     * the browser registers the click as a user gesture.
-     */
-    startStudySound(
-        playlist.sound
-    );
+    openFocusMode();
 }
-
 
 /* -------------------------
    CLOSE FOCUS MODE
