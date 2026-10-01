@@ -2491,16 +2491,21 @@ function openStudyEnvironmentFullscreen(playlistId) {
 
         spotifyContainer.innerHTML = embedUrl
             ? `
-                <iframe
-                    src="${embedUrl}"
-                    width="100%"
-                    height="152"
-                    frameborder="0"
-                    allowfullscreen=""
-                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                    loading="lazy"
-                    title="${playlist.title} Spotify playlist"
-                ></iframe>
+<div class="spotify-drag-handle">
+    <span>⠿</span>
+    <span>Drag music player</span>
+</div>
+
+<iframe
+    src="${embedUrl}"
+    width="100%"
+    height="152"
+    frameborder="0"
+    allowfullscreen=""
+    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+    loading="lazy"
+    title="${playlist.title} Spotify playlist"
+></iframe>
             `
             : `
                 <p class="focus-spotify-placeholder">
