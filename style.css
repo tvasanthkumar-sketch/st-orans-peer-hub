@@ -2562,45 +2562,29 @@ textarea:focus {
         transform: scale(1.025);
     }
 }
-/* =========================================================
-   CAFE
-   ========================================================= */
-
+/* CAFE */
 .focus-mode-overlay.cafe
 .focus-background-layer {
     background-image:
-        radial-gradient(
-            circle at 22% 25%,
-            rgba(215, 194, 143, 0.28),
-            transparent 24%
-        ),
         linear-gradient(
-            rgba(55, 37, 27, 0.2),
-            rgba(25, 18, 14, 0.62)
+            rgba(35, 24, 18, 0.25),
+            rgba(20, 14, 11, 0.62)
         ),
-        linear-gradient(
-            135deg,
-            #76543b,
-            #3d2b21 55%,
-            #1f1815
-        );
-
+        url("https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=2400&q=85");
     background-position: center;
+    background-size: cover;
     animation: cafeScene 12s ease-in-out infinite alternate;
 }
-
 @keyframes cafeScene {
     from {
         transform: scale(1);
         filter: brightness(0.9);
     }
-
     to {
         transform: scale(1.025);
         filter: brightness(1);
     }
 }
-
 
 /* =========================================================
    NO LYRICS
