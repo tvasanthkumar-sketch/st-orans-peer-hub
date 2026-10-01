@@ -1839,7 +1839,62 @@ if (focusInput) {
 }
 }
 
+function renderProfile(container) {
+    const user = currentUser;
 
+    if (!user) {
+        return;
+    }
+
+    container.innerHTML = `
+        <div class="page-header">
+            <div>
+                <p class="eyebrow">YOUR PROFILE</p>
+                <h1>${user.name}</h1>
+                <p>Keep track of your Peer Hub progress and school details.</p>
+            </div>
+        </div>
+
+        <div class="profile-grid">
+
+            <section class="profile-card">
+                <div class="profile-avatar">
+                    ${user.name
+                        .split(" ")
+                        .map(name => name[0])
+                        .join("")
+                        .slice(0, 2)
+                        .toUpperCase()}
+                </div>
+
+                <div class="profile-main">
+                    <h2>${user.name}</h2>
+                    <p>${user.email}</p>
+                    <span class="profile-year">
+                        ${user.year || "Student"} · ${user.className || ""}
+                    </span>
+                </div>
+            </section>
+
+            <section class="profile-card">
+                <p class="eyebrow">PEER POINTS</p>
+                <strong class="profile-stat">
+                    ${user.points || 0}
+                </strong>
+                <p>Points earned through helping and learning.</p>
+            </section>
+
+            <section class="profile-card">
+                <p class="eyebrow">STUDY SESSIONS</p>
+                <strong class="profile-stat">
+                    ${user.sessions || 0}
+                </strong>
+                <p>Focus sessions completed.</p>
+            </section>
+
+        </div>
+    `;
+}
 /* =========================================================
    TIMER
    ========================================================= */
