@@ -153,6 +153,7 @@ let timerInterval = null;
 let timerSeconds = 25 * 60;
 let timerRunning = false;
 let timerMode = "focus";
+let activeStudyEnvironment = null;
 
 let focusTimerInterval = null;
 let focusSeconds = 25 * 60;
@@ -1743,9 +1744,7 @@ function renderStudy(container) {
                                 FOCUS
                             </span>
 
-                            <strong>
-                                25:00
-                            </strong>
+                            <strong data-study-timer="${playlist.id}">25:00</strong>
 
                         </div>
 
@@ -1865,19 +1864,21 @@ function resetTimer() {
 
 function updateTimerDisplay() {
     const display = $("#timerDisplay");
-
-    if (display) {
-        display.textContent =
-            formatTime(timerSeconds);
-    }
+    if (display) display.textContent = formatTime(timerSeconds);
 
     const start = $("#timerStart");
-
     if (start) {
-        start.textContent =
-            timerRunning
-                ? "Pause"
-                : "Start";
+        start.textContent = timerRunning ? "Pause" : "Start";
+    }
+
+    if (activeStudyEnvironment) {
+        const studyTimer = document.querySelector(
+            `[data-study-timer="${activeStudyEnvironment}"]`
+        );
+
+        if (studyTimer) {
+            studyTimer.textContent = formatTime(timerSeconds);
+        }
     }
 }
 
