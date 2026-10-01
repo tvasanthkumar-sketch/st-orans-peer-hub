@@ -3712,7 +3712,60 @@ function attachPageEvents() {
 
         });
 
+    $$("[data-playlist-action]")
+        .forEach(button => {
 
+            button.addEventListener(
+                "click",
+                event => {
+
+                    event.preventDefault();
+                    event.stopPropagation();
+
+                    const action =
+                        button.dataset
+                            .playlistAction;
+
+                    const playlistId =
+                        button.dataset
+                            .playlistId;
+
+                    if (
+                        action ===
+                        "fullscreen"
+                    ) {
+
+                        const playlist =
+                            getStudyPlaylists()
+                                .find(
+                                    item =>
+                                        item.id ===
+                                        playlistId
+                                );
+
+                        if (!playlist) {
+                            console.error(
+                                "Study playlist not found:",
+                                playlistId
+                            );
+                            return;
+                        }
+
+                        activeStudyEnvironment =
+                            playlistId;
+
+                        openFocusMode(
+                            playlist.fullscreenBackground,
+                            playlist.sound
+                        );
+
+                        return;
+                    }
+
+                }
+            );
+
+        });
     /* -------------------------
        Study environments
        ------------------------- */
