@@ -1702,7 +1702,7 @@ p {
     text-align: center;
 }
 .focus-spotify-embed {
-    position: absolute;
+    position: fixed;
     top: 24px;
     right: 24px;
     z-index: 20;
