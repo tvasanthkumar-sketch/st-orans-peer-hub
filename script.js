@@ -1664,7 +1664,7 @@ function getStudyPlaylists() {
             spotify:
                 "https://open.spotify.com/playlist/37i9dQZF1DWVceT0UosQME?si=AEmZ_Pw7Ru-XFpuD4_YgvQ",
             theme: "lyrics",
-            fullscreenBackground: "forest",
+            fullscreenBackground: "lyrics",
             sound: "minimal"
         }
     ];
@@ -2645,96 +2645,33 @@ function finishFocusTimer() {
    ========================================================= */
 
 function createFocusBackground() {
+    const overlay = $("#focusModeOverlay");
+    if (!overlay) return;
 
-    const overlay =
-        $("#focusModeOverlay");
-
-    if (!overlay) {
-        return;
-    }
-
-
-    /* -------------------------
-       BACKGROUND LAYER
-       ------------------------- */
-
-    let backgroundLayer =
-        $("#focusBackgroundLayer");
+    let backgroundLayer = $("#focusBackgroundLayer");
 
     if (!backgroundLayer) {
-
-        backgroundLayer =
-            document.createElement(
-                "div"
-            );
-
-        backgroundLayer.id =
-            "focusBackgroundLayer";
-
-        /*
-         * Your CSS targets .focus-background-layer,
-         * not just #focusBackgroundLayer.
-         */
-        backgroundLayer.className =
-            "focus-background-layer";
-
-        backgroundLayer.setAttribute(
-            "aria-hidden",
-            "true"
-        );
-
-        overlay.prepend(
-            backgroundLayer
-        );
-
+        backgroundLayer = document.createElement("div");
+        backgroundLayer.id = "focusBackgroundLayer";
+        backgroundLayer.className = "focus-background-layer";
+        backgroundLayer.setAttribute("aria-hidden", "true");
+        overlay.prepend(backgroundLayer);
     } else {
-
-        backgroundLayer.classList.add(
-            "focus-background-layer"
-        );
+        backgroundLayer.classList.add("focus-background-layer");
     }
 
-
-    /* -------------------------
-       ATMOSPHERE LAYER
-       ------------------------- */
-
-    let atmosphere =
-        $("#focusAtmosphere");
+    let atmosphere = $("#focusAtmosphere");
 
     if (!atmosphere) {
-
-        atmosphere =
-            document.createElement(
-                "div"
-            );
-
-        atmosphere.id =
-            "focusAtmosphere";
-
-        /*
-         * Your CSS targets .focus-atmosphere.
-         */
-        atmosphere.className =
-            "focus-atmosphere";
-
-        atmosphere.setAttribute(
-            "aria-hidden",
-            "true"
-        );
-
-        overlay.appendChild(
-            atmosphere
-        );
-
+        atmosphere = document.createElement("div");
+        atmosphere.id = "focusAtmosphere";
+        atmosphere.className = "focus-atmosphere";
+        atmosphere.setAttribute("aria-hidden", "true");
+        overlay.appendChild(atmosphere);
     } else {
-
-        atmosphere.classList.add(
-            "focus-atmosphere"
-        );
+        atmosphere.classList.add("focus-atmosphere");
     }
 }
-
 
 /* -------------------------
    CHANGE BACKGROUND
@@ -2759,14 +2696,14 @@ function setFocusBackground(
     /*
      * Remove every possible environment class.
      */
-    overlay.classList.remove(
-        "forest",
-        "rain",
-        "academia",
-        "night",
-        "cafe",
-        "lyrics"
-    );
+   overlay.classList.remove(
+    "forest",
+    "rain",
+    "academia",
+    "night",
+    "cafe",
+    "lyrics"
+);
 
     overlay.classList.add(
         currentFocusBackground
