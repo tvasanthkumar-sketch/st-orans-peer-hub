@@ -153,6 +153,10 @@ let timerInterval = null;
 let timerSeconds = 25 * 60;
 let timerRunning = false;
 let timerMode = "focus";
+
+/*
+ * Which Study card currently owns the timer.
+ */
 let activeStudyEnvironment = null;
 
 let focusTimerInterval = null;
@@ -160,6 +164,7 @@ let focusSeconds = 25 * 60;
 let focusRunning = false;
 
 let currentFocusBackground = "forest";
+let currentFocusSound = "forest";
 
 
 /* =========================================================
@@ -446,7 +451,11 @@ function handleSignIn(event) {
 
     saveCurrentUser();
 
-    showToast("Welcome back, " + user.name.split(" ")[0] + " 🌿");
+    showToast(
+        "Welcome back, " +
+        user.name.split(" ")[0] +
+        " 🌿"
+    );
 
     showApplication();
 }
@@ -757,9 +766,7 @@ function renderHome(container) {
             </div>
         </div>
 
-
         <section class="home-hero card">
-
             <div class="home-hero-content">
                 <p class="eyebrow">YOUR PEER HUB</p>
 
@@ -788,9 +795,7 @@ function renderHome(container) {
             >
                 🐉
             </div>
-
         </section>
-
 
         <section class="stats-grid">
 
@@ -806,7 +811,6 @@ function renderHome(container) {
                 </div>
             </div>
 
-
             <div class="stat-card card">
                 <div class="stat-icon">✓</div>
                 <div>
@@ -819,7 +823,6 @@ function renderHome(container) {
                 </div>
             </div>
 
-
             <div class="stat-card card">
                 <div class="stat-icon">◷</div>
                 <div>
@@ -831,7 +834,6 @@ function renderHome(container) {
                     </div>
                 </div>
             </div>
-
 
             <div class="stat-card card">
                 <div class="stat-icon">↗</div>
@@ -846,7 +848,6 @@ function renderHome(container) {
             </div>
 
         </section>
-
 
         <section class="home-grid">
 
@@ -877,7 +878,6 @@ function renderHome(container) {
 
             </div>
 
-
             <div class="home-right">
 
                 <div class="card card-padding">
@@ -903,7 +903,6 @@ function renderHome(container) {
                     </button>
 
                 </div>
-
 
                 <div class="card card-padding">
 
@@ -1112,7 +1111,6 @@ function renderCalendar(container) {
 
         </div>
 
-
         <div class="calendar-toolbar">
 
             <div class="calendar-nav">
@@ -1149,7 +1147,6 @@ function renderCalendar(container) {
 
         </div>
 
-
         <div class="calendar-layout">
 
             <div class="card calendar-card">
@@ -1173,13 +1170,11 @@ function renderCalendar(container) {
 
                 </div>
 
-
                 <div class="calendar-grid">
                     ${daysHTML}
                 </div>
 
             </div>
-
 
             <div
                 id="selectedDayCard"
@@ -1305,7 +1300,6 @@ function renderAssignments(container) {
 
         </div>
 
-
         <div class="card card-padding">
 
             <div class="card-header">
@@ -1333,7 +1327,6 @@ function renderAssignments(container) {
             }
 
         </div>
-
 
         <div class="card card-padding">
 
@@ -1387,7 +1380,6 @@ function renderAssignmentRow(assignment) {
                 ${assignment.completed ? "✓" : ""}
             </button>
 
-
             <div class="assignment-info">
 
                 <strong class="assignment-title">
@@ -1401,7 +1393,6 @@ function renderAssignmentRow(assignment) {
                 </span>
 
             </div>
-
 
             <span
                 class="importance ${escapeHTML(
@@ -1463,7 +1454,6 @@ function renderTutors(container) {
 
         </div>
 
-
         <div class="filter-bar">
 
             <input
@@ -1484,7 +1474,6 @@ function renderTutors(container) {
             </select>
 
         </div>
-
 
         <div
             id="tutorGrid"
@@ -1610,8 +1599,8 @@ function filterTutors() {
    STUDY PAGE
    ========================================================= */
 
-function renderStudy(container) {
-    const studyPlaylists = [
+function getStudyPlaylists() {
+    return [
         {
             id: "rain",
             icon: "🌧️",
@@ -1619,7 +1608,9 @@ function renderStudy(container) {
             description: "Rain • Lo-fi • Ambient",
             spotify:
                 "https://open.spotify.com/playlist/37i9dQZF1DX8ymr6UES7vc?si=zHMR9PgqShChIsgGJ8enOA",
-            theme: "rain"
+            theme: "rain",
+            fullscreenBackground: "rain",
+            sound: "rain"
         },
         {
             id: "cafe",
@@ -1628,7 +1619,9 @@ function renderStudy(container) {
             description: "Café • Lo-fi • Soft jazz",
             spotify:
                 "https://open.spotify.com/playlist/37i9dQZF1DX9RwfGbeGQwP?si=2W5EvODHQ0iJW_w6YKC8xQ",
-            theme: "cafe"
+            theme: "cafe",
+            fullscreenBackground: "cafe",
+            sound: "cafe"
         },
         {
             id: "forest",
@@ -1637,7 +1630,9 @@ function renderStudy(container) {
             description: "Nature • Piano • Ambient",
             spotify:
                 "https://open.spotify.com/playlist/37i9dQZF1DX4PP3DA4J0N8?si=ZZ_WvJL-RCOaSCwiIrQi6Q",
-            theme: "forest"
+            theme: "forest",
+            fullscreenBackground: "forest",
+            sound: "forest"
         },
         {
             id: "academia",
@@ -1646,7 +1641,9 @@ function renderStudy(container) {
             description: "Classical • Piano • Orchestral",
             spotify:
                 "https://open.spotify.com/playlist/3MelsVnZV5g03wyiJsybHk?si=EI-1KuwXSjyczW84kfPppQ",
-            theme: "academia"
+            theme: "academia",
+            fullscreenBackground: "academia",
+            sound: "academia"
         },
         {
             id: "midnight",
@@ -1655,7 +1652,9 @@ function renderStudy(container) {
             description: "Dreamy • Ambient • Soft instrumental",
             spotify:
                 "https://open.spotify.com/playlist/6asedDPn710ueu5byDKXul?si=5LGw1r7FRz63_VfBKA4X4Q",
-            theme: "midnight"
+            theme: "midnight",
+            fullscreenBackground: "night",
+            sound: "midnight"
         },
         {
             id: "lyrics",
@@ -1664,9 +1663,16 @@ function renderStudy(container) {
             description: "Instrumental • Minimal • Deep focus",
             spotify:
                 "https://open.spotify.com/playlist/37i9dQZF1DWVceT0UosQME?si=AEmZ_Pw7Ru-XFpuD4_YgvQ",
-            theme: "lyrics"
+            theme: "lyrics",
+            fullscreenBackground: "forest",
+            sound: "minimal"
         }
     ];
+}
+
+
+function renderStudy(container) {
+    const studyPlaylists = getStudyPlaylists();
 
     container.innerHTML = `
         <div class="page-header">
@@ -1684,7 +1690,6 @@ function renderStudy(container) {
             </div>
 
         </div>
-
 
         <div class="study-environment-grid">
 
@@ -1720,7 +1725,6 @@ function renderStudy(container) {
 
                         </div>
 
-
                         <div class="study-environment-title">
 
                             <p class="study-environment-label">
@@ -1737,17 +1741,17 @@ function renderStudy(container) {
 
                         </div>
 
-
                         <div class="study-card-timer">
 
                             <span class="study-card-timer-label">
                                 FOCUS
                             </span>
 
-                            <strong data-study-timer="${playlist.id}">25:00</strong>
+                            <strong
+                                data-study-timer="${playlist.id}"
+                            >25:00</strong>
 
                         </div>
-
 
                         <div class="study-environment-actions">
 
@@ -1778,11 +1782,29 @@ function renderStudy(container) {
 
         </div>
     `;
+
+    /*
+     * If a timer is already running and the Study page gets
+     * re-rendered, immediately put its current time back
+     * into the correct card.
+     */
+    updateTimerDisplay();
 }
 
+
+/* =========================================================
+   TIMER
+   ========================================================= */
+
 function formatTime(seconds) {
-    const minutes = Math.floor(seconds / 60);
-    const remaining = seconds % 60;
+    const safeSeconds = Math.max(0, seconds);
+
+    const minutes = Math.floor(
+        safeSeconds / 60
+    );
+
+    const remaining =
+        safeSeconds % 60;
 
     return `${String(minutes).padStart(2, "0")}:${String(
         remaining
@@ -1792,6 +1814,7 @@ function formatTime(seconds) {
 
 function setTimerMode(mode) {
     timerRunning = false;
+
     clearInterval(timerInterval);
 
     timerMode = mode;
@@ -1804,7 +1827,14 @@ function setTimerMode(mode) {
         timerSeconds = 15 * 60;
     }
 
+    /*
+     * Do NOT clear activeStudyEnvironment.
+     * The selected Study card should keep owning
+     * the timer after the Study page re-renders.
+     */
     renderPage("study");
+
+    updateTimerDisplay();
 }
 
 
@@ -1818,11 +1848,30 @@ function toggleTimer() {
 
 
 function startTimer() {
+    if (timerRunning) {
+        return;
+    }
+
+    /*
+     * Web Audio needs a user interaction before browsers
+     * will allow sound to play.
+     */
+    if (activeStudyEnvironment) {
+        const playlist = getStudyPlaylists().find(
+            item => item.id === activeStudyEnvironment
+        );
+
+        if (playlist) {
+            startStudySound(playlist.sound);
+        }
+    }
+
     timerRunning = true;
 
     clearInterval(timerInterval);
 
     timerInterval = setInterval(() => {
+
         timerSeconds--;
 
         updateTimerDisplay();
@@ -1830,6 +1879,7 @@ function startTimer() {
         if (timerSeconds <= 0) {
             finishTimer();
         }
+
     }, 1000);
 
     updateTimerDisplay();
@@ -1841,6 +1891,8 @@ function pauseTimer() {
 
     clearInterval(timerInterval);
 
+    stopStudySound();
+
     updateTimerDisplay();
 }
 
@@ -1849,6 +1901,8 @@ function resetTimer() {
     clearInterval(timerInterval);
 
     timerRunning = false;
+
+    stopStudySound();
 
     if (timerMode === "focus") {
         timerSeconds = 25 * 60;
@@ -1864,20 +1918,31 @@ function resetTimer() {
 
 function updateTimerDisplay() {
     const display = $("#timerDisplay");
-    if (display) display.textContent = formatTime(timerSeconds);
+
+    if (display) {
+        display.textContent =
+            formatTime(timerSeconds);
+    }
 
     const start = $("#timerStart");
+
     if (start) {
-        start.textContent = timerRunning ? "Pause" : "Start";
+        start.textContent =
+            timerRunning
+                ? "Pause"
+                : "Start";
     }
 
     if (activeStudyEnvironment) {
-        const studyTimer = document.querySelector(
-            `[data-study-timer="${activeStudyEnvironment}"]`
-        );
+
+        const studyTimer =
+            document.querySelector(
+                `[data-study-timer="${activeStudyEnvironment}"]`
+            );
 
         if (studyTimer) {
-            studyTimer.textContent = formatTime(timerSeconds);
+            studyTimer.textContent =
+                formatTime(timerSeconds);
         }
     }
 }
@@ -1887,313 +1952,50 @@ function finishTimer() {
     clearInterval(timerInterval);
 
     timerRunning = false;
+
     timerSeconds = 0;
+
+    stopStudySound();
 
     updateTimerDisplay();
 
     if (timerMode === "focus") {
-        const user = getCurrentUserFromData();
+
+        const user =
+            getCurrentUserFromData();
 
         updateCurrentUser({
-            points: (user?.points || 0) + 20,
-            sessions: (user?.sessions || 0) + 1
+            points:
+                (user?.points || 0) + 20,
+
+            sessions:
+                (user?.sessions || 0) + 1
         });
 
         showToast(
             "Focus session complete! +20 points ✦"
         );
+
     } else {
+
         showToast(
             "Break finished. Back to it."
         );
     }
 
     setTimeout(() => {
+
         if (currentPage === "study") {
-            renderStudy($("#pageContent"));
+
+            renderStudy(
+                $("#pageContent")
+            );
+
             attachPageEvents();
+
         }
+
     }, 100);
-}
-
-
-/* =========================================================
-   PROFILE
-   ========================================================= */
-
-function renderProfile(container) {
-    const user = getCurrentUserFromData();
-
-    const points = user?.points || 0;
-
-    const progress = Math.min(
-        Math.round((points / 300) * 100),
-        100
-    );
-
-    container.innerHTML = `
-        <div class="page-header">
-
-            <div>
-                <p class="eyebrow">YOUR SPACE</p>
-                <h1>Profile</h1>
-                <p>
-                    Your Peer Hub progress and activity.
-                </p>
-            </div>
-
-        </div>
-
-
-        <div class="profile-header card">
-
-            <div class="profile-large-avatar">
-                ${getInitials(user?.name || "Student")}
-            </div>
-
-            <div>
-                <p class="eyebrow">
-                    STUDENT
-                </p>
-
-                <h2>
-                    ${escapeHTML(user?.name || "Student")}
-                </h2>
-
-                <p>
-                    Year ${escapeHTML(user?.year || "-")}
-                    ·
-                    ${escapeHTML(
-                        user?.className || "-"
-                    )}
-                </p>
-            </div>
-
-        </div>
-
-
-        <div class="progress-card card card-padding">
-
-            <div class="card-header">
-
-                <div>
-                    <p class="eyebrow">
-                        PEER POINTS
-                    </p>
-
-                    <h3>
-                        ${points} points
-                    </h3>
-                </div>
-
-                <strong>
-                    ${progress}%
-                </strong>
-
-            </div>
-
-
-            <div class="progress-chart">
-
-                <div
-                    class="progress-bar"
-                    aria-label="${progress}% progress"
-                >
-                    <span
-                        style="width: ${progress}%"
-                    ></span>
-                </div>
-
-            </div>
-
-
-            <p class="card-description">
-                Keep completing assignments and
-                study sessions to build your points.
-            </p>
-
-        </div>
-
-
-        <div class="stats-grid">
-
-            <div class="stat-card card">
-                <div class="stat-icon">✦</div>
-                <div>
-                    <div class="stat-number">
-                        ${points}
-                    </div>
-                    <div class="stat-label">
-                        Total Points
-                    </div>
-                </div>
-            </div>
-
-
-            <div class="stat-card card">
-                <div class="stat-icon">◷</div>
-                <div>
-                    <div class="stat-number">
-                        ${user?.sessions || 0}
-                    </div>
-                    <div class="stat-label">
-                        Study Sessions
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    `;
-}
-
-
-/* =========================================================
-   SETTINGS
-   ========================================================= */
-
-function renderSettings(container) {
-    const settings = appData.settings;
-
-    container.innerHTML = `
-        <div class="page-header">
-
-            <div>
-                <p class="eyebrow">PERSONALISE</p>
-                <h1>Settings</h1>
-                <p>
-                    Choose how the Peer Hub behaves.
-                </p>
-            </div>
-
-        </div>
-
-
-        <div class="card card-padding">
-
-            <div class="settings-list">
-
-                <div class="setting-row">
-
-                    <div>
-                        <strong>
-                            Notifications
-                        </strong>
-
-                        <span>
-                            Receive Peer Hub notifications.
-                        </span>
-                    </div>
-
-                    <button
-                        type="button"
-                        class="toggle ${
-                            settings.notifications
-                                ? "active"
-                                : ""
-                        }"
-                        data-setting="notifications"
-                        aria-pressed="${
-                            settings.notifications
-                        }"
-                    >
-                        <span></span>
-                    </button>
-
-                </div>
-
-
-                <div class="setting-row">
-
-                    <div>
-                        <strong>
-                            Assignment reminders
-                        </strong>
-
-                        <span>
-                            Keep upcoming work visible.
-                        </span>
-                    </div>
-
-                    <button
-                        type="button"
-                        class="toggle ${
-                            settings.reminders
-                                ? "active"
-                                : ""
-                        }"
-                        data-setting="reminders"
-                        aria-pressed="${
-                            settings.reminders
-                        }"
-                    >
-                        <span></span>
-                    </button>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <div class="card card-padding">
-
-            <div class="card-header">
-                <div>
-                    <p class="eyebrow">
-                        ACCOUNT
-                    </p>
-
-                    <h3>
-                        ${escapeHTML(
-                            getCurrentUserFromData()
-                                ?.email || ""
-                        )}
-                    </h3>
-                </div>
-            </div>
-
-
-            <button
-                type="button"
-                class="secondary-button"
-                data-action="sign-out"
-            >
-                Sign Out
-            </button>
-
-        </div>
-
-
-        <div class="card card-padding">
-
-            <div class="card-header">
-                <div>
-                    <p class="eyebrow">
-                        DEMO DATA
-                    </p>
-
-                    <h3>
-                        Reset Peer Hub
-                    </h3>
-                </div>
-            </div>
-
-            <p class="card-description">
-                Restore the original demo assignments,
-                tutors and settings.
-            </p>
-
-            <button
-                type="button"
-                class="secondary-button"
-                data-action="reset-data"
-            >
-                Reset Demo Data
-            </button>
-
-        </div>
-    `;
 }
 
 
@@ -2228,11 +2030,15 @@ function openModal(content) {
         </div>
     `;
 
-    const modal = $("[data-modal-content]", root);
+    const modal =
+        $("[data-modal-content]", root);
 
-    modal?.addEventListener("click", event => {
-        event.stopPropagation();
-    });
+    modal?.addEventListener(
+        "click",
+        event => {
+            event.stopPropagation();
+        }
+    );
 }
 
 
@@ -2270,7 +2076,6 @@ function openAddAssignmentModal() {
 
         </div>
 
-
         <form
             id="assignmentForm"
             class="modal-form"
@@ -2291,7 +2096,6 @@ function openAddAssignmentModal() {
 
             </div>
 
-
             <div class="form-group">
 
                 <label for="newAssignmentSubject">
@@ -2306,7 +2110,6 @@ function openAddAssignmentModal() {
                 >
 
             </div>
-
 
             <div class="form-group">
 
@@ -2323,7 +2126,6 @@ function openAddAssignmentModal() {
 
             </div>
 
-
             <div class="form-group">
 
                 <label for="newAssignmentImportance">
@@ -2339,7 +2141,6 @@ function openAddAssignmentModal() {
                 </select>
 
             </div>
-
 
             <div class="modal-actions">
 
@@ -2366,6 +2167,7 @@ function openAddAssignmentModal() {
     $("#assignmentForm")?.addEventListener(
         "submit",
         event => {
+
             event.preventDefault();
 
             const title =
@@ -2394,6 +2196,7 @@ function openAddAssignmentModal() {
             });
 
             saveData();
+
             closeModal();
 
             showToast(
@@ -2436,13 +2239,11 @@ function openTutorModal(tutor) {
 
         </div>
 
-
         <div class="modal-form">
 
             <p>
                 ${escapeHTML(tutor.bio)}
             </p>
-
 
             <div class="tutor-subjects">
 
@@ -2457,12 +2258,10 @@ function openTutorModal(tutor) {
 
             </div>
 
-
             <p>
                 <strong>Availability:</strong>
                 ${escapeHTML(tutor.availability)}
             </p>
-
 
             <div class="modal-actions">
 
@@ -2488,7 +2287,6 @@ function openTutorModal(tutor) {
         </div>
     `);
 
-
     $("#closeTutorModal")?.addEventListener(
         "click",
         closeModal
@@ -2506,8 +2304,7 @@ function openTutorModal(tutor) {
    ========================================================= */
 
 let focusAudioContext = null;
-let focusRainSource = null;
-let focusRainGain = null;
+let focusSoundNodes = [];
 
 
 /* -------------------------
@@ -2561,12 +2358,19 @@ function setupFocusMode() {
    OPEN FOCUS MODE
    ------------------------- */
 
-function openFocusMode() {
+function openFocusMode(
+    backgroundOverride = null,
+    soundOverride = null
+) {
 
-    const overlay = $("#focusModeOverlay");
+    const overlay =
+        $("#focusModeOverlay");
 
     if (!overlay) {
-        console.error("Focus Mode overlay not found.");
+        console.error(
+            "Focus Mode overlay not found."
+        );
+
         return;
     }
 
@@ -2578,15 +2382,64 @@ function openFocusMode() {
     );
 
     focusSeconds = 25 * 60;
+
     focusRunning = false;
 
     createFocusBackground();
 
-    setFocusBackground(
-        currentFocusBackground
-    );
+    const background =
+        backgroundOverride ||
+        currentFocusBackground ||
+        "forest";
+
+    const sound =
+        soundOverride ||
+        background;
+
+    currentFocusSound = sound;
+
+    setFocusBackground(background);
 
     updateFocusDisplay();
+}
+
+
+/* -------------------------
+   OPEN STUDY ENVIRONMENT
+   ------------------------- */
+
+function openStudyEnvironmentFullscreen(
+    playlistId
+) {
+
+    const playlist =
+        getStudyPlaylists().find(
+            item => item.id === playlistId
+        );
+
+    if (!playlist) {
+        return;
+    }
+
+    currentFocusBackground =
+        playlist.fullscreenBackground;
+
+    currentFocusSound =
+        playlist.sound;
+
+    openFocusMode(
+        playlist.fullscreenBackground,
+        playlist.sound
+    );
+
+    /*
+     * If the user clicked Full Screen, start the
+     * selected environment's ambient sound after
+     * the browser registers the click as a user gesture.
+     */
+    startStudySound(
+        playlist.sound
+    );
 }
 
 
@@ -2596,10 +2449,23 @@ function openFocusMode() {
 
 function closeFocusMode() {
 
-    const overlay = $("#focusModeOverlay");
+    const overlay =
+        $("#focusModeOverlay");
 
     if (!overlay) {
         return;
+    }
+
+    /*
+     * Remove focus before hiding the overlay.
+     * This prevents the aria-hidden warning.
+     */
+    if (
+        overlay.contains(
+            document.activeElement
+        )
+    ) {
+        document.activeElement.blur();
     }
 
     overlay.classList.remove("active");
@@ -2609,11 +2475,13 @@ function closeFocusMode() {
         "true"
     );
 
-    clearInterval(focusTimerInterval);
+    clearInterval(
+        focusTimerInterval
+    );
 
     focusRunning = false;
 
-    stopFocusRain();
+    stopStudySound();
 }
 
 
@@ -2627,21 +2495,30 @@ function startFocusTimer() {
         return;
     }
 
+    startStudySound(
+        currentFocusSound
+    );
+
     focusRunning = true;
 
-    clearInterval(focusTimerInterval);
+    clearInterval(
+        focusTimerInterval
+    );
 
-    focusTimerInterval = setInterval(() => {
+    focusTimerInterval =
+        setInterval(() => {
 
-        focusSeconds--;
+            focusSeconds--;
 
-        updateFocusDisplay();
+            updateFocusDisplay();
 
-        if (focusSeconds <= 0) {
-            finishFocusTimer();
-        }
+            if (
+                focusSeconds <= 0
+            ) {
+                finishFocusTimer();
+            }
 
-    }, 1000);
+        }, 1000);
 
     updateFocusDisplay();
 }
@@ -2651,7 +2528,11 @@ function pauseFocusTimer() {
 
     focusRunning = false;
 
-    clearInterval(focusTimerInterval);
+    clearInterval(
+        focusTimerInterval
+    );
+
+    stopStudySound();
 
     updateFocusDisplay();
 }
@@ -2661,9 +2542,14 @@ function resetFocusTimer() {
 
     focusRunning = false;
 
-    clearInterval(focusTimerInterval);
+    clearInterval(
+        focusTimerInterval
+    );
 
-    focusSeconds = 25 * 60;
+    stopStudySound();
+
+    focusSeconds =
+        25 * 60;
 
     updateFocusDisplay();
 }
@@ -2671,16 +2557,20 @@ function resetFocusTimer() {
 
 function updateFocusDisplay() {
 
-    const display = $("#focusModeTimer");
+    const display =
+        $("#focusModeTimer");
 
     if (display) {
 
         display.textContent =
-            formatTime(focusSeconds);
+            formatTime(
+                focusSeconds
+            );
 
     }
 
-    const start = $("#focusStart");
+    const start =
+        $("#focusStart");
 
     if (start) {
 
@@ -2691,7 +2581,8 @@ function updateFocusDisplay() {
 
     }
 
-    const progress = $("#focusProgressBar");
+    const progress =
+        $("#focusProgressBar");
 
     if (progress) {
 
@@ -2703,7 +2594,10 @@ function updateFocusDisplay() {
         progress.style.width =
             `${Math.max(
                 0,
-                Math.min(100, percentage)
+                Math.min(
+                    100,
+                    percentage
+                )
             )}%`;
     }
 }
@@ -2715,15 +2609,20 @@ function updateFocusDisplay() {
 
 function finishFocusTimer() {
 
-    clearInterval(focusTimerInterval);
+    clearInterval(
+        focusTimerInterval
+    );
 
     focusRunning = false;
 
     focusSeconds = 0;
 
+    stopStudySound();
+
     updateFocusDisplay();
 
-    const user = getCurrentUserFromData();
+    const user =
+        getCurrentUserFromData();
 
     updateCurrentUser({
 
@@ -2747,7 +2646,8 @@ function finishFocusTimer() {
 
 function createFocusBackground() {
 
-    const overlay = $("#focusModeOverlay");
+    const overlay =
+        $("#focusModeOverlay");
 
     if (!overlay) {
         return;
@@ -2764,17 +2664,34 @@ function createFocusBackground() {
     if (!backgroundLayer) {
 
         backgroundLayer =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
 
         backgroundLayer.id =
             "focusBackgroundLayer";
+
+        /*
+         * Your CSS targets .focus-background-layer,
+         * not just #focusBackgroundLayer.
+         */
+        backgroundLayer.className =
+            "focus-background-layer";
 
         backgroundLayer.setAttribute(
             "aria-hidden",
             "true"
         );
 
-        overlay.prepend(backgroundLayer);
+        overlay.prepend(
+            backgroundLayer
+        );
+
+    } else {
+
+        backgroundLayer.classList.add(
+            "focus-background-layer"
+        );
     }
 
 
@@ -2788,17 +2705,33 @@ function createFocusBackground() {
     if (!atmosphere) {
 
         atmosphere =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
 
         atmosphere.id =
             "focusAtmosphere";
+
+        /*
+         * Your CSS targets .focus-atmosphere.
+         */
+        atmosphere.className =
+            "focus-atmosphere";
 
         atmosphere.setAttribute(
             "aria-hidden",
             "true"
         );
 
-        overlay.appendChild(atmosphere);
+        overlay.appendChild(
+            atmosphere
+        );
+
+    } else {
+
+        atmosphere.classList.add(
+            "focus-atmosphere"
+        );
     }
 }
 
@@ -2807,7 +2740,9 @@ function createFocusBackground() {
    CHANGE BACKGROUND
    ------------------------- */
 
-function setFocusBackground(background) {
+function setFocusBackground(
+    background
+) {
 
     const overlay =
         $("#focusModeOverlay");
@@ -2816,30 +2751,30 @@ function setFocusBackground(background) {
         return;
     }
 
-
-    /* Make sure the layers exist,
-       BUT DO NOT call setFocusBackground
-       from createFocusBackground. */
-
     createFocusBackground();
-
 
     currentFocusBackground =
         background || "forest";
 
-
+    /*
+     * Remove every possible environment class.
+     */
     overlay.classList.remove(
         "forest",
         "rain",
         "academia",
-        "night"
+        "night",
+        "cafe",
+        "lyrics"
     );
 
     overlay.classList.add(
         currentFocusBackground
     );
 
-
+    /*
+     * The old background buttons still work.
+     */
     $$(".background-option").forEach(
         option => {
 
@@ -2852,23 +2787,16 @@ function setFocusBackground(background) {
         }
     );
 
-
     updateFocusAtmosphere(
         currentFocusBackground
     );
 
-
-    if (
-        currentFocusBackground === "rain"
-    ) {
-
-        startFocusRain();
-
-    } else {
-
-        stopFocusRain();
-
-    }
+    /*
+     * Stop any previous environment sound.
+     * The selected sound will be started by
+     * the appropriate user action.
+     */
+    stopStudySound();
 }
 
 
@@ -2876,7 +2804,9 @@ function setFocusBackground(background) {
    ATMOSPHERE
    ========================================================= */
 
-function updateFocusAtmosphere(background) {
+function updateFocusAtmosphere(
+    background
+) {
 
     const atmosphere =
         $("#focusAtmosphere");
@@ -2897,10 +2827,15 @@ function updateFocusAtmosphere(background) {
         for (let i = 0; i < 90; i++) {
 
             const drop =
-                document.createElement("span");
+                document.createElement(
+                    "span"
+                );
 
+            /*
+             * Your stylesheet uses .rain-drop.
+             */
             drop.className =
-                "focus-rain-drop";
+                "rain-drop";
 
             drop.style.left =
                 `${Math.random() * 100}%`;
@@ -2911,7 +2846,9 @@ function updateFocusAtmosphere(background) {
             drop.style.animationDuration =
                 `${0.55 + Math.random() * 0.5}s`;
 
-            atmosphere.appendChild(drop);
+            atmosphere.appendChild(
+                drop
+            );
         }
 
         return;
@@ -2927,7 +2864,9 @@ function updateFocusAtmosphere(background) {
         for (let i = 0; i < 90; i++) {
 
             const star =
-                document.createElement("span");
+                document.createElement(
+                    "span"
+                );
 
             star.className =
                 "focus-star";
@@ -2944,7 +2883,9 @@ function updateFocusAtmosphere(background) {
             star.style.animationDuration =
                 `${2 + Math.random() * 3}s`;
 
-            atmosphere.appendChild(star);
+            atmosphere.appendChild(
+                star
+            );
         }
 
         return;
@@ -2960,10 +2901,15 @@ function updateFocusAtmosphere(background) {
         for (let i = 0; i < 35; i++) {
 
             const particle =
-                document.createElement("span");
+                document.createElement(
+                    "span"
+                );
 
+            /*
+             * Your stylesheet uses .forest-leaf.
+             */
             particle.className =
-                "focus-forest-particle";
+                "forest-leaf";
 
             particle.style.left =
                 `${Math.random() * 100}%`;
@@ -2977,7 +2923,9 @@ function updateFocusAtmosphere(background) {
             particle.style.animationDuration =
                 `${4 + Math.random() * 5}s`;
 
-            atmosphere.appendChild(particle);
+            atmosphere.appendChild(
+                particle
+            );
         }
 
         return;
@@ -2993,10 +2941,15 @@ function updateFocusAtmosphere(background) {
         for (let i = 0; i < 40; i++) {
 
             const particle =
-                document.createElement("span");
+                document.createElement(
+                    "span"
+                );
 
+            /*
+             * Your stylesheet uses .academia-particle.
+             */
             particle.className =
-                "focus-academia-particle";
+                "academia-particle";
 
             particle.style.left =
                 `${Math.random() * 100}%`;
@@ -3014,249 +2967,558 @@ function updateFocusAtmosphere(background) {
                 particle
             );
         }
+
+        return;
+    }
+
+
+    /* -------------------------
+       CAFE / LYRICS
+       ------------------------- */
+
+    if (
+        background === "cafe" ||
+        background === "lyrics"
+    ) {
+
+        /*
+         * Use subtle floating particles rather
+         * than leaving the atmosphere completely empty.
+         */
+        for (let i = 0; i < 24; i++) {
+
+            const particle =
+                document.createElement(
+                    "span"
+                );
+
+            particle.className =
+                "academia-particle";
+
+            particle.style.left =
+                `${Math.random() * 100}%`;
+
+            particle.style.top =
+                `${Math.random() * 100}%`;
+
+            particle.style.animationDelay =
+                `${Math.random() * 6}s`;
+
+            particle.style.animationDuration =
+                `${6 + Math.random() * 6}s`;
+
+            atmosphere.appendChild(
+                particle
+            );
+        }
     }
 }
 
 
 /* =========================================================
-   RAIN SOUND
+   STUDY ENVIRONMENT SOUND
    ========================================================= */
 
-function startFocusRain() {
+function getAudioContext() {
 
-    if (focusRainSource) {
+    if (!focusAudioContext) {
+
+        const AudioContext =
+            window.AudioContext ||
+            window.webkitAudioContext;
+
+        if (!AudioContext) {
+            return null;
+        }
+
+        focusAudioContext =
+            new AudioContext();
+    }
+
+    if (
+        focusAudioContext.state ===
+        "suspended"
+    ) {
+
+        focusAudioContext.resume();
+
+    }
+
+    return focusAudioContext;
+}
+
+
+function createNoiseSource(
+    context,
+    type = "white"
+) {
+
+    const bufferSize =
+        context.sampleRate * 2;
+
+    const buffer =
+        context.createBuffer(
+            1,
+            bufferSize,
+            context.sampleRate
+        );
+
+    const data =
+        buffer.getChannelData(0);
+
+    let lastValue = 0;
+
+    for (
+        let i = 0;
+        i < bufferSize;
+        i++
+    ) {
+
+        const random =
+            Math.random() * 2 - 1;
+
+        if (type === "brown") {
+
+            lastValue =
+                (lastValue + 0.02 * random) /
+                1.02;
+
+            data[i] =
+                lastValue * 3.5;
+
+        } else if (
+            type === "pink"
+        ) {
+
+            lastValue =
+                0.98 * lastValue +
+                0.02 * random;
+
+            data[i] =
+                lastValue;
+
+        } else {
+
+            data[i] =
+                random;
+        }
+    }
+
+    const source =
+        context.createBufferSource();
+
+    source.buffer = buffer;
+    source.loop = true;
+
+    return source;
+}
+
+
+function addAmbientNoise(
+    context,
+    type,
+    volume,
+    filterType,
+    frequency
+) {
+
+    const source =
+        createNoiseSource(
+            context,
+            type
+        );
+
+    const filter =
+        context.createBiquadFilter();
+
+    filter.type =
+        filterType;
+
+    filter.frequency.value =
+        frequency;
+
+    const gain =
+        context.createGain();
+
+    gain.gain.value =
+        volume;
+
+    source.connect(filter);
+    filter.connect(gain);
+    gain.connect(
+        context.destination
+    );
+
+    source.start();
+
+    focusSoundNodes.push(
+        source,
+        filter,
+        gain
+    );
+}
+
+
+function addAmbientTone(
+    context,
+    frequency,
+    volume,
+    waveform = "sine"
+) {
+
+    const oscillator =
+        context.createOscillator();
+
+    const gain =
+        context.createGain();
+
+    oscillator.type =
+        waveform;
+
+    oscillator.frequency.value =
+        frequency;
+
+    gain.gain.value =
+        volume;
+
+    oscillator.connect(gain);
+
+    gain.connect(
+        context.destination
+    );
+
+    oscillator.start();
+
+    focusSoundNodes.push(
+        oscillator,
+        gain
+    );
+}
+
+
+function startStudySound(
+    sound
+) {
+
+    stopStudySound();
+
+    const context =
+        getAudioContext();
+
+    if (!context) {
         return;
     }
 
     try {
 
-        if (!focusAudioContext) {
+        switch (sound) {
 
-            focusAudioContext =
-                new (
-                    window.AudioContext ||
-                    window.webkitAudioContext
-                )();
+            case "rain":
 
+                addAmbientNoise(
+                    context,
+                    "white",
+                    0.035,
+                    "lowpass",
+                    1800
+                );
+
+                addAmbientNoise(
+                    context,
+                    "pink",
+                    0.018,
+                    "highpass",
+                    350
+                );
+
+                break;
+
+
+            case "cafe":
+
+                addAmbientNoise(
+                    context,
+                    "pink",
+                    0.012,
+                    "lowpass",
+                    900
+                );
+
+                addAmbientTone(
+                    context,
+                    92,
+                    0.012,
+                    "sine"
+                );
+
+                addAmbientTone(
+                    context,
+                    184,
+                    0.004,
+                    "sine"
+                );
+
+                break;
+
+
+            case "forest":
+
+                addAmbientNoise(
+                    context,
+                    "pink",
+                    0.025,
+                    "lowpass",
+                    750
+                );
+
+                addAmbientTone(
+                    context,
+                    110,
+                    0.006,
+                    "sine"
+                );
+
+                break;
+
+
+            case "academia":
+
+                addAmbientNoise(
+                    context,
+                    "brown",
+                    0.018,
+                    "lowpass",
+                    1200
+                );
+
+                addAmbientTone(
+                    context,
+                    65,
+                    0.008,
+                    "triangle"
+                );
+
+                break;
+
+
+            case "midnight":
+
+                addAmbientNoise(
+                    context,
+                    "pink",
+                    0.012,
+                    "lowpass",
+                    500
+                );
+
+                addAmbientTone(
+                    context,
+                    55,
+                    0.008,
+                    "sine"
+                );
+
+                addAmbientTone(
+                    context,
+                    110,
+                    0.003,
+                    "sine"
+                );
+
+                break;
+
+
+            case "minimal":
+
+                addAmbientNoise(
+                    context,
+                    "brown",
+                    0.009,
+                    "lowpass",
+                    600
+                );
+
+                break;
+
+            default:
+                break;
         }
-
-        if (
-            focusAudioContext.state ===
-            "suspended"
-        ) {
-
-            focusAudioContext.resume();
-        }
-
-
-        const bufferSize =
-            focusAudioContext.sampleRate * 2;
-
-        const buffer =
-            focusAudioContext.createBuffer(
-                1,
-                bufferSize,
-                focusAudioContext.sampleRate
-            );
-
-        const data =
-            buffer.getChannelData(0);
-
-
-        for (
-            let i = 0;
-            i < bufferSize;
-            i++
-        ) {
-
-            data[i] =
-                (Math.random() * 2 - 1) *
-                0.18;
-
-        }
-
-
-        focusRainSource =
-            focusAudioContext.createBufferSource();
-
-        focusRainSource.buffer = buffer;
-
-        focusRainSource.loop = true;
-
-
-        focusRainGain =
-            focusAudioContext.createGain();
-
-        focusRainGain.gain.value =
-            0.08;
-
-
-        focusRainSource.connect(
-            focusRainGain
-        );
-
-        focusRainGain.connect(
-            focusAudioContext.destination
-        );
-
-
-        focusRainSource.start();
 
     } catch (error) {
 
         console.warn(
-            "Rain audio could not start:",
+            "Study sound could not start:",
             error
         );
 
-        focusRainSource = null;
+        stopStudySound();
     }
 }
 
 
-function stopFocusRain() {
+function stopStudySound() {
 
-    if (!focusRainSource) {
+    if (
+        !focusSoundNodes ||
+        focusSoundNodes.length === 0
+    ) {
         return;
     }
 
-    try {
+    focusSoundNodes.forEach(
+        node => {
 
-        focusRainSource.stop();
+            try {
 
-    } catch (error) {
-        // Already stopped.
-    }
+                if (
+                    typeof node.stop ===
+                    "function"
+                ) {
+                    node.stop();
+                }
 
-    focusRainSource.disconnect();
+            } catch (error) {
+                // Already stopped.
+            }
 
-    focusRainSource = null;
+            try {
+                node.disconnect();
+            } catch (error) {
+                // Already disconnected.
+            }
+        }
+    );
 
-    if (focusRainGain) {
-
-        focusRainGain.disconnect();
-
-        focusRainGain = null;
-    }
+    focusSoundNodes = [];
 }
 
 
-/* =========================================================
-   END FOCUS MODE
-   ========================================================= */
 /* =========================================================
    GLOBAL CLICK HANDLING
    ========================================================= */
 
 function setupGlobalClicks() {
 
-    document.addEventListener("click", event => {
+    document.addEventListener(
+        "click",
+        event => {
 
-        const actionElement =
-            event.target.closest("[data-action]");
-
-        if (!actionElement) {
-            return;
-        }
-
-        const action =
-            actionElement.dataset.action;
-
-        switch (action) {
-
-            case "find-peer":
-                navigateTo("tutors");
-                break;
-
-            case "assignments":
-                navigateTo("assignments");
-                break;
-
-            case "study":
-                navigateTo("study");
-                break;
-
-            case "toggle-assignment":
-                toggleAssignment(
-                    actionElement.dataset.id
+            const actionElement =
+                event.target.closest(
+                    "[data-action]"
                 );
-                break;
 
-            case "add-assignment":
-                openAddAssignmentModal();
-                break;
-
-            case "close-modal":
-                closeModal();
-                break;
-
-            case "view-tutor": {
-
-                const tutor =
-                    appData.tutors.find(
-                        item =>
-                            String(item.id) ===
-                            String(
-                                actionElement.dataset.id
-                            )
-                    );
-
-                openTutorModal(tutor);
-
-                break;
+            if (!actionElement) {
+                return;
             }
 
-            case "book-tutor":
-            case "request-tutor": {
+            const action =
+                actionElement.dataset.action;
 
-                const tutor =
-                    appData.tutors.find(
-                        item =>
-                            String(item.id) ===
-                            String(
-                                actionElement.dataset.id
-                            )
+            switch (action) {
+
+                case "find-peer":
+                    navigateTo("tutors");
+                    break;
+
+                case "assignments":
+                    navigateTo("assignments");
+                    break;
+
+                case "study":
+                    navigateTo("study");
+                    break;
+
+                case "toggle-assignment":
+                    toggleAssignment(
+                        actionElement.dataset.id
                     );
+                    break;
 
-                requestTutor(tutor);
+                case "add-assignment":
+                    openAddAssignmentModal();
+                    break;
 
-                break;
+                case "close-modal":
+                    closeModal();
+                    break;
+
+                case "view-tutor": {
+
+                    const tutor =
+                        appData.tutors.find(
+                            item =>
+                                String(item.id) ===
+                                String(
+                                    actionElement.dataset.id
+                                )
+                        );
+
+                    openTutorModal(tutor);
+
+                    break;
+                }
+
+                case "book-tutor":
+                case "request-tutor": {
+
+                    const tutor =
+                        appData.tutors.find(
+                            item =>
+                                String(item.id) ===
+                                String(
+                                    actionElement.dataset.id
+                                )
+                        );
+
+                    requestTutor(tutor);
+
+                    break;
+                }
+
+                case "spotify":
+                    openSpotify();
+                    break;
+
+                case "sign-out":
+                    signOut();
+                    break;
+
+                case "reset-data":
+                    resetApplicationData();
+                    break;
             }
-
-            case "spotify":
-                openSpotify();
-                break;
-
-            case "sign-out":
-                signOut();
-                break;
-
-            case "reset-data":
-                resetApplicationData();
-                break;
         }
-    });
+    );
 
 
     document.addEventListener(
         "keydown",
         event => {
 
-            if (event.key === "Escape") {
+            if (
+                event.key === "Escape"
+            ) {
 
                 closeModal();
 
                 if (
-                    $("#focusModeOverlay")?.classList.contains(
-                        "active"
-                    )
+                    $("#focusModeOverlay")
+                        ?.classList
+                        .contains("active")
                 ) {
+
                     closeFocusMode();
+
                 }
+
             }
+
         }
     );
 }
+
+
 /* =========================================================
    PAGE EVENT ATTACHMENT
    ========================================================= */
@@ -3267,223 +3529,398 @@ function attachPageEvents() {
        Calendar
        ------------------------- */
 
-    $$("[data-calendar-action]").forEach(button => {
-        button.addEventListener("click", () => {
+    $$("[data-calendar-action]")
+        .forEach(button => {
 
-            const action =
-                button.dataset.calendarAction;
+            button.addEventListener(
+                "click",
+                () => {
 
-            if (action === "previous") {
-                selectedCalendarDate =
-                    new Date(
-                        selectedCalendarDate.getFullYear(),
-                        selectedCalendarDate.getMonth() - 1,
-                        1
+                    const action =
+                        button.dataset
+                            .calendarAction;
+
+                    if (
+                        action ===
+                        "previous"
+                    ) {
+
+                        selectedCalendarDate =
+                            new Date(
+                                selectedCalendarDate
+                                    .getFullYear(),
+                                selectedCalendarDate
+                                    .getMonth() - 1,
+                                1
+                            );
+
+                        renderPage(
+                            "calendar"
+                        );
+                    }
+
+                    if (
+                        action ===
+                        "next"
+                    ) {
+
+                        selectedCalendarDate =
+                            new Date(
+                                selectedCalendarDate
+                                    .getFullYear(),
+                                selectedCalendarDate
+                                    .getMonth() + 1,
+                                1
+                            );
+
+                        renderPage(
+                            "calendar"
+                        );
+                    }
+
+                    if (
+                        action ===
+                        "today"
+                    ) {
+
+                        selectedCalendarDate =
+                            new Date();
+
+                        renderPage(
+                            "calendar"
+                        );
+                    }
+
+                }
+            );
+
+        });
+
+
+    $$("[data-calendar-date]")
+        .forEach(button => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    const dateString =
+                        button.dataset
+                            .calendarDate;
+
+                    const parts =
+                        dateString
+                            .split("-")
+                            .map(Number);
+
+                    selectedCalendarDate =
+                        new Date(
+                            parts[0],
+                            parts[1] - 1,
+                            parts[2]
+                        );
+
+                    renderPage(
+                        "calendar"
                     );
 
-                renderPage("calendar");
-            }
+                }
+            );
 
-            if (action === "next") {
-                selectedCalendarDate =
-                    new Date(
-                        selectedCalendarDate.getFullYear(),
-                        selectedCalendarDate.getMonth() + 1,
-                        1
-                    );
-
-                renderPage("calendar");
-            }
-
-            if (action === "today") {
-                selectedCalendarDate =
-                    new Date();
-
-                renderPage("calendar");
-            }
         });
-    });
-
-
-    $$("[data-calendar-date]").forEach(button => {
-        button.addEventListener("click", () => {
-
-            const dateString =
-                button.dataset.calendarDate;
-
-            const parts =
-                dateString.split("-").map(Number);
-
-            selectedCalendarDate =
-                new Date(
-                    parts[0],
-                    parts[1] - 1,
-                    parts[2]
-                );
-
-            renderPage("calendar");
-        });
-    });
 
 
     /* -------------------------
        Tutor filtering
        ------------------------- */
 
-    $("#tutorSearch")?.addEventListener(
-        "input",
-        filterTutors
-    );
+    $("#tutorSearch")
+        ?.addEventListener(
+            "input",
+            filterTutors
+        );
 
-    $("#subjectFilter")?.addEventListener(
-        "change",
-        filterTutors
-    );
+    $("#subjectFilter")
+        ?.addEventListener(
+            "change",
+            filterTutors
+        );
 
 
     /* -------------------------
        Study timer
        ------------------------- */
 
-    $("#timerStart")?.addEventListener(
-        "click",
-        toggleTimer
-    );
+    $("#timerStart")
+        ?.addEventListener(
+            "click",
+            toggleTimer
+        );
 
-    $("#timerReset")?.addEventListener(
-        "click",
-        resetTimer
-    );
+    $("#timerReset")
+        ?.addEventListener(
+            "click",
+            resetTimer
+        );
 
-    $("#timerFocusMode")?.addEventListener(
-        "click",
-        openFocusMode
-    );
-
-    $$("[data-timer-mode]").forEach(button => {
-        button.addEventListener(
+    $("#timerFocusMode")
+        ?.addEventListener(
             "click",
             () => {
-                setTimerMode(
-                    button.dataset.timerMode
-                );
+
+                const playlist =
+                    activeStudyEnvironment
+                        ? getStudyPlaylists()
+                            .find(
+                                item =>
+                                    item.id ===
+                                    activeStudyEnvironment
+                            )
+                        : null;
+
+                if (playlist) {
+
+                    openFocusMode(
+                        playlist.fullscreenBackground,
+                        playlist.sound
+                    );
+
+                } else {
+
+                    openFocusMode();
+
+                }
+
             }
         );
-    });
-  
-document.querySelectorAll(
-    "[data-playlist-action]"
-).forEach(button => {
 
-    button.addEventListener("click", event => {
 
-        event.stopPropagation();
+    $$("[data-timer-mode]")
+        .forEach(button => {
 
-        const action =
-            button.dataset.playlistAction;
+            button.addEventListener(
+                "click",
+                () => {
 
-        const playlistId =
-            button.dataset.playlistId;
+                    setTimerMode(
+                        button.dataset
+                            .timerMode
+                    );
 
-        const playlistMap = {
-            rain:
-                "https://open.spotify.com/playlist/37i9dQZF1DX8ymr6UES7vc?si=zHMR9PgqShChIsgGJ8enOA",
-
-            cafe:
-                "https://open.spotify.com/playlist/37i9dQZF1DX9RwfGbeGQwP?si=2W5EvODHQ0iJW_w6YKC8xQ",
-
-            forest:
-                "https://open.spotify.com/playlist/37i9dQZF1DX4PP3DA4J0N8?si=ZZ_WvJL-RCOaSCwiIrQi6Q",
-
-            academia:
-                "https://open.spotify.com/playlist/3MelsVnZV5g03wyiJsybHk?si=EI-1KuwXSjyczW84kfPppQ",
-
-            midnight:
-                "https://open.spotify.com/playlist/6asedDPn710ueu5byDKXul?si=5LGw1r7FRz63_VfBKA4X4Q",
-
-            lyrics:
-                "https://open.spotify.com/playlist/37i9dQZF1DWVceT0UosQME?si=AEmZ_Pw7Ru-XFpuD4_YgvQ"
-        };
-
-        if (action === "open") {
-
-            window.open(
-                playlistMap[playlistId],
-                "_blank",
-                "noopener,noreferrer"
+                }
             );
 
-            return;
-        }
+        });
 
-       if (action === "start") {
-    activeStudyEnvironment = playlistId;
 
-    if (timerMode !== "focus") {
-        setTimerMode("focus");
-    }
+    /* -------------------------
+       Study environments
+       ------------------------- */
 
-    if (!timerRunning) {
-        startTimer();
-    }
+    $$("[data-playlist-action]")
+        .forEach(button => {
 
-    updateTimerDisplay();
+            button.addEventListener(
+                "click",
+                event => {
 
-    showToast(
-        "Focus session started.",
-        "success"
-    );
+                    event.stopPropagation();
 
-    return;
-}
-    });
+                    const action =
+                        button.dataset
+                            .playlistAction;
 
-});
+                    const playlistId =
+                        button.dataset
+                            .playlistId;
+
+                    const playlist =
+                        getStudyPlaylists()
+                            .find(
+                                item =>
+                                    item.id ===
+                                    playlistId
+                            );
+
+                    if (!playlist) {
+                        return;
+                    }
+
+
+                    /* -------------------------
+                       OPEN SPOTIFY PLAYLIST
+                       ------------------------- */
+
+                    if (
+                        action === "open"
+                    ) {
+
+                        window.open(
+                            playlist.spotify,
+                            "_blank",
+                            "noopener,noreferrer"
+                        );
+
+                        return;
+                    }
+
+
+                    /* -------------------------
+                       START STUDY CARD
+                       ------------------------- */
+
+                    if (
+                        action === "start"
+                    ) {
+
+                        /*
+                         * THIS is the important part.
+                         * The timer now knows which
+                         * Study card owns it.
+                         */
+                        activeStudyEnvironment =
+                            playlistId;
+
+                        currentFocusBackground =
+                            playlist.fullscreenBackground;
+
+                        currentFocusSound =
+                            playlist.sound;
+
+                        /*
+                         * Always use a fresh 25-minute
+                         * focus timer when changing into
+                         * a Study environment.
+                         */
+                        if (
+                            timerMode !==
+                            "focus"
+                        ) {
+
+                            timerMode =
+                                "focus";
+
+                            timerSeconds =
+                                25 * 60;
+
+                        }
+
+                        /*
+                         * If the timer isn't running,
+                         * start it.
+                         */
+                        if (!timerRunning) {
+
+                            startTimer();
+
+                        } else {
+
+                            /*
+                             * If another environment was
+                             * already running, just move
+                             * the displayed timer to this
+                             * card and switch its sound.
+                             */
+                            startStudySound(
+                                playlist.sound
+                            );
+
+                            updateTimerDisplay();
+
+                        }
+
+                        showToast(
+                            `${playlist.title} started.`
+                        );
+
+                        return;
+                    }
+
+
+                    /* -------------------------
+                       FULLSCREEN
+                       ------------------------- */
+
+                    if (
+                        action ===
+                        "fullscreen"
+                    ) {
+
+                        activeStudyEnvironment =
+                            playlistId;
+
+                        currentFocusBackground =
+                            playlist.fullscreenBackground;
+
+                        currentFocusSound =
+                            playlist.sound;
+
+                        openStudyEnvironmentFullscreen(
+                            playlistId
+                        );
+
+                        return;
+                    }
+
+                }
+            );
+
+        });
 
 
     /* -------------------------
        Settings
        ------------------------- */
 
-    $$("[data-setting]").forEach(button => {
-        button.addEventListener(
-            "click",
-            () => {
-                const setting =
-                    button.dataset.setting;
+    $$("[data-setting]")
+        .forEach(button => {
 
-                if (
-                    !Object.prototype.hasOwnProperty.call(
-                        appData.settings,
-                        setting
-                    )
-                ) {
-                    return;
+            button.addEventListener(
+                "click",
+                () => {
+
+                    const setting =
+                        button.dataset.setting;
+
+                    if (
+                        !Object.prototype
+                            .hasOwnProperty.call(
+                                appData.settings,
+                                setting
+                            )
+                    ) {
+                        return;
+                    }
+
+                    appData.settings[setting] =
+                        !appData.settings[setting];
+
+                    saveData();
+
+                    updateTopbar();
+
+                    renderPage(
+                        "settings"
+                    );
+
+                    showToast(
+                        `${setting
+                            .charAt(0)
+                            .toUpperCase() +
+                            setting.slice(1)
+                        } ${
+                            appData.settings[
+                                setting
+                            ]
+                                ? "enabled"
+                                : "disabled"
+                        }.`
+                    );
+
                 }
+            );
 
-                appData.settings[setting] =
-                    !appData.settings[setting];
-
-                saveData();
-
-                updateTopbar();
-
-                renderPage("settings");
-
-                showToast(
-                    `${setting
-                        .charAt(0)
-                        .toUpperCase() +
-                        setting.slice(1)
-                    } ${
-                        appData.settings[setting]
-                            ? "enabled"
-                            : "disabled"
-                    }.`
-                );
-            }
-        );
-    });
+        });
 }
 
 
@@ -3492,6 +3929,7 @@ document.querySelectorAll(
    ========================================================= */
 
 function requestTutor(tutor) {
+
     if (!tutor) {
         return;
     }
@@ -3509,6 +3947,7 @@ function requestTutor(tutor) {
    ========================================================= */
 
 function openSpotify() {
+
     window.open(
         "https://open.spotify.com/",
         "_blank",
@@ -3522,10 +3961,19 @@ function openSpotify() {
    ========================================================= */
 
 function signOut() {
-    clearInterval(timerInterval);
-    clearInterval(focusTimerInterval);
+
+    clearInterval(
+        timerInterval
+    );
+
+    clearInterval(
+        focusTimerInterval
+    );
+
+    stopStudySound();
 
     timerRunning = false;
+
     focusRunning = false;
 
     currentUser = null;
@@ -3537,11 +3985,14 @@ function signOut() {
     currentPage = "home";
 
     closeModal();
+
     closeFocusMode();
 
     showAuth();
 
-    showToast("You've been signed out.");
+    showToast(
+        "You've been signed out."
+    );
 }
 
 
@@ -3550,6 +4001,7 @@ function signOut() {
    ========================================================= */
 
 function resetApplicationData() {
+
     const confirmed =
         window.confirm(
             "Reset the Peer Hub demo data?"
@@ -3560,13 +4012,17 @@ function resetApplicationData() {
     }
 
     appData =
-        structuredClone(DEFAULT_DATA);
+        structuredClone(
+            DEFAULT_DATA
+        );
 
     saveData();
 
     const demo =
         appData.users.find(
-            user => user.id === "demo-maya"
+            user =>
+                user.id ===
+                "demo-maya"
         );
 
     currentUser = demo;
@@ -3589,22 +4045,35 @@ function resetApplicationData() {
 
 let toastTimeout = null;
 
+
 function showToast(message) {
-    const toast = $("#toast");
+
+    const toast =
+        $("#toast");
 
     if (!toast) {
         return;
     }
 
-    toast.textContent = message;
+    toast.textContent =
+        message;
 
-    toast.classList.add("show");
+    toast.classList.add(
+        "show"
+    );
 
-    clearTimeout(toastTimeout);
+    clearTimeout(
+        toastTimeout
+    );
 
-    toastTimeout = setTimeout(() => {
-        toast.classList.remove("show");
-    }, 3200);
+    toastTimeout =
+        setTimeout(() => {
+
+            toast.classList.remove(
+                "show"
+            );
+
+        }, 3200);
 }
 
 
@@ -3618,19 +4087,36 @@ document.addEventListener(
 
         if (
             event.key === "/" &&
-            !["INPUT", "TEXTAREA", "SELECT"].includes(
-                document.activeElement?.tagName
+            ![
+                "INPUT",
+                "TEXTAREA",
+                "SELECT"
+            ].includes(
+                document.activeElement
+                    ?.tagName
             )
         ) {
+
             event.preventDefault();
 
-            if (currentPage !== "tutors") {
-                navigateTo("tutors");
+            if (
+                currentPage !==
+                "tutors"
+            ) {
+
+                navigateTo(
+                    "tutors"
+                );
+
             }
 
             setTimeout(() => {
-                $("#tutorSearch")?.focus();
+
+                $("#tutorSearch")
+                    ?.focus();
+
             }, 100);
+
         }
 
     }
@@ -3644,15 +4130,23 @@ document.addEventListener(
 document.addEventListener(
     "submit",
     event => {
-        const form = event.target;
+
+        const form =
+            event.target;
 
         if (
-            form.id !== "signinForm" &&
-            form.id !== "signupForm" &&
-            form.id !== "assignmentForm"
+            form.id !==
+                "signinForm" &&
+            form.id !==
+                "signupForm" &&
+            form.id !==
+                "assignmentForm"
         ) {
+
             event.preventDefault();
+
         }
+
     }
 );
 
