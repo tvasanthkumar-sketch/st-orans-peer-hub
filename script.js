@@ -1598,7 +1598,24 @@ function filterTutors() {
 /* =========================================================
    STUDY PAGE
    ========================================================= */
+function getSpotifyEmbedUrl(spotifyUrl) {
+    try {
+        const url = new URL(spotifyUrl);
+        const parts = url.pathname.split("/").filter(Boolean);
 
+        const playlistIndex = parts.indexOf("playlist");
+
+        if (playlistIndex === -1 || !parts[playlistIndex + 1]) {
+            return "";
+        }
+
+        const playlistId = parts[playlistIndex + 1];
+
+        return `https://open.spotify.com/embed/playlist/${playlistId}?utm_source=generator&theme=0`;
+    } catch (error) {
+        return "";
+    }
+}
 function getStudyPlaylists() {
     return [
         {
@@ -1725,24 +1742,27 @@ function renderStudy(container) {
 
                         </div>
 
-                        <div class="study-environment-title">
+<div class="study-environment-title">
+    <p class="study-environment-label">
+        STUDY ATMOSPHERE
+    </p>
+    <h3>${playlist.title}</h3>
+    <p>${playlist.description}</p>
+</div>
 
-                            <p class="study-environment-label">
-                                STUDY ATMOSPHERE
-                            </p>
+<iframe
+    class="study-spotify-embed"
+    src="${getSpotifyEmbedUrl(playlist.spotify)}"
+    width="100%"
+    height="152"
+    frameborder="0"
+    allowfullscreen=""
+    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+    loading="lazy"
+    title="${playlist.title} Spotify playlist"
+></iframe>
 
-                            <h3>
-                                ${playlist.title}
-                            </h3>
-
-                            <p>
-                                ${playlist.description}
-                            </p>
-
-                        </div>
-
-                        <div class="study-card-timer">
-
+<div class="study-card-timer">
                             <span class="study-card-timer-label">
                                 FOCUS
                             </span>
