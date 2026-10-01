@@ -343,7 +343,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function initialiseApp() {
     setupAuthTabs();
-    setupAuthentication();
+   console.log("AUTH SETUP RUNNING");
+setupAuthentication();
     setupNavigation();
     setupTopbar();
     setupGlobalClicks();
