@@ -2562,7 +2562,83 @@ textarea:focus {
         transform: scale(1.025);
     }
 }
+/* =========================================================
+   CAFE
+   ========================================================= */
 
+.focus-mode-overlay.cafe
+.focus-background-layer {
+    background-image:
+        radial-gradient(
+            circle at 22% 25%,
+            rgba(215, 194, 143, 0.28),
+            transparent 24%
+        ),
+        linear-gradient(
+            rgba(55, 37, 27, 0.2),
+            rgba(25, 18, 14, 0.62)
+        ),
+        linear-gradient(
+            135deg,
+            #76543b,
+            #3d2b21 55%,
+            #1f1815
+        );
+
+    background-position: center;
+    animation: cafeScene 12s ease-in-out infinite alternate;
+}
+
+@keyframes cafeScene {
+    from {
+        transform: scale(1);
+        filter: brightness(0.9);
+    }
+
+    to {
+        transform: scale(1.025);
+        filter: brightness(1);
+    }
+}
+
+
+/* =========================================================
+   NO LYRICS
+   ========================================================= */
+
+.focus-mode-overlay.lyrics
+.focus-background-layer {
+    background-image:
+        radial-gradient(
+            circle at 75% 25%,
+            rgba(255, 255, 255, 0.13),
+            transparent 22%
+        ),
+        radial-gradient(
+            circle at 25% 75%,
+            rgba(183, 154, 98, 0.12),
+            transparent 28%
+        ),
+        linear-gradient(
+            145deg,
+            #30463f,
+            #46645a 50%,
+            #182b25
+        );
+
+    background-position: center;
+    animation: lyricsScene 18s ease-in-out infinite alternate;
+}
+
+@keyframes lyricsScene {
+    from {
+        transform: scale(1);
+    }
+
+    to {
+        transform: scale(1.02);
+    }
+}
 
 /* =========================================================
    ATMOSPHERE LAYER
