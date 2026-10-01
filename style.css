@@ -1701,7 +1701,27 @@ p {
     width: min(100%, 650px);
     text-align: center;
 }
+.focus-spotify-embed {
+    width: min(420px, 90vw);
+    margin: 18px auto 8px;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+}
 
+.focus-spotify-embed iframe {
+    display: block;
+    width: 100%;
+    height: 152px;
+    border: 0;
+}
+
+.focus-spotify-placeholder {
+    margin: 0;
+    padding: 16px;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.8);
+}
 .focus-mode-close {
     position: absolute;
     top: 20px;
