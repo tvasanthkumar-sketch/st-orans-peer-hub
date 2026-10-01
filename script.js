@@ -3416,31 +3416,26 @@ document.querySelectorAll(
             return;
         }
 
-        if (action === "start") {
+       if (action === "start") {
+    activeStudyEnvironment = playlistId;
 
-            if (timerMode !== "focus") {
-                setTimerMode("focus");
-            }
+    if (timerMode !== "focus") {
+        setTimerMode("focus");
+    }
 
-            if (!timerRunning) {
-                startTimer();
-            }
+    if (!timerRunning) {
+        startTimer();
+    }
 
-            showToast(
-                "Focus session started.",
-                "success"
-            );
+    updateTimerDisplay();
 
-            return;
-        }
+    showToast(
+        "Focus session started.",
+        "success"
+    );
 
-        if (action === "fullscreen") {
-
-            openFocusMode();
-
-            return;
-        }
-
+    return;
+}
     });
 
 });
