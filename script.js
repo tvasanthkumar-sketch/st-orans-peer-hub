@@ -1880,13 +1880,7 @@ timerInputs.forEach(input => {
     });
 });
 
-decreaseButton?.addEventListener("click", () => {
-    updateFocusLength(customFocusMinutes - 1);
-});
 
-increaseButton?.addEventListener("click", () => {
-    updateFocusLength(customFocusMinutes + 1);
-});
 }
 function renderProfile(container) {
     const user = currentUser;
