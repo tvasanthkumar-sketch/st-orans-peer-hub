@@ -1796,15 +1796,19 @@ function renderStudy(container) {
 
 
 <div class="study-card-timer">
-                            <span class="study-card-timer-label">
-                                FOCUS
-                            </span>
+    <span class="study-card-timer-label">
+        FOCUS
+    </span>
 
-                            <strong
-                                data-study-timer="${playlist.id}"
-                            >25:00</strong>
-
-                        </div>
+    <input
+        type="text"
+        class="study-card-timer-input"
+        data-study-timer="${playlist.id}"
+        value="${formatTime(customFocusMinutes * 60)}"
+        aria-label="Focus timer length"
+        inputmode="numeric"
+    >
+</div>
 
                         <div class="study-environment-actions">
 
@@ -1844,40 +1848,36 @@ function renderStudy(container) {
     updateTimerDisplay();
 
 
-const focusInput = document.querySelector("#focusMinutes");
-const decreaseButton = document.querySelector("#decreaseFocusMinutes");
-const increaseButton = document.querySelector("#increaseFocusMinutes");
+const timerInputs = document.querySelectorAll(
+    ".study-card-timer-input"
+);
 
-function updateFocusLength(value) {
-    let minutes = Number(value);
+timerInputs.forEach(input => {
+    input.addEventListener("change", () => {
+        let value = input.value
+            .replace(/[^0-9]/g, "");
 
-    if (!Number.isFinite(minutes)) {
-        minutes = 25;
-    }
+        let minutes = Number(value);
 
-    minutes = Math.round(minutes);
-    minutes = Math.max(1, Math.min(120, minutes));
+        if (!Number.isFinite(minutes) || minutes < 1) {
+            minutes = 25;
+        }
 
-    customFocusMinutes = minutes;
+        minutes = Math.min(minutes, 120);
 
-    if (focusInput) {
-        focusInput.value = minutes;
-    }
+        customFocusMinutes = minutes;
 
-    if (timerMode === "focus" && !timerRunning) {
-        timerSeconds = minutes * 60;
-        updateTimerDisplay();
-    }
-}
+        if (timerMode === "focus" && !timerRunning) {
+            timerSeconds = minutes * 60;
+            updateTimerDisplay();
+        }
 
-focusInput?.addEventListener("change", () => {
-    updateFocusLength(focusInput.value);
-});
+        input.value = formatTime(minutes * 60);
+    });
 
-focusInput?.addEventListener("input", () => {
-    if (focusInput.value !== "") {
-        updateFocusLength(focusInput.value);
-    }
+    input.addEventListener("focus", () => {
+        input.select();
+    });
 });
 
 decreaseButton?.addEventListener("click", () => {
