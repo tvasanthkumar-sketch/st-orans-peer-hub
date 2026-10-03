@@ -3349,3 +3349,27 @@ textarea:focus {
         justify-content: center;
     }
 }
+.study-card-timer-input {
+    display: block;
+    width: 110px;
+    padding: 0;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: inherit;
+    font-family: inherit;
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1;
+    text-align: left;
+    cursor: text;
+}
+
+.study-card-timer-input:focus {
+    border-bottom: 2px solid var(--gold);
+}
+
+.study-card-timer-input::selection {
+    background: var(--gold);
+    color: var(--green-dark);
+}
