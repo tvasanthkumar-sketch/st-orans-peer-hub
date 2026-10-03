@@ -2677,7 +2677,7 @@ function openFocusMode(
         "false"
     );
 
-    focusSeconds = 25 * 60;
+    focusSeconds = customFocusMinutes * 60;
 
     focusRunning = false;
 
@@ -2690,6 +2690,7 @@ function openFocusMode(
 
     const sound =
         soundOverride ||
+        currentFocusSound ||
         background;
 
     currentFocusSound = sound;
@@ -2698,8 +2699,6 @@ function openFocusMode(
 
     updateFocusDisplay();
 }
-
-
 /* -------------------------
    OPEN STUDY ENVIRONMENT
    ------------------------- */
