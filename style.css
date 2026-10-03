@@ -3247,3 +3247,105 @@ textarea:focus {
     }
 
 }
+/* =========================================================
+   ADJUSTABLE TIMER
+   ========================================================= */
+
+.timer-settings {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    margin: 24px 0 28px;
+    padding: 20px 22px;
+    background: var(--white);
+    border: 1px solid rgba(183, 154, 98, 0.25);
+    border-radius: 18px;
+}
+
+.timer-settings-label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.timer-settings-label .eyebrow {
+    margin: 0;
+}
+
+.timer-settings-label strong {
+    color: var(--green);
+    font-size: 17px;
+}
+
+.timer-settings-label p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.timer-length-control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.timer-length-button {
+    width: 40px;
+    height: 40px;
+    border: 1px solid rgba(183, 154, 98, 0.4);
+    border-radius: 12px;
+    background: var(--cream);
+    color: var(--green);
+    font-size: 22px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.timer-length-button:hover {
+    background: var(--cream-dark);
+    transform: translateY(-1px);
+}
+
+.timer-length-value {
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+    min-width: 78px;
+    justify-content: center;
+}
+
+.timer-length-value input {
+    width: 48px;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--green);
+    font-size: 22px;
+    font-weight: 700;
+    text-align: right;
+    font-family: inherit;
+}
+
+.timer-length-value input::-webkit-inner-spin-button,
+.timer-length-value input::-webkit-outer-spin-button {
+    opacity: 0.6;
+}
+
+.timer-length-value span {
+    color: var(--muted);
+    font-size: 13px;
+}
+
+@media (max-width: 650px) {
+    .timer-settings {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .timer-length-control {
+        align-self: stretch;
+        justify-content: center;
+    }
+}
