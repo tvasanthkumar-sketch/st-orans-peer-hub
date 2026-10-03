@@ -1712,19 +1712,43 @@ function renderStudy(container) {
 
         </div>
 <div class="timer-settings">
-    <label for="focusMinutes">
-        Focus length
-    </label>
+    <div class="timer-settings-label">
+        <span class="eyebrow">FOCUS TIMER</span>
+        <strong>Focus length</strong>
+        <p>Choose how long you want each focus session to be.</p>
+    </div>
 
-    <input
-        type="number"
-        id="focusMinutes"
-        min="1"
-        max="120"
-        value="${customFocusMinutes}"
-    >
+    <div class="timer-length-control">
+        <button
+            type="button"
+            class="timer-length-button"
+            id="decreaseFocusMinutes"
+            aria-label="Decrease focus time"
+        >
+            −
+        </button>
 
-    <span>minutes</span>
+        <div class="timer-length-value">
+            <input
+                type="number"
+                id="focusMinutes"
+                min="1"
+                max="120"
+                value="${customFocusMinutes}"
+                aria-label="Focus length in minutes"
+            >
+            <span>min</span>
+        </div>
+
+        <button
+            type="button"
+            class="timer-length-button"
+            id="increaseFocusMinutes"
+            aria-label="Increase focus time"
+        >
+            +
+        </button>
+    </div>
 </div>
         <div class="study-environment-grid">
 
@@ -1821,22 +1845,48 @@ function renderStudy(container) {
 
 
 const focusInput = document.querySelector("#focusMinutes");
+const decreaseButton = document.querySelector("#decreaseFocusMinutes");
+const increaseButton = document.querySelector("#increaseFocusMinutes");
 
-if (focusInput) {
-    focusInput.addEventListener("change", () => {
+function updateFocusLength(value) {
+    let minutes = Number(value);
 
-        customFocusMinutes =
-            Number(focusInput.value);
+    if (!Number.isFinite(minutes)) {
+        minutes = 25;
+    }
 
-        if (timerMode === "focus" && !timerRunning) {
-            timerSeconds =
-                customFocusMinutes * 60;
+    minutes = Math.round(minutes);
+    minutes = Math.max(1, Math.min(120, minutes));
 
-            updateTimerDisplay();
-        }
+    customFocusMinutes = minutes;
 
-    });
+    if (focusInput) {
+        focusInput.value = minutes;
+    }
+
+    if (timerMode === "focus" && !timerRunning) {
+        timerSeconds = minutes * 60;
+        updateTimerDisplay();
+    }
 }
+
+focusInput?.addEventListener("change", () => {
+    updateFocusLength(focusInput.value);
+});
+
+focusInput?.addEventListener("input", () => {
+    if (focusInput.value !== "") {
+        updateFocusLength(focusInput.value);
+    }
+});
+
+decreaseButton?.addEventListener("click", () => {
+    updateFocusLength(customFocusMinutes - 1);
+});
+
+increaseButton?.addEventListener("click", () => {
+    updateFocusLength(customFocusMinutes + 1);
+});
 }
 function renderProfile(container) {
     const user = currentUser;
