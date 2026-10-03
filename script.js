@@ -1909,7 +1909,6 @@ function renderProfile(container) {
         </div>
     `;
 }
-
 function renderSettings(container) {
     container.innerHTML = `
         <div class="page-header">
@@ -1981,6 +1980,7 @@ function renderSettings(container) {
         </div>
     `;
 }
+
 /* =========================================================
    TIMER
    ========================================================= */
