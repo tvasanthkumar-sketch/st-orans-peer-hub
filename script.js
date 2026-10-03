@@ -2174,12 +2174,17 @@ function updateTimerDisplay() {
             );
 
         if (studyTimer) {
-            studyTimer.textContent =
+            const formatted =
                 formatTime(timerSeconds);
+
+            if (studyTimer.matches("input")) {
+                studyTimer.value = formatted;
+            } else {
+                studyTimer.textContent = formatted;
+            }
         }
     }
 }
-
 
 function finishTimer() {
     clearInterval(timerInterval);
