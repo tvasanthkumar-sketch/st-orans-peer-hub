@@ -1853,7 +1853,8 @@ const timerInputs = document.querySelectorAll(
 );
 
 timerInputs.forEach(input => {
-    input.addEventListener("change", () => {
+
+    function applyCustomTime() {
         let value = input.value
             .replace(/[^0-9]/g, "");
 
@@ -1867,21 +1868,24 @@ timerInputs.forEach(input => {
 
         customFocusMinutes = minutes;
 
-        if (timerMode === "focus" && !timerRunning) {
+        if (timerMode === "focus") {
             timerSeconds = minutes * 60;
-            updateTimerDisplay();
         }
 
         input.value = formatTime(minutes * 60);
-    });
+
+        updateTimerDisplay();
+    }
+
+    input.addEventListener("change", applyCustomTime);
+
+    input.addEventListener("blur", applyCustomTime);
 
     input.addEventListener("focus", () => {
         input.select();
     });
+
 });
-
-
-}
 function renderProfile(container) {
     const user = currentUser;
 
