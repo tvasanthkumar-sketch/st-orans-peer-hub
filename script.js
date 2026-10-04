@@ -2157,35 +2157,8 @@ function updateTimerDisplay() {
             formatTime(timerSeconds);
     }
 
-    const start = $("#timerStart");
-
-    if (start) {
-        start.textContent =
-            timerRunning
-                ? "Pause"
-                : "Start";
-    }
-
-    if (activeStudyEnvironment) {
-
-        const studyTimer =
-            document.querySelector(
-                `[data-study-timer="${activeStudyEnvironment}"]`
-            );
-
-        if (studyTimer) {
-            const formatted =
-                formatTime(timerSeconds);
-
-            if (studyTimer.matches("input")) {
-                studyTimer.value = formatted;
-            } else {
-                studyTimer.textContent = formatted;
-            }
-        }
-    }
-}
-
+ 
+   
 function finishTimer() {
     clearInterval(timerInterval);
 
@@ -3951,60 +3924,89 @@ function attachPageEvents() {
 
         });
 
-    $$("[data-playlist-action]")
-        .forEach(button => {
+$$("[data-playlist-action]")
+    .forEach(button => {
 
-            button.addEventListener(
-                "click",
-                event => {
+        button.addEventListener(
+            "click",
+            event => {
 
-                    event.preventDefault();
-                    event.stopPropagation();
+                event.preventDefault();
+                event.stopPropagation();
 
-                    const action =
-                        button.dataset
-                            .playlistAction;
+                const action =
+                    button.dataset.playlistAction;
 
-                    const playlistId =
-                        button.dataset
-                            .playlistId;
+                const playlistId =
+                    button.dataset.playlistId;
+
+                const playlist =
+                    getStudyPlaylists().find(
+                        item =>
+                            item.id === playlistId
+                    );
+
+                if (!playlist) {
+                    console.error(
+                        "Study playlist not found:",
+                        playlistId
+                    );
+                    return;
+                }
+
+                if (action === "start") {
+
+                    activeStudyEnvironment =
+                        playlistId;
 
                     if (
-                        action ===
-                        "fullscreen"
+                        timerMode === "focus" &&
+                        !timerRunning
                     ) {
-
-                        const playlist =
-                            getStudyPlaylists()
-                                .find(
-                                    item =>
-                                        item.id ===
-                                        playlistId
-                                );
-
-                        if (!playlist) {
-                            console.error(
-                                "Study playlist not found:",
-                                playlistId
-                            );
-                            return;
-                        }
-
-                        activeStudyEnvironment =
-                            playlistId;
-
-                        openFocusMode(
-                            playlist.fullscreenBackground,
-                            playlist.sound
-                        );
-
-                        return;
+                        timerSeconds =
+                            customFocusMinutes * 60;
                     }
 
-                }
-            );
+                    startTimer();
 
-        });
+                    showToast(
+                        "Focus timer started 🐉"
+                    );
+
+                    return;
+                }
+
+                if (action === "fullscreen") {
+
+                    activeStudyEnvironment =
+                        playlistId;
+
+                    openFocusMode(
+                        playlist.fullscreenBackground,
+                        playlist.sound
+                    );
+
+                    return;
+                }
+
+                if (action === "open") {
+
+                    const spotifyUrl =
+                        playlist.spotify;
+
+                    if (spotifyUrl) {
+                        window.open(
+                            spotifyUrl,
+                            "_blank"
+                        );
+                    }
+
+                    return;
+                }
+            }
+        );
+
+    });
     /* -------------------------
        Study environments
        ------------------------- */
