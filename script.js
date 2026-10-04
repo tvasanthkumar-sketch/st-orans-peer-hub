@@ -1886,6 +1886,7 @@ timerInputs.forEach(input => {
     });
 
 });
+}
 function renderProfile(container) {
     const user = currentUser;
 
