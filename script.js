@@ -1889,6 +1889,45 @@ timerInputs.forEach(input => {
     });
 
 });
+
+/* Focus length controls */
+const focusMinutesInput = document.querySelector("#focusMinutes");
+const decreaseButton = document.querySelector("#decreaseFocusMinutes");
+const increaseButton = document.querySelector("#increaseFocusMinutes");
+
+function applyFocusMinutes(value) {
+    let minutes = Number(value);
+
+    if (!Number.isFinite(minutes)) {
+        minutes = customFocusMinutes || 25;
+    }
+
+    minutes = Math.max(1, Math.min(120, Math.round(minutes)));
+    customFocusMinutes = minutes;
+
+    if (!timerRunning && timerMode === "focus") {
+        timerSeconds = minutes * 60;
+    }
+
+    if (focusMinutesInput) {
+        focusMinutesInput.value = minutes;
+    }
+
+    updateTimerDisplay();
+    updateFocusDisplay();
+}
+
+focusMinutesInput?.addEventListener("change", event => {
+    applyFocusMinutes(event.target.value);
+});
+
+decreaseButton?.addEventListener("click", () => {
+    applyFocusMinutes(customFocusMinutes - 1);
+});
+
+increaseButton?.addEventListener("click", () => {
+    applyFocusMinutes(customFocusMinutes + 1);
+});
 }
 function renderProfile(container) {
     const user = currentUser;
@@ -2667,9 +2706,13 @@ function openFocusMode(
         "false"
     );
 
-    focusSeconds = customFocusMinutes * 60;
+    /* Keep the fullscreen timer tied to the main Study timer. */
+    if (!timerRunning && timerSeconds <= 0) {
+        timerSeconds = customFocusMinutes * 60;
+    }
 
-    focusRunning = false;
+    focusSeconds = timerSeconds;
+    focusRunning = timerRunning;
 
     createFocusBackground();
 
@@ -2783,67 +2826,40 @@ function closeFocusMode() {
    ------------------------- */
 
 function startFocusTimer() {
-
-    if (focusRunning) {
+    if (timerRunning) {
+        focusRunning = true;
+        updateFocusDisplay();
         return;
     }
 
-    startStudySound(
-        currentFocusSound
-    );
+    timerMode = "focus";
 
-    focusRunning = true;
+    if (timerSeconds <= 0) {
+        timerSeconds = customFocusMinutes * 60;
+    }
 
-    clearInterval(
-        focusTimerInterval
-    );
+    startTimer();
 
-    focusTimerInterval =
-        setInterval(() => {
-
-            focusSeconds--;
-
-            updateFocusDisplay();
-
-            if (
-                focusSeconds <= 0
-            ) {
-                finishFocusTimer();
-            }
-
-        }, 1000);
-
+    focusRunning = timerRunning;
+    focusSeconds = timerSeconds;
     updateFocusDisplay();
 }
 
 
 function pauseFocusTimer() {
+    pauseTimer();
 
     focusRunning = false;
-
-    clearInterval(
-        focusTimerInterval
-    );
-
-    stopStudySound();
-
+    focusSeconds = timerSeconds;
     updateFocusDisplay();
 }
 
 
 function resetFocusTimer() {
+    resetTimer();
 
     focusRunning = false;
-
-    clearInterval(
-        focusTimerInterval
-    );
-
-    stopStudySound();
-
-    focusSeconds =
-        customFocusMinutes * 60;
-
+    focusSeconds = timerSeconds;
     updateFocusDisplay();
 }
 
@@ -2855,9 +2871,11 @@ function updateFocusDisplay() {
 
     if (display) {
 
+        focusSeconds = timerSeconds;
+
         display.textContent =
             formatTime(
-                focusSeconds
+                timerSeconds
             );
 
     }
@@ -2911,7 +2929,7 @@ function finishFocusTimer() {
 
     focusRunning = false;
 
-    focusSeconds = 0;
+    focusSeconds = timerSeconds;
 
     stopStudySound();
 
