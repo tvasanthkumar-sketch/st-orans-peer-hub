@@ -1140,13 +1140,23 @@ function renderCalendar(container) {
 
             </div>
 
-            <button
-                type="button"
-                class="calendar-today secondary-button"
-                data-calendar-action="today"
-            >
-                Today
-            </button>
+            <div class="calendar-toolbar-actions">
+                <button
+                    type="button"
+                    class="secondary-button"
+                    data-calendar-action="add-event"
+                >
+                    + Add Event
+                </button>
+
+                <button
+                    type="button"
+                    class="calendar-today secondary-button"
+                    data-calendar-action="today"
+                >
+                    Today
+                </button>
+            </div>
 
         </div>
 
@@ -1230,14 +1240,105 @@ function renderSelectedDay() {
                 event => `
                     <div class="day-item">
                         <strong>${escapeHTML(event.title)}</strong>
-                        <span>${escapeHTML(
-                            event.type || "Event"
-                        )}</span>
+                        <span>
+                            ${escapeHTML(event.type || "Event")}
+                            ${event.time ? " · " + escapeHTML(formatEventTime(event.time)) : ""}
+                        </span>
                     </div>
                 `
             )
             .join("")}
     `;
+}
+
+
+function openAddCalendarEventModal() {
+    const defaultDate = formatDateKey(selectedCalendarDate);
+
+    openModal(`
+        <div class="card-header">
+            <div>
+                <p class="eyebrow">PLAN AHEAD</p>
+                <h2>Add Calendar Event</h2>
+            </div>
+            <button type="button" class="icon-button" data-action="close-modal" aria-label="Close">×</button>
+        </div>
+
+        <form id="calendarEventForm" class="modal-form">
+            <div class="form-group">
+                <label for="newEventTitle">Event</label>
+                <input id="newEventTitle" type="text" required placeholder="e.g. Cultural Evening">
+            </div>
+
+            <div class="form-group">
+                <label for="newEventDate">Date</label>
+                <input id="newEventDate" type="date" value="${defaultDate}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="newEventTime">Time <span>(optional)</span></label>
+                <input id="newEventTime" type="time">
+            </div>
+
+            <div class="form-group">
+                <label for="newEventType">Type</label>
+                <select id="newEventType">
+                    <option value="Event">Event</option>
+                    <option value="School">School</option>
+                    <option value="Study">Study</option>
+                    <option value="Personal">Personal</option>
+                </select>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="secondary-button" data-action="close-modal">Cancel</button>
+                <button type="submit" class="primary-button">Add Event</button>
+            </div>
+        </form>
+    `);
+
+    $("#calendarEventForm")?.addEventListener("submit", event => {
+        event.preventDefault();
+
+        const title = $("#newEventTitle")?.value.trim();
+        const date = $("#newEventDate")?.value;
+        const time = $("#newEventTime")?.value || "";
+        const type = $("#newEventType")?.value || "Event";
+
+        if (!title || !date) return;
+
+        appData.calendarEvents.push({
+            id: "event-" + Date.now(),
+            title,
+            date,
+            time,
+            type,
+            source: "event"
+        });
+
+        saveData();
+        closeModal();
+
+        const parts = date.split("-").map(Number);
+        selectedCalendarDate = new Date(parts[0], parts[1] - 1, parts[2]);
+
+        showToast("Event added to your calendar ✦");
+        renderPage("calendar");
+    });
+}
+
+
+function formatEventTime(time) {
+    if (!time) return "";
+
+    const [hours, minutes] = time.split(":").map(Number);
+    if (!Number.isFinite(hours) || !Number.isFinite(minutes)) return time;
+
+    const date = new Date(2000, 0, 1, hours, minutes);
+    return date.toLocaleTimeString("en-NZ", {
+        hour: "numeric",
+        minute: "2-digit"
+    });
 }
 
 
@@ -2387,9 +2488,9 @@ function openAddAssignmentModal() {
 
                 <input
                     id="newAssignmentDue"
-                    type="text"
+                    type="date"
                     required
-                    placeholder="e.g. Friday"
+                    aria-label="Assignment due date"
                 >
 
             </div>
@@ -2444,8 +2545,20 @@ function openAddAssignmentModal() {
             const subject =
                 $("#newAssignmentSubject").value.trim();
 
+            const dueDate =
+                $("#newAssignmentDue").value;
+
             const due =
-                $("#newAssignmentDue").value.trim();
+                dueDate
+                    ? new Date(dueDate + "T00:00:00").toLocaleDateString(
+                        "en-NZ",
+                        {
+                            day: "numeric",
+                            month: "short",
+                            year: "numeric"
+                        }
+                    )
+                    : "";
 
             const importance =
                 $("#newAssignmentImportance").value;
@@ -2454,13 +2567,26 @@ function openAddAssignmentModal() {
                 return;
             }
 
+            const assignmentId = Date.now();
+
             appData.assignments.push({
-                id: Date.now(),
+                id: assignmentId,
                 title,
                 subject,
                 due,
+                dueDate,
                 importance,
                 completed: false
+            });
+
+            appData.calendarEvents.push({
+                id: "assignment-" + assignmentId,
+                title,
+                date: dueDate,
+                type: "Assignment",
+                time: "",
+                source: "assignment",
+                assignmentId
             });
 
             saveData();
@@ -3830,6 +3956,14 @@ function attachPageEvents() {
 
                     if (
                         action ===
+                        "add-event"
+                    ) {
+                        openAddCalendarEventModal();
+                        return;
+                    }
+
+                    if (
+                        action ===
                         "today"
                     ) {
 
@@ -4388,7 +4522,9 @@ document.addEventListener(
             form.id !==
                 "signupForm" &&
             form.id !==
-                "assignmentForm"
+                "assignmentForm" &&
+            form.id !==
+                "calendarEventForm"
         ) {
 
             event.preventDefault();
