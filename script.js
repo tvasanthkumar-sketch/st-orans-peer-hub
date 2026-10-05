@@ -611,7 +611,7 @@ function handleGoogleDemo() {
 
 function showAuth() {
     const authScreen = $("#authScreen");
-    const appShell = $("#appShell");
+    const appShell = $("#appShell") || $("#app");
 
     authScreen?.classList.remove("hidden");
     appShell?.classList.add("hidden");
@@ -620,7 +620,7 @@ function showAuth() {
 
 function showApplication() {
     const authScreen = $("#authScreen");
-    const appShell = $("#appShell");
+    const appShell = $("#appShell") || $("#app");
 
     authScreen?.classList.add("hidden");
     appShell?.classList.remove("hidden");
