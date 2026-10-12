@@ -209,6 +209,8 @@ function loadData() {
             calendarEvents:
                 parsed.calendarEvents ||
                 [],
+            bookings: parsed.bookings || [],
+            notificationsList: parsed.notificationsList || [],
             settings: {
                 ...DEFAULT_DATA.settings,
                 ...(parsed.settings || {})
@@ -349,6 +351,7 @@ setupAuthentication();
     setupTopbar();
     setupGlobalClicks();
     setupFocusMode();
+    setupEnhancedFeatures();
 
     if (currentUser) {
         showApplication();
@@ -651,6 +654,10 @@ function renderPage(page) {
 
         case "tutors":
             renderTutors(container);
+            break;
+
+        case "points":
+            renderPeerPoints(container);
             break;
 
         case "study":
@@ -1544,161 +1551,13 @@ function toggleAssignment(id) {
    ========================================================= */
 
 function renderTutors(container) {
-    container.innerHTML = `
-        <div class="page-header">
-
-            <div>
-                <p class="eyebrow">LEARN TOGETHER</p>
-                <h1>Find a Peer</h1>
-                <p>
-                    Find a student who can help
-                    with the subject you're working on.
-                </p>
-            </div>
-
-        </div>
-
-        <div class="filter-bar">
-
-            <input
-                type="search"
-                id="tutorSearch"
-                placeholder="Search by name or subject..."
-                aria-label="Search tutors"
-            >
-
-            <select id="subjectFilter">
-                <option value="">All subjects</option>
-                <option value="English">English</option>
-                <option value="Mathematics">Mathematics</option>
-                <option value="Science">Science</option>
-                <option value="French">French</option>
-                <option value="History">History</option>
-                <option value="PE">PE</option>
-            </select>
-
-        </div>
-
-        <div
-            id="tutorGrid"
-            class="tutor-grid"
-        >
-            ${appData.tutors
-                .map(renderTutorCard)
-                .join("")}
-        </div>
-    `;
+ const user=getCurrentUserFromData();appData.bookings=appData.bookings||[];const own=appData.tutors.find(t=>String(t.userId)===String(user?.id));const subjects=["English","Mathematics","Science","French","Te Reo Māori","History","Social Studies","Physics","Chemistry","Biology","PE","Digital Technology"];
+ container.innerHTML=`<div class="page-header"><div><p class="eyebrow">LEARN TOGETHER</p><h1>Find a Peer</h1><p>Find help, offer your strengths, and arrange a specific time to study.</p></div><button class="primary-button" type="button" data-action="edit-tutor-profile">${own?"Edit tutor profile":"Become a tutor"}</button></div><section class="feature-panel"><p class="eyebrow">YOUR TUTOR PROFILE</p><h2>${own?"You're listed as a tutor":"Share what you're good at"}</h2><p>${own?"Your subjects and available times are visible to other students.":"Create a profile so classmates can find you by subject and request a session."}</p><button class="secondary-button" type="button" data-action="edit-tutor-profile">${own?"Update profile":"Create profile"}</button></section><div class="filter-bar"><input type="search" id="tutorSearch" placeholder="Search by name or subject..." aria-label="Search tutors"><select id="subjectFilter"><option value="">All subjects</option>${subjects.map(s=>`<option value="${escapeHTML(s)}">${escapeHTML(s)}</option>`).join("")}</select></div><div id="tutorGrid" class="tutor-grid">${appData.tutors.filter(t=>String(t.userId||"")!==String(user?.id)).map(renderTutorCard).join("")||'<p class="empty-state">No other tutors yet. Create a tutor profile to get started.</p>'}</div><section class="feature-panel"><p class="eyebrow">YOUR SESSIONS</p><h2>Booking requests</h2><p class="muted">Requests remain pending until the tutor accepts or declines.</p><div class="booking-list">${appData.bookings.filter(b=>b.studentId===user?.id||b.tutorUserId===user?.id).slice().reverse().map(renderBookingRow).join("")||'<p class="muted">No sessions yet.</p>'}</div></section>`;
+ $("#tutorSearch")?.addEventListener("input",filterTutors);$("#subjectFilter")?.addEventListener("change",filterTutors);
 }
-
-
-function renderTutorCard(tutor) {
-    return `
-        <article
-            class="tutor-card card"
-            data-tutor-name="${escapeHTML(
-                tutor.name.toLowerCase()
-            )}"
-            data-tutor-subjects="${escapeHTML(
-                tutor.subjects.join(" ").toLowerCase()
-            )}"
-        >
-
-            <div class="tutor-avatar">
-                ${escapeHTML(tutor.initials)}
-            </div>
-
-            <div class="tutor-year">
-                ${escapeHTML(tutor.year)}
-            </div>
-
-            <h3>
-                ${escapeHTML(tutor.name)}
-            </h3>
-
-            <div class="tutor-subjects">
-
-                ${tutor.subjects
-                    .map(
-                        subject =>
-                            `<span class="subject-tag">${escapeHTML(
-                                subject
-                            )}</span>`
-                    )
-                    .join("")}
-
-            </div>
-
-            <p>
-                ${escapeHTML(tutor.bio)}
-            </p>
-
-            <div class="tutor-availability">
-                <span>◷</span>
-                ${escapeHTML(tutor.availability)}
-            </div>
-
-            <div class="tutor-buttons">
-
-                <button
-                    type="button"
-                    class="primary-button"
-                    data-action="book-tutor"
-                    data-id="${tutor.id}"
-                >
-                    Request Session
-                </button>
-
-                <button
-                    type="button"
-                    class="secondary-button"
-                    data-action="view-tutor"
-                    data-id="${tutor.id}"
-                >
-                    View
-                </button>
-
-            </div>
-
-        </article>
-    `;
-}
-
-
-function filterTutors() {
-    const search =
-        ($("#tutorSearch")?.value || "")
-            .trim()
-            .toLowerCase();
-
-    const subject =
-        ($("#subjectFilter")?.value || "")
-            .trim()
-            .toLowerCase();
-
-    $$(".tutor-card").forEach(card => {
-        const name =
-            card.dataset.tutorName || "";
-
-        const subjects =
-            card.dataset.tutorSubjects || "";
-
-        const matchesSearch =
-            !search ||
-            name.includes(search) ||
-            subjects.includes(search);
-
-        const matchesSubject =
-            !subject ||
-            subjects.includes(subject);
-
-        card.style.display =
-            matchesSearch && matchesSubject
-                ? ""
-                : "none";
-    });
-}
-
-
+function renderTutorCard(t){return `<article class="tutor-card card" data-tutor-name="${escapeHTML(String(t.name||"").toLowerCase())}" data-tutor-subjects="${escapeHTML((t.subjects||[]).join(" ").toLowerCase())}"><div class="tutor-avatar">${escapeHTML(t.initials||getInitials(t.name))}</div><div class="tutor-year">Year ${escapeHTML(String(t.year||"—"))}</div><h3>${escapeHTML(t.name||"Student tutor")}</h3><div class="tutor-subjects">${(t.subjects||[]).map(s=>`<span class="subject-tag">${escapeHTML(s)}</span>`).join("")}</div><p>${escapeHTML(t.bio||"Peer tutor")}</p><div class="tutor-availability">◷ ${escapeHTML(t.availability||"Availability by arrangement")}</div><div class="tutor-buttons"><button type="button" class="primary-button" data-action="book-tutor" data-id="${escapeHTML(String(t.id))}">Choose a time</button><button type="button" class="secondary-button" data-action="view-tutor" data-id="${escapeHTML(String(t.id))}">View</button></div></article>`;}
+function renderBookingRow(b){const u=getCurrentUserFromData(),isTutor=b.tutorUserId===u?.id,status=b.status||"pending";return `<article class="booking-row"><div><strong>${escapeHTML(isTutor?b.studentName:b.tutorName)}</strong><p>${escapeHTML(b.subject)} · ${escapeHTML(b.date)} at ${escapeHTML(b.time)}</p><span class="booking-status status-${escapeHTML(status)}">${escapeHTML(status)}</span></div>${isTutor&&status==="pending"?`<div class="booking-actions"><button type="button" class="primary-button" data-action="update-booking" data-id="${escapeHTML(String(b.id))}" data-status="accepted">Accept</button><button type="button" class="secondary-button" data-action="update-booking" data-id="${escapeHTML(String(b.id))}" data-status="declined">Decline</button></div>`:""}</article>`;}
+function filterTutors(){const q=($("#tutorSearch")?.value||"").trim().toLowerCase(),s=($("#subjectFilter")?.value||"").trim().toLowerCase();$$(".tutor-card").forEach(c=>{const n=c.dataset.tutorName||"",ss=c.dataset.tutorSubjects||"";c.style.display=(!q||n.includes(q)||ss.includes(q))&&(!s||ss.includes(s))?"":"none";});}
 /* =========================================================
    STUDY PAGE
    ========================================================= */
@@ -4538,3 +4397,15 @@ document.addEventListener(
 /* =========================================================
    END OF SCRIPT
    ========================================================= */
+/* Lucy feedback: tutor registration, specific booking times, notifications and points. */
+function setupEnhancedFeatures(){appData.bookings=appData.bookings||[];appData.notificationsList=appData.notificationsList||[];const nav=$(".main-nav");if(nav&&!$('.nav-item[data-page="points"]',nav)){const b=document.createElement("button");b.type="button";b.className="nav-item";b.dataset.page="points";b.title="Peer Points";b.innerHTML='<span class="nav-icon">✦</span><span class="nav-text">Peer Points</span>';b.addEventListener("click",()=>navigateTo("points"));nav.appendChild(b);}const side=$(".sidebar");if(side&&!side.querySelector('[data-action="sign-out"]')){const b=document.createElement("button");b.type="button";b.className="secondary-button sidebar-signout";b.dataset.action="sign-out";b.textContent="Sign out";side.appendChild(b);}document.addEventListener("click",e=>{const el=e.target.closest("[data-action]");if(!el)return;const a=el.dataset.action;if(a==="edit-tutor-profile")openTutorProfileForm();if(a==="book-tutor")openSpecificBookingForm(appData.tutors.find(t=>String(t.id)===String(el.dataset.id)));if(a==="view-tutor")openTutorDetails(appData.tutors.find(t=>String(t.id)===String(el.dataset.id)));if(a==="update-booking")updateBookingStatus(el.dataset.id,el.dataset.status);});document.addEventListener("submit",e=>{if(e.target.id==="tutorProfileForm"){e.preventDefault();saveTutorProfile();}if(e.target.id==="specificBookingForm"){e.preventDefault();createSpecificBooking();}});saveData();}
+function openTutorProfileForm(){const u=getCurrentUserFromData();if(!u)return;const t=appData.tutors.find(x=>String(x.userId)===String(u.id)),subs=["English","Mathematics","Science","French","Te Reo Māori","History","Social Studies","Physics","Chemistry","Biology","PE","Digital Technology"],days=["Monday","Tuesday","Wednesday","Thursday","Friday"];openModal(`<div class="card-header"><div><p class="eyebrow">PEER TUTOR</p><h2>${t?"Edit your tutor profile":"Become a tutor"}</h2></div><button type="button" class="icon-button" data-action="close-modal">×</button></div><form id="tutorProfileForm" class="modal-form"><div class="form-group"><label for="tutorBio">Short introduction</label><textarea id="tutorBio" required maxlength="240" placeholder="What can you help other students with?">${escapeHTML(t?.bio||"")}</textarea></div><div class="form-group"><label for="tutorSubjects">Subjects you can tutor</label><select id="tutorSubjects" multiple size="5" required>${subs.map(s=>`<option value="${escapeHTML(s)}" ${(t?.subjects||[]).includes(s)?"selected":""}>${escapeHTML(s)}</option>`).join("")}</select><small>Hold Cmd (Mac) or Ctrl (Windows) to choose multiple.</small></div><div class="form-group"><label>Days available</label><div class="choice-chips">${days.map(d=>`<label><input type="checkbox" name="tutorDays" value="${d}" ${(t?.availableDays||[]).includes(d)?"checked":""}> ${d}</label>`).join("")}</div></div><div class="form-grid"><div class="form-group"><label for="tutorStart">From</label><input id="tutorStart" type="time" value="${escapeHTML(t?.startTime||"15:30")}" required></div><div class="form-group"><label for="tutorEnd">Until</label><input id="tutorEnd" type="time" value="${escapeHTML(t?.endTime||"16:30")}" required></div></div><div class="modal-actions"><button type="button" class="secondary-button" data-action="close-modal">Cancel</button><button type="submit" class="primary-button">Save profile</button></div></form>`);}
+function saveTutorProfile(){const u=getCurrentUserFromData();if(!u)return;const bio=$("#tutorBio")?.value.trim()||"",subjects=[...($("#tutorSubjects")?.selectedOptions||[])].map(o=>o.value),availableDays=$$('input[name="tutorDays"]:checked').map(x=>x.value),startTime=$("#tutorStart")?.value||"",endTime=$("#tutorEnd")?.value||"";if(!bio||!subjects.length||!availableDays.length||!startTime||!endTime||startTime>=endTime){showToast("Add an introduction, subjects, available days and a valid time range.");return;}let t=appData.tutors.find(x=>String(x.userId)===String(u.id));const r={id:t?.id||("tutor-"+u.id),userId:u.id,name:u.name,year:u.year||"Student",initials:getInitials(u.name),subjects,bio,availableDays,startTime,endTime,availability:availableDays.join(" · ")+" · "+startTime+"–"+endTime};if(t)Object.assign(t,r);else appData.tutors.push(r);updateCurrentUser({role:"tutor",tutorProfile:true});saveData();closeModal();showToast("Tutor profile saved.");renderPage("tutors");}
+function openSpecificBookingForm(t){const u=getCurrentUserFromData();if(!u||!t)return;if(String(t.userId||"")===String(u.id)){showToast("That's your own tutor profile.");return;}const d=new Date(),today=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");openModal(`<div class="card-header"><div><p class="eyebrow">BOOK A PEER</p><h2>Choose a session time</h2></div><button type="button" class="icon-button" data-action="close-modal">×</button></div><form id="specificBookingForm" class="modal-form" data-tutor-id="${escapeHTML(String(t.id))}"><p>Request a session with <strong>${escapeHTML(t.name)}</strong>. It stays pending until they respond.</p><div class="form-group"><label for="bookingSubject">Subject</label><select id="bookingSubject" required>${(t.subjects||[]).map(s=>`<option value="${escapeHTML(s)}">${escapeHTML(s)}</option>`).join("")}</select></div><div class="form-group"><label for="bookingDate">Date</label><input id="bookingDate" type="date" min="${today}" required></div><div class="form-group"><label for="bookingTime">Start time</label><input id="bookingTime" type="time" value="${escapeHTML(t.startTime||"15:30")}" required><small>Usual availability: ${escapeHTML(t.availability||"By arrangement")}</small></div><div class="form-group"><label for="bookingDuration">Duration</label><select id="bookingDuration"><option value="30">30 minutes</option><option value="45">45 minutes</option><option value="60" selected>1 hour</option></select></div><div class="form-group"><label for="bookingNote">What would you like help with? (optional)</label><textarea id="bookingNote" maxlength="240"></textarea></div><div class="modal-actions"><button type="button" class="secondary-button" data-action="close-modal">Cancel</button><button type="submit" class="primary-button">Send request</button></div></form>`);}
+function createSpecificBooking(){const u=getCurrentUserFromData(),f=$("#specificBookingForm");if(!u||!f)return;const t=appData.tutors.find(x=>String(x.id)===String(f.dataset.tutorId)),subject=$("#bookingSubject")?.value,date=$("#bookingDate")?.value,time=$("#bookingTime")?.value,duration=Number($("#bookingDuration")?.value||60),note=$("#bookingNote")?.value.trim()||"";if(!t||!date||!time||!subject)return;const day=new Date(date+"T12:00:00").toLocaleDateString("en-NZ",{weekday:"long"}),start=Number(time.slice(0,2))*60+Number(time.slice(3,5)),end=start+duration,ts=t.startTime?Number(t.startTime.slice(0,2))*60+Number(t.startTime.slice(3,5)):0,te=t.endTime?Number(t.endTime.slice(0,2))*60+Number(t.endTime.slice(3,5)):1440;if(t.availableDays?.length&&!t.availableDays.includes(day)){showToast("Choose one of the tutor's available days.");return;}if(start<ts||end>te){showToast("Choose a time within the tutor's available hours.");return;}if(appData.bookings.some(b=>String(b.tutorId)===String(t.id)&&b.date===date&&["pending","accepted"].includes(b.status)&&start<Number(b.startMinutes)+Number(b.duration)&&end>Number(b.startMinutes))){showToast("That time overlaps another request or booking.");return;}const b={id:"booking-"+Date.now(),tutorId:t.id,tutorUserId:t.userId||null,tutorName:t.name,studentId:u.id,studentName:u.name,subject,date,time,duration,startMinutes:start,note,status:"pending",createdAt:new Date().toISOString()};appData.bookings.push(b);appData.notificationsList.push({id:"notice-"+Date.now(),userId:t.userId||null,message:"New session request from "+u.name+" for "+subject+" on "+date+" at "+time+".",read:false});saveData();closeModal();showToast("Session request sent. It's pending until the tutor responds.");renderPage("tutors");}
+function updateBookingStatus(id,status){const u=getCurrentUserFromData(),b=appData.bookings.find(x=>String(x.id)===String(id));if(!b||b.tutorUserId!==u?.id||!["accepted","declined"].includes(status)){showToast("Only the listed tutor can respond to this request.");return;}b.status=status;appData.notificationsList.push({id:"notice-"+Date.now(),userId:b.studentId,message:"Your session with "+b.tutorName+" was "+status+".",read:false});if(status==="accepted"){if(!appData.calendarEvents.some(e=>e.id==="booking-"+b.id))appData.calendarEvents.push({id:"booking-"+b.id,title:"Peer tutoring: "+b.subject+" with "+b.tutorName,date:b.date,time:b.time,type:"Tutoring",source:"booking",bookingId:b.id});awardPeerPoints(b.tutorUserId,10,"Accepted a tutoring request");awardPeerPoints(b.studentId,5,"Booked a peer study session");}saveData();showToast("Booking "+status+".");renderPage("tutors");}
+function awardPeerPoints(id,amount,reason){if(!id)return;const u=appData.users.find(x=>String(x.id)===String(id));if(!u)return;u.points=Number(u.points||0)+amount;u.pointHistory=u.pointHistory||[];u.pointHistory.push({amount,reason,date:new Date().toISOString()});appData.notificationsList.push({id:"points-"+Date.now(),userId:u.id,message:"+"+amount+" Peer Points: "+reason+".",read:false});}
+function getPeerLevel(p){if(p>=500)return{name:"Scholar",floor:500,next:null};if(p>=300)return{name:"Mentor",floor:300,next:500};if(p>=150)return{name:"Collaborator",floor:150,next:300};if(p>=50)return{name:"Contributor",floor:50,next:150};return{name:"New Leaf",floor:0,next:50};}
+function renderPeerPoints(c){const users=(appData.users||[]).slice().sort((a,b)=>Number(b.points||0)-Number(a.points||0)),u=getCurrentUserFromData(),p=Number(u?.points||0),l=getPeerLevel(p),prog=l.next?Math.min(100,Math.round((p-l.floor)/(l.next-l.floor)*100)):100,h=(u?.pointHistory||[]).slice().reverse().slice(0,6);c.innerHTML=`<div class="page-header"><div><p class="eyebrow">YOUR PROGRESS</p><h1>Peer Points</h1><p>Helping each other should count for something.</p></div></div><section class="points-hero card"><p class="eyebrow">YOUR CURRENT LEVEL</p><h2>${l.name} ✦</h2><div class="points-total">${p}<span> points</span></div><div class="points-progress"><div class="points-progress-fill" style="width:${prog}%"></div></div><p>${l.next?l.next-p+" points until "+getPeerLevel(l.next).name:"You've reached the highest current level."}</p></section><div class="points-columns"><section class="feature-panel"><p class="eyebrow">HOW TO EARN POINTS</p><h2>Give help. Get better.</h2><ul class="points-rules"><li><strong>+10</strong> Tutor request accepted</li><li><strong>+5</strong> Book a peer study session</li><li><strong>+5</strong> Complete a focus session</li><li><strong>+10</strong> Help a classmate as a tutor</li></ul><p class="muted">Booking points are tracked in this prototype when a request is accepted.</p></section><section class="feature-panel"><p class="eyebrow">RECENT ACTIVITY</p><h2>Point history</h2>${h.length?h.map(x=>`<div class="point-history-row"><span>${escapeHTML(x.reason)}</span><strong>+${Number(x.amount||0)}</strong></div>`).join(""):'<p class="muted">Your activity will appear here as you earn points.</p>'}</section></div><section class="feature-panel"><p class="eyebrow">FRIENDLY COMPETITION</p><h2>Leaderboard</h2><p class="muted">Demo account names and points are shown for this prototype.</p><div class="leaderboard">${users.map((x,i)=>`<div class="leaderboard-row ${x.id===u?.id?"is-current-user":""}"><span class="leaderboard-rank">${i+1}</span><span class="leaderboard-avatar">${escapeHTML(getInitials(x.name))}</span><span class="leaderboard-name">${escapeHTML(x.name)}${x.id===u?.id?" (you)":""}<small>${getPeerLevel(Number(x.points||0)).name}</small></span><strong>${Number(x.points||0)} pts</strong></div>`).join("")}</div></section>`;}
+function openTutorDetails(t){if(!t)return;openModal(`<div class="card-header"><div><p class="eyebrow">PEER TUTOR</p><h2>${escapeHTML(t.name)}</h2></div><button type="button" class="icon-button" data-action="close-modal">×</button></div><div class="modal-form"><p>${escapeHTML(t.bio||"")}</p><div class="tutor-subjects">${(t.subjects||[]).map(s=>`<span class="subject-tag">${escapeHTML(s)}</span>`).join("")}</div><p><strong>Availability:</strong> ${escapeHTML(t.availability||"By arrangement")}</p><div class="modal-actions"><button type="button" class="secondary-button" data-action="close-modal">Close</button><button type="button" class="primary-button" data-action="book-tutor" data-id="${escapeHTML(String(t.id))}">Choose a time</button></div></div>`);}
+function showNotifications(){if(!appData.settings.notifications){showToast("Notifications are turned off.");return;}const u=getCurrentUserFromData(),msgs=(appData.notificationsList||[]).filter(n=>n.userId===u?.id||(!n.userId&&u?.id==="demo-maya"));if(!msgs.length){const n=(appData.assignments||[]).filter(a=>!a.completed).length;showToast(n?n+" assignments still need attention.":"You're all caught up ✦");return;}openModal(`<div class="card-header"><div><p class="eyebrow">UPDATES</p><h2>Notifications</h2></div><button type="button" class="icon-button" data-action="close-modal">×</button></div><div class="modal-form notification-list">${msgs.slice().reverse().slice(0,12).map(n=>`<article class="notification-row"><span class="notification-dot"></span><p>${escapeHTML(n.message)}</p></article>`).join("")}</div><div class="modal-actions"><button type="button" class="primary-button" data-action="close-modal">Done</button></div>`);msgs.forEach(n=>n.read=true);saveData();}
