@@ -2383,8 +2383,8 @@ function openModal(content) {
         }
     );
 
-    // Keep every modal exit control reliable, including dynamically created forms.
-    $('[data-action="close-modal"]', root).forEach(button => {
+    // Bind every modal close control (Cancel and ×).
+    $$("[data-action=\"close-modal\"]", root).forEach(button => {
         button.addEventListener("click", event => {
             event.preventDefault();
             event.stopPropagation();
@@ -2395,16 +2395,6 @@ function openModal(content) {
     const backdrop = $(".modal-backdrop", root);
     backdrop?.addEventListener("click", event => {
         if (event.target === backdrop) closeModal();
-    });
-
-    // Bind both Cancel and × controls. The previous code queried only one
-    // element and then called forEach, which prevented the handlers binding.
-    $('[data-action="close-modal"]', root).forEach(button => {
-        button.addEventListener("click", event => {
-            event.preventDefault();
-            event.stopPropagation();
-            closeModal();
-        });
     });
 }
 
