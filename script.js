@@ -4840,15 +4840,14 @@ async function loadSupabaseBookings(){
    saveData();
  }catch(error){console.error("Could not load session requests:",error);}
 }
-function updateBookingStatus(id,status){const user=getCurrentUserFromData(),booking=appData.bookings.find(x=>String(x.id)===String(id)),demoResponse=booking&&!booking.tutorUserId&&booking.studentId===user?.id;if(!booking||(!demoResponse&&booking.tutorUserId!==user?.id)||!["accepted","declined"].includes(status)){showToast("Only the listed tutor can respond to this request.");return;}booking.status=status;appData.notificationsList.push({id:"notice-"+Date.now(),userId:booking.studentId,message:"Your session with "+booking.tutorName+" was "+status+".",read:false});if(status==="accepted"){if(!appData.calendarEvents.some(e=>e.id==="booking-"+booking.id))appData.calendarEvents.push({id:"booking-"+booking.id,title:"Peer tutoring: "+booking.subject+" with "+booking.tutorName,date:booking.date,time:booking.time,type:"Tutoring",source:"booking",bookingId:booking.id});awardPeerPoints(booking.tutorUserId,10,"Accepted a tutoring request");awardPeerPoints(booking.studentId,5,"Booked a peer study session");}saveData();showToast((demoResponse?"Simulated demo tutor response: ":"Booking ")+status+".");renderPage("tutors");}
-
 async function updateBookingStatus(id,status){
  const user=getCurrentUserFromData(),booking=(appData.bookings||[]).find(x=>String(x.id)===String(id));
  if(!booking||booking.tutorUserId!==user?.id||!["accepted","declined"].includes(status)){showToast("Only the listed tutor can respond to this request.");return;}
  if(booking.cloud){
    try{
      const {data,error}=await supabaseClient.from("bookings").update({status}).eq("id",id).select("id").maybeSingle();
-     if(error)throw error;if(!data)throw new Error("The database did not confirm the status change.");
+     if(error)throw error;
+     if(!data)throw new Error("The database did not confirm the status change.");
    }catch(error){console.error("Could not update booking:",error);showToast("Booking update failed: "+(error?.message||String(error)));return;}
  }
  booking.status=status;
