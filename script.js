@@ -681,6 +681,8 @@ async function restoreSupabaseSession() {
         // Load active tutor profiles so the directory is shared between school accounts.
         await loadSupabaseTutors();
 
+        await loadSupabaseBookings();
+
         // Load this student's assignments from Supabase.
         const { data: cloudAssignments, error: assignmentError } =
             await supabaseClient
@@ -4792,8 +4794,71 @@ function setupEnhancedFeatures(){appData.bookings=appData.bookings||[];appData.n
 function openTutorProfileForm(){const u=getCurrentUserFromData();if(!u)return;const t=appData.tutors.find(x=>String(x.userId)===String(u.id)),subs=["English","Mathematics","Science","French","Te Reo Māori","History","Social Studies","Physics","Chemistry","Biology","PE","Digital Technology"],days=["Monday","Tuesday","Wednesday","Thursday","Friday"];openModal(`<div class="card-header"><div><p class="eyebrow">PEER TUTOR</p><h2>${t?"Edit your tutor profile":"Become a tutor"}</h2></div><button type="button" class="icon-button" data-action="close-modal">×</button></div><form id="tutorProfileForm" class="modal-form"><div class="form-group"><label for="tutorBio">Short introduction</label><textarea id="tutorBio" required maxlength="240" placeholder="What can you help other students with?">${escapeHTML(t?.bio||"")}</textarea></div><div class="form-group"><label for="tutorSubjects">Subjects you can tutor</label><select id="tutorSubjects" multiple size="5" required>${subs.map(s=>`<option value="${escapeHTML(s)}" ${(t?.subjects||[]).includes(s)?"selected":""}>${escapeHTML(s)}</option>`).join("")}</select><small>Hold Cmd (Mac) or Ctrl (Windows) to choose multiple.</small></div><div class="form-group"><label>Days available</label><div class="choice-chips">${days.map(d=>`<label><input type="checkbox" name="tutorDays" value="${d}" ${(t?.availableDays||[]).includes(d)?"checked":""}> ${d}</label>`).join("")}</div></div><div class="form-grid"><div class="form-group"><label for="tutorStart">From</label><input id="tutorStart" type="time" value="${escapeHTML(t?.startTime||"15:30")}" required></div><div class="form-group"><label for="tutorEnd">Until</label><input id="tutorEnd" type="time" value="${escapeHTML(t?.endTime||"16:30")}" required></div></div><div class="modal-actions"><button type="button" class="secondary-button" data-action="close-modal">Cancel</button><button type="submit" class="primary-button">Save profile</button></div></form>`);}
 async function saveTutorProfile(){const u=getCurrentUserFromData();if(!u)return;const bio=$("#tutorBio")?.value.trim()||"",subjects=[...($("#tutorSubjects")?.selectedOptions||[])].map(o=>o.value),availableDays=$$('input[name="tutorDays"]:checked').map(x=>x.value),startTime=$("#tutorStart")?.value||"",endTime=$("#tutorEnd")?.value||"";if(!bio||!subjects.length||!availableDays.length||!startTime||!endTime||startTime>=endTime){showToast("Add an introduction, subjects, available days and a valid time range.");return;}const saveButton=$('#tutorProfileForm button[type="submit"]');if(saveButton){saveButton.disabled=true;saveButton.textContent="Saving…";}try{let authId=null;const isGoogleUser=String(u.id||"").startsWith("google-");if(isGoogleUser){if(!supabaseClient)throw new Error("Supabase did not load. Refresh the page and try again.");const {data,error:sessionError}=await supabaseClient.auth.getSession();if(sessionError)throw sessionError;const authUser=data?.session?.user;if(!authUser)throw new Error("Your Google sign-in session has expired. Sign in again and retry.");authId=authUser.id;const {error}=await supabaseClient.from("tutor_profiles").upsert({user_id:authId,bio,subjects,availability:[...availableDays,startTime+"–"+endTime],active:true,updated_at:new Date().toISOString()},{onConflict:"user_id"});if(error)throw error;const {data:verify,error:verifyError}=await supabaseClient.from("tutor_profiles").select("user_id").eq("user_id",authId).maybeSingle();if(verifyError)throw verifyError;if(!verify)throw new Error("The database did not return the saved tutor row. Check the tutor_profiles table policies.");}else if(supabaseClient){throw new Error("Please sign in with your school Google account before saving a tutor profile.");}let t=appData.tutors.find(x=>String(x.userId)===String(u.id));const row={id:t?.id||("tutor-"+u.id),userId:u.id,name:u.name,year:u.year||"Student",initials:getInitials(u.name),subjects,bio,availableDays,startTime,endTime,availability:availableDays.join(" · ")+" · "+startTime+"–"+endTime,cloud:!!authId};if(t)Object.assign(t,row);else appData.tutors.push(row);updateCurrentUser({role:"tutor",tutorProfile:true,subjects,bio,availability:availableDays});saveData();if(authId)await loadSupabaseTutors();closeModal();showToast("Tutor profile saved to the database.");renderPage("tutors");}catch(error){console.error("Tutor profile database save failed:",error);showToast("Tutor profile NOT saved: "+(error?.message||String(error)));if(saveButton){saveButton.disabled=false;saveButton.textContent="Save profile";}}}
 function openSpecificBookingForm(t){const u=getCurrentUserFromData();if(!u||!t)return;if(String(t.userId||"")===String(u.id)){showToast("That's your own tutor profile.");return;}const d=new Date(),today=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");openModal(`<div class="card-header"><div><p class="eyebrow">BOOK A PEER</p><h2>Choose a session time</h2></div><button type="button" class="icon-button" data-action="close-modal">×</button></div><form id="specificBookingForm" class="modal-form" data-tutor-id="${escapeHTML(String(t.id))}"><p>Request a session with <strong>${escapeHTML(t.name)}</strong>. It stays pending until they respond.</p><div class="form-group"><label for="bookingSubject">Subject</label><select id="bookingSubject" required>${(t.subjects||[]).map(s=>`<option value="${escapeHTML(s)}">${escapeHTML(s)}</option>`).join("")}</select></div><div class="form-group"><label for="bookingDate">Date</label><input id="bookingDate" type="date" min="${today}" required></div><div class="form-group"><label for="bookingTime">Start time</label><input id="bookingTime" type="time" value="${escapeHTML(t.startTime||"15:30")}" required><small>Usual availability: ${escapeHTML(t.availability||"By arrangement")}</small></div><div class="form-group"><label for="bookingDuration">Duration</label><select id="bookingDuration"><option value="30">30 minutes</option><option value="45">45 minutes</option><option value="60" selected>1 hour</option></select></div><div class="form-group"><label for="bookingNote">What would you like help with? (optional)</label><textarea id="bookingNote" maxlength="240"></textarea></div><div class="modal-actions"><button type="button" class="secondary-button" data-action="close-modal">Cancel</button><button type="submit" class="primary-button">Send request</button></div></form>`);}
-function createSpecificBooking(){const u=getCurrentUserFromData(),f=$("#specificBookingForm");if(!u||!f)return;const t=appData.tutors.find(x=>String(x.id)===String(f.dataset.tutorId)),subject=$("#bookingSubject")?.value,date=$("#bookingDate")?.value,time=$("#bookingTime")?.value,duration=Number($("#bookingDuration")?.value||60),note=$("#bookingNote")?.value.trim()||"";if(!t||!date||!time||!subject)return;const day=new Date(date+"T12:00:00").toLocaleDateString("en-NZ",{weekday:"long"}),start=Number(time.slice(0,2))*60+Number(time.slice(3,5)),end=start+duration,ts=t.startTime?Number(t.startTime.slice(0,2))*60+Number(t.startTime.slice(3,5)):0,te=t.endTime?Number(t.endTime.slice(0,2))*60+Number(t.endTime.slice(3,5)):1440;if(t.availableDays?.length&&!t.availableDays.includes(day)){showToast("Choose one of the tutor's available days.");return;}if(start<ts||end>te){showToast("Choose a time within the tutor's available hours.");return;}if(appData.bookings.some(b=>String(b.tutorId)===String(t.id)&&b.date===date&&["pending","accepted"].includes(b.status)&&start<Number(b.startMinutes)+Number(b.duration)&&end>Number(b.startMinutes))){showToast("That time overlaps another request or booking.");return;}const b={id:"booking-"+Date.now(),tutorId:t.id,tutorUserId:t.userId||null,tutorName:t.name,studentId:u.id,studentName:u.name,subject,date,time,duration,startMinutes:start,note,status:"pending",createdAt:new Date().toISOString()};appData.bookings.push(b);if(t.userId)appData.notificationsList.push({id:"notice-"+Date.now(),userId:t.userId,message:"New session request from "+u.name+" for "+subject+" on "+date+" at "+time+".",read:false});saveData();closeModal();showToast("Session request sent. It's pending until the tutor responds.");renderPage("tutors");}
+async function createSpecificBooking(){
+ const u=getCurrentUserFromData(),f=$("#specificBookingForm");
+ if(!u||!f)return;
+ const t=appData.tutors.find(x=>String(x.id)===String(f.dataset.tutorId)),subject=$("#bookingSubject")?.value,date=$("#bookingDate")?.value,time=$("#bookingTime")?.value,duration=Number($("#bookingDuration")?.value||60),note=$("#bookingNote")?.value.trim()||"";
+ if(!t||!date||!time||!subject)return;
+ if(!supabaseClient||!String(u.id||"").startsWith("google-")||!String(t.userId||"").startsWith("google-")){
+   showToast("Real session requests need a signed-in school account and a tutor with a saved database profile.");return;
+ }
+ const day=new Date(date+"T12:00:00").toLocaleDateString("en-NZ",{weekday:"long"}),start=Number(time.slice(0,2))*60+Number(time.slice(3,5)),end=start+duration,ts=t.startTime?Number(t.startTime.slice(0,2))*60+Number(t.startTime.slice(3,5)):0,te=t.endTime?Number(t.endTime.slice(0,2))*60+Number(t.endTime.slice(3,5)):1440;
+ if(String(t.userId)===String(u.id)){showToast("That's your own tutor profile.");return;}
+ if(t.availableDays?.length&&!t.availableDays.includes(day)){showToast("Choose one of the tutor's available days.");return;}
+ if(start<ts||end>te){showToast("Choose a time within the tutor's available hours.");return;}
+ const submit=f.querySelector('button[type="submit"]');if(submit){submit.disabled=true;submit.textContent="Sending…";}
+ try{
+   const requestedAt=new Date(date+"T"+time+":00").toISOString();
+   const payload={requester_id:String(u.id).slice(7),tutor_id:String(t.userId).slice(7),subject,requested_at:requestedAt,notes:"Duration: "+duration+" minutes"+(note?"\n"+note:""),status:"pending"};
+   const {data,error}=await supabaseClient.from("bookings").insert(payload).select("id, requester_id, tutor_id, subject, requested_at, notes, status, created_at").single();
+   if(error)throw error;
+   const b=mapSupabaseBooking(data,u,t);
+   appData.bookings=appData.bookings||[];appData.bookings.push(b);saveData();
+   closeModal();showToast("Session request saved to the database.");await loadSupabaseBookings();renderPage("tutors");
+ }catch(error){
+   console.error("Could not save session request:",error);
+   showToast("Session request NOT saved: "+(error?.message||String(error)));
+   if(submit){submit.disabled=false;submit.textContent="Send request";}
+ }
+}
+function mapSupabaseBooking(row,user,knownTutor){
+ const dateTime=new Date(row.requested_at),date=String(row.requested_at||"").slice(0,10),time=String(row.requested_at||"").slice(11,16),notes=String(row.notes||""),durationMatch=notes.match(/Duration:\s*(\d+)\s*minutes/i),duration=Number(durationMatch?.[1]||60),note=notes.replace(/Duration:\s*\d+\s*minutes\n?/i,"").trim();
+ const requesterId="google-"+row.requester_id,tutorUserId="google-"+row.tutor_id,profiles=appData.users||[],requester=profiles.find(x=>String(x.id)===requesterId),tutor=knownTutor||appData.tutors.find(x=>String(x.userId)===tutorUserId);
+ return {id:row.id,tutorId:tutor?.id||("cloud-"+row.tutor_id),tutorUserId,tutorName:tutor?.name||"Peer tutor",studentId:requesterId,studentName:requester?.name||(requesterId===user?.id?user.name:"Student"),subject:row.subject,date,time,duration,startMinutes:Number(time.slice(0,2))*60+Number(time.slice(3,5)),note,status:row.status,createdAt:row.created_at,cloud:true};
+}
+async function loadSupabaseBookings(){
+ const user=getCurrentUserFromData();
+ if(!supabaseClient||!user||!String(user.id||"").startsWith("google-"))return;
+ try{
+   const authId=String(user.id).slice(7);
+   const {data,error}=await supabaseClient.from("bookings").select("id, requester_id, tutor_id, subject, requested_at, notes, status, created_at").order("created_at",{ascending:false});
+   if(error)throw error;
+   const rows=(data||[]).filter(x=>x.requester_id===authId||x.tutor_id===authId);
+   const mapped=rows.map(row=>mapSupabaseBooking(row,user));
+   const cloudIds=new Set(mapped.map(x=>String(x.id)));
+   appData.bookings=(appData.bookings||[]).filter(x=>!x.cloud&&!cloudIds.has(String(x.id))).concat(mapped);
+   saveData();
+ }catch(error){console.error("Could not load session requests:",error);}
+}
 function updateBookingStatus(id,status){const user=getCurrentUserFromData(),booking=appData.bookings.find(x=>String(x.id)===String(id)),demoResponse=booking&&!booking.tutorUserId&&booking.studentId===user?.id;if(!booking||(!demoResponse&&booking.tutorUserId!==user?.id)||!["accepted","declined"].includes(status)){showToast("Only the listed tutor can respond to this request.");return;}booking.status=status;appData.notificationsList.push({id:"notice-"+Date.now(),userId:booking.studentId,message:"Your session with "+booking.tutorName+" was "+status+".",read:false});if(status==="accepted"){if(!appData.calendarEvents.some(e=>e.id==="booking-"+booking.id))appData.calendarEvents.push({id:"booking-"+booking.id,title:"Peer tutoring: "+booking.subject+" with "+booking.tutorName,date:booking.date,time:booking.time,type:"Tutoring",source:"booking",bookingId:booking.id});awardPeerPoints(booking.tutorUserId,10,"Accepted a tutoring request");awardPeerPoints(booking.studentId,5,"Booked a peer study session");}saveData();showToast((demoResponse?"Simulated demo tutor response: ":"Booking ")+status+".");renderPage("tutors");}
+
+async function updateBookingStatus(id,status){
+ const user=getCurrentUserFromData(),booking=(appData.bookings||[]).find(x=>String(x.id)===String(id));
+ if(!booking||booking.tutorUserId!==user?.id||!["accepted","declined"].includes(status)){showToast("Only the listed tutor can respond to this request.");return;}
+ if(booking.cloud){
+   try{
+     const {data,error}=await supabaseClient.from("bookings").update({status}).eq("id",id).select("id").maybeSingle();
+     if(error)throw error;if(!data)throw new Error("The database did not confirm the status change.");
+   }catch(error){console.error("Could not update booking:",error);showToast("Booking update failed: "+(error?.message||String(error)));return;}
+ }
+ booking.status=status;
+ appData.notificationsList.push({id:"notice-"+Date.now(),userId:booking.studentId,message:"Your session with "+booking.tutorName+" was "+status+".",read:false});
+ if(status==="accepted"){
+   if(!appData.calendarEvents.some(e=>e.id==="booking-"+booking.id))appData.calendarEvents.push({id:"booking-"+booking.id,title:"Peer tutoring: "+booking.subject+" with "+booking.tutorName,date:booking.date,time:booking.time,type:"Tutoring",source:"booking",bookingId:booking.id});
+   awardPeerPoints(booking.tutorUserId,10,"Accepted a tutoring request");awardPeerPoints(booking.studentId,5,"Booked a peer study session");
+ }
+ saveData();showToast("Booking "+status+".");await loadSupabaseBookings();renderPage("tutors");
+}
 
 function awardPeerPoints(id,amount,reason){if(!id)return;const u=appData.users.find(x=>String(x.id)===String(id));if(!u)return;u.points=Number(u.points||0)+amount;u.pointHistory=u.pointHistory||[];u.pointHistory.push({amount,reason,date:new Date().toISOString()});appData.notificationsList.push({id:"points-"+Date.now(),userId:u.id,message:"+"+amount+" Peer Points: "+reason+".",read:false});}
 function getPeerLevel(p){if(p>=500)return{name:"Scholar",floor:500,next:null};if(p>=300)return{name:"Mentor",floor:300,next:500};if(p>=150)return{name:"Collaborator",floor:150,next:300};if(p>=50)return{name:"Contributor",floor:50,next:150};return{name:"New Leaf",floor:0,next:50};}
