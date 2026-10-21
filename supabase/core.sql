@@ -105,7 +105,10 @@ create policy "Booking participants can view bookings"
 drop policy if exists "Students can request sessions for themselves" on public.bookings;
 create policy "Students can request sessions for themselves"
     on public.bookings for insert to authenticated
-    with check (auth.uid() = requester_id);
+    with check (
+        auth.uid() = requester_id
+        and lower(coalesce(auth.jwt() ->> 'email', '')) like '%@storans.school.nz'
+    );
 drop policy if exists "Tutors can update their bookings" on public.bookings;
 create policy "Tutors can update their bookings"
     on public.bookings for update to authenticated
