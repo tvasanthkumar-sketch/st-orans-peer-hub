@@ -319,6 +319,37 @@ function updateCurrentUser(updates) {
 
     saveData();
     saveCurrentUser();
+    void syncSupabaseProfile();
+}
+
+
+async function syncSupabaseProfile() {
+    if (!supabaseClient || !currentUser || !String(currentUser.id || "").startsWith("google-")) {
+        return;
+    }
+
+    const authId = String(currentUser.id).slice("google-".length);
+    const user = getCurrentUserFromData() || currentUser;
+
+    const profile = {
+        id: authId,
+        full_name: String(user.name || ""),
+        year_level: String(user.year || ""),
+        class_name: String(user.className || ""),
+        role: ["student", "tutor", "both"].includes(user.role) ? user.role : "student",
+        subjects: Array.isArray(user.subjects) ? user.subjects.map(String) : [],
+        availability: Array.isArray(user.availability) ? user.availability.map(String) : [],
+        bio: String(user.bio || ""),
+        updated_at: new Date().toISOString()
+    };
+
+    const { error } = await supabaseClient
+        .from("profiles")
+        .upsert(profile, { onConflict: "id" });
+
+    if (error) {
+        console.error("Could not sync profile to Supabase:", error);
+    }
 }
 
 
@@ -639,6 +670,9 @@ async function restoreSupabaseSession() {
 
         currentUser = user;
         saveCurrentUser();
+
+        // Save the student's shared profile for the Peer Hub directory.
+        await syncSupabaseProfile();
 
         // Load this student's assignments from Supabase.
         const { data: cloudAssignments, error: assignmentError } =
