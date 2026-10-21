@@ -2421,6 +2421,35 @@ function toggleTimer() {
 }
 
 
+let focusSessionStartPromise = null;
+let activeFocusSessionId = null;
+
+async function startSupabaseFocusSession(durationSeconds) {
+    const user = getCurrentUserFromData();
+    if (!supabaseClient || !user || !String(user.id || "").startsWith("google-")) {
+        return null;
+    }
+    const { data, error } = await supabaseClient.rpc("start_focus_session", {
+        p_duration_seconds: durationSeconds
+    });
+    if (error) throw error;
+    activeFocusSessionId = data;
+    return data;
+}
+
+async function completeSupabaseFocusSession() {
+    const sessionId = await focusSessionStartPromise;
+    focusSessionStartPromise = null;
+    activeFocusSessionId = null;
+    if (!sessionId || !supabaseClient) return false;
+    const { data, error } = await supabaseClient.rpc("complete_focus_session", {
+        p_session_id: sessionId
+    });
+    if (error) throw error;
+    await loadSupabasePoints();
+    return Number(data || 0) === 20;
+}
+
 function startTimer() {
     if (timerRunning) {
         return;
@@ -2437,6 +2466,20 @@ function startTimer() {
 
         if (playlist) {
             startStudySound(playlist.sound);
+        }
+    }
+
+    if (timerMode === "focus") {
+        const user = getCurrentUserFromData();
+        if (supabaseClient && user && String(user.id || "").startsWith("google-")) {
+            focusSessionStartPromise = startSupabaseFocusSession(Math.max(60, customFocusMinutes * 60))
+                .catch(error => {
+                    console.error("Could not start saved focus session:", error);
+                    showToast("Focus session started, but database tracking failed.");
+                    return null;
+                });
+        } else {
+            focusSessionStartPromise = null;
         }
     }
 
@@ -2523,21 +2566,28 @@ function finishTimer() {
     updateTimerDisplay();
 
     if (timerMode === "focus") {
+        const user = getCurrentUserFromData();
 
-        const user =
-            getCurrentUserFromData();
-
-        updateCurrentUser({
-            points:
-                (user?.points || 0) + 20,
-
-            sessions:
-                (user?.sessions || 0) + 1
-        });
-
-        showToast(
-            "Focus session complete! +20 points ✦"
-        );
+        if (supabaseClient && user && String(user.id || "").startsWith("google-")) {
+            completeSupabaseFocusSession().then(awarded => {
+                if (awarded) {
+                    updateCurrentUser({ sessions: (user?.sessions || 0) + 1 });
+                    showToast("Focus session complete! +20 points saved ✦");
+                } else {
+                    showToast("Focus session was already recorded. No duplicate points added.");
+                }
+                if (currentPage === "points") renderPage("points");
+            }).catch(error => {
+                console.error("Could not save completed focus session:", error);
+                showToast("Focus finished, but its points could not be saved. Check the database connection.");
+            });
+        } else {
+            updateCurrentUser({
+                points: (user?.points || 0) + 20,
+                sessions: (user?.sessions || 0) + 1
+            });
+            showToast("Focus session complete! +20 points ✦");
+        }
 
     } else {
 
@@ -3301,22 +3351,27 @@ function finishFocusTimer() {
 
     updateFocusDisplay();
 
-    const user =
-        getCurrentUserFromData();
-
-    updateCurrentUser({
-
-        points:
-            (user?.points || 0) + 20,
-
-        sessions:
-            (user?.sessions || 0) + 1
-
-    });
-
-    showToast(
-        "Focus session complete! +20 points ✦"
-    );
+    const user = getCurrentUserFromData();
+    if (supabaseClient && user && String(user.id || "").startsWith("google-")) {
+        completeSupabaseFocusSession().then(awarded => {
+            if (awarded) {
+                updateCurrentUser({ sessions: (user?.sessions || 0) + 1 });
+                showToast("Focus session complete! +20 points saved ✦");
+            } else {
+                showToast("Focus session was already recorded. No duplicate points added.");
+            }
+            if (currentPage === "points") renderPage("points");
+        }).catch(error => {
+            console.error("Could not save completed focus session:", error);
+            showToast("Focus finished, but its points could not be saved. Check the database connection.");
+        });
+    } else {
+        updateCurrentUser({
+            points: (user?.points || 0) + 20,
+            sessions: (user?.sessions || 0) + 1
+        });
+        showToast("Focus session complete! +20 points ✦");
+    }
 }
 
 
