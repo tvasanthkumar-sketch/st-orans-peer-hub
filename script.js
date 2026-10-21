@@ -663,11 +663,15 @@ async function restoreSupabaseSession() {
                 availability: []
             };
             appData.users.push(user);
-            saveData();
         } else {
+            // A local/demo account may already exist with this email.
+            // Once Google auth succeeds, always use the real Supabase auth UUID.
+            user.id = "google-" + authUser.id;
             user.name = name;
+            user.email = email;
         }
 
+        saveData();
         currentUser = user;
         saveCurrentUser();
 
@@ -1799,6 +1803,8 @@ function openTutorProfileEditor() {
                 if (error) throw error;
                 updateCurrentUser({ role: "tutor", subjects: selectedSubjects, availability: selectedAvailability, bio });
                 await loadSupabaseTutors();
+            } else if (supabaseClient) {
+                throw new Error("You're not signed in with a verified Google account. Please sign out and sign in again with your St Oran's school Google account.");
             } else {
                 updateCurrentUser({ role: "tutor", subjects: selectedSubjects, availability: selectedAvailability, bio });
                 const tutor = {
