@@ -1790,26 +1790,38 @@ function openTutorProfileEditor() {
         const submit = $('button[type="submit"]', form);
         if (submit) { submit.disabled = true; submit.textContent = "Saving…"; }
         try {
-            const isGoogleUser = String(user.id || "").startsWith("google-");
-            if (isGoogleUser && !supabaseClient) {
-                throw new Error("Supabase did not load on this page, so your tutor profile was not saved to the database. Refresh the page and try again. If this continues, check that the Supabase JavaScript library is loading.");
+            if (!supabaseClient) {
+                throw new Error("Supabase did not load on this page. Your profile was not saved to the database. Refresh the page and try again.");
             }
-            if (isGoogleUser && supabaseClient) {
-                const authId = String(user.id).slice("google-".length);
-                const { error } = await supabaseClient.from("tutor_profiles").upsert({
-                    user_id: authId,
-                    bio,
-                    subjects: selectedSubjects,
-                    availability: selectedAvailability,
-                    active: true,
-                    updated_at: new Date().toISOString()
-                }, { onConflict: "user_id" });
-                if (error) throw error;
-                updateCurrentUser({ role: "tutor", subjects: selectedSubjects, availability: selectedAvailability, bio });
-                await loadSupabaseTutors();
-            } else if (supabaseClient) {
-                throw new Error("You're not signed in with a verified Google account. Please sign out and sign in again with your St Oran's school Google account.");
-            } else {
+            const { data: sessionData, error: sessionError } = await supabaseClient.auth.getSession();
+            if (sessionError) throw sessionError;
+            const authUser = sessionData?.session?.user;
+            if (!authUser) {
+                throw new Error("No active Google sign-in session was found. Sign out, then sign in again with your St Oran's school Google account.");
+            }
+            const authEmail = String(authUser.email || "").toLowerCase();
+            if (!authEmail.endsWith("@storans.school.nz")) {
+                throw new Error("The signed-in email (" + authEmail + ") does not match the @storans.school.nz domain allowed by the current database policies. The database policy must be updated to allow your school's actual account domain.");
+            }
+            const { error } = await supabaseClient.from("tutor_profiles").upsert({
+                user_id: authUser.id,
+                bio,
+                subjects: selectedSubjects,
+                availability: selectedAvailability,
+                active: true,
+                updated_at: new Date().toISOString()
+            }, { onConflict: "user_id" });
+            if (error) throw error;
+            const { data: savedRow, error: verifyError } = await supabaseClient
+                .from("tutor_profiles")
+                .select("user_id")
+                .eq("user_id", authUser.id)
+                .maybeSingle();
+            if (verifyError) throw verifyError;
+            if (!savedRow) throw new Error("Supabase accepted the save request but the row could not be read back. Check the tutor_profiles Row Level Security policies.");
+            updateCurrentUser({ role: "tutor", subjects: selectedSubjects, availability: selectedAvailability, bio });
+            await loadSupabaseTutors();
+            
                 updateCurrentUser({ role: "tutor", subjects: selectedSubjects, availability: selectedAvailability, bio });
                 const tutor = {
                     id: existing?.id || "local-tutor-" + user.id,
@@ -1830,8 +1842,10 @@ function openTutorProfileEditor() {
             renderPage("tutors");
         } catch (error) {
             console.error("Could not save tutor profile:", error);
-            if (message) message.textContent = "We couldn't save your profile. Check your connection and try again.";
-            showToast("Tutor profile wasn't saved. Please try again.");
+            const detail = error?.message || String(error);
+            if (message) message.textContent = "Database save failed: " + detail;
+            showToast("Tutor profile wasn't saved. See the message in the form.");
+
             if (submit) { submit.disabled = false; submit.textContent = "Save tutor profile"; }
         }
     });
