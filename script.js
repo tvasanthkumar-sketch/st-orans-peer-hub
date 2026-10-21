@@ -674,6 +674,9 @@ async function restoreSupabaseSession() {
         // Save the student's shared profile for the Peer Hub directory.
         await syncSupabaseProfile();
 
+        // Load active tutor profiles so the directory is shared between school accounts.
+        await loadSupabaseTutors();
+
         // Load this student's assignments from Supabase.
         const { data: cloudAssignments, error: assignmentError } =
             await supabaseClient
@@ -1700,8 +1703,128 @@ function toggleAssignment(id) {
 
 function renderTutors(container) {
  const user=getCurrentUserFromData();appData.bookings=appData.bookings||[];const own=appData.tutors.find(t=>String(t.userId)===String(user?.id));const subjects=["English","Mathematics","Science","French","Te Reo Māori","History","Social Studies","Physics","Chemistry","Biology","PE","Digital Technology"];
- container.innerHTML=`<div class="page-header"><div><p class="eyebrow">LEARN TOGETHER</p><h1>Find a Peer</h1><p>Find help, offer your strengths, and arrange a specific time to study.</p></div><button class="primary-button" type="button" data-action="edit-tutor-profile">${own?"Edit tutor profile":"Become a tutor"}</button></div><section class="feature-panel"><p class="eyebrow">YOUR TUTOR PROFILE</p><h2>${own?"You're listed as a tutor":"Share what you're good at"}</h2><p>${own?"Your subjects and available times are visible to other students.":"Create a profile so classmates can find you by subject and request a session."}</p><button class="secondary-button" type="button" data-action="edit-tutor-profile">${own?"Update profile":"Create profile"}</button></section><div class="filter-bar"><input type="search" id="tutorSearch" placeholder="Search by name or subject..." aria-label="Search tutors"><select id="subjectFilter"><option value="">All subjects</option>${subjects.map(s=>`<option value="${escapeHTML(s)}">${escapeHTML(s)}</option>`).join("")}</select></div><div id="tutorGrid" class="tutor-grid">${appData.tutors.filter(t=>String(t.userId||"")!==String(user?.id)).map(renderTutorCard).join("")||'<p class="empty-state">No other tutors yet. Create a tutor profile to get started.</p>'}</div><section class="feature-panel"><p class="eyebrow">YOUR SESSIONS</p><h2>Booking requests</h2><p class="muted">Requests remain pending until the tutor accepts or declines.</p><div class="booking-list">${appData.bookings.filter(b=>b.studentId===user?.id||b.tutorUserId===user?.id).slice().reverse().map(renderBookingRow).join("")||'<p class="muted">No sessions yet.</p>'}</div></section>`;
+ container.innerHTML=`<div class="page-header"><div><p class="eyebrow">LEARN TOGETHER</p><h1>Find a Peer</h1><p>Find help, offer your strengths, and arrange a specific time to study.</p></div><button class="primary-button" type="button" data-action="edit-tutor-profile">${own?"Edit tutor profile":"Become a Peer"}</button></div><section class="feature-panel"><p class="eyebrow">YOUR TUTOR PROFILE</p><h2>${own?"You're listed as a tutor":"Share what you're good at"}</h2><p>${own?"Your subjects and available times are visible to other students.":"Create a profile so classmates can find you by subject and request a session."}</p><button class="secondary-button" type="button" data-action="edit-tutor-profile">${own?"Update profile":"Create profile"}</button></section><div class="filter-bar"><input type="search" id="tutorSearch" placeholder="Search by name or subject..." aria-label="Search tutors"><select id="subjectFilter"><option value="">All subjects</option>${subjects.map(s=>`<option value="${escapeHTML(s)}">${escapeHTML(s)}</option>`).join("")}</select></div><div id="tutorGrid" class="tutor-grid">${appData.tutors.filter(t=>String(t.userId||"")!==String(user?.id)).map(renderTutorCard).join("")||'<p class="empty-state">No other tutors yet. Create a tutor profile to get started.</p>'}</div><section class="feature-panel"><p class="eyebrow">YOUR SESSIONS</p><h2>Booking requests</h2><p class="muted">Requests remain pending until the tutor accepts or declines.</p><div class="booking-list">${appData.bookings.filter(b=>b.studentId===user?.id||b.tutorUserId===user?.id).slice().reverse().map(renderBookingRow).join("")||'<p class="muted">No sessions yet.</p>'}</div></section>`;
  $("#tutorSearch")?.addEventListener("input",filterTutors);$("#subjectFilter")?.addEventListener("change",filterTutors);
+}
+
+async function loadSupabaseTutors() {
+    if (!supabaseClient || !currentUser || !String(currentUser.id || "").startsWith("google-")) return;
+    const { data: tutorRows, error: tutorError } = await supabaseClient
+        .from("tutor_profiles")
+        .select("user_id, bio, subjects, availability, active")
+        .eq("active", true);
+    if (tutorError) {
+        console.error("Could not load tutor profiles:", tutorError);
+        return;
+    }
+    if (!tutorRows?.length) {
+        appData.tutors = (appData.tutors || []).filter(t => !t.cloud);
+        saveData();
+        return;
+    }
+    const { data: profileRows, error: profileError } = await supabaseClient
+        .from("profiles")
+        .select("id, full_name, year_level, class_name")
+        .in("id", tutorRows.map(t => t.user_id));
+    if (profileError) {
+        console.error("Could not load tutor profile details:", profileError);
+        return;
+    }
+    const profileMap = new Map((profileRows || []).map(p => [p.id, p]));
+    const cloudTutors = tutorRows.map(t => {
+        const p = profileMap.get(t.user_id) || {};
+        const name = p.full_name || "Student tutor";
+        return {
+            id: "cloud-" + t.user_id,
+            userId: "google-" + t.user_id,
+            name,
+            year: p.year_level || "—",
+            className: p.class_name || "",
+            subjects: Array.isArray(t.subjects) ? t.subjects : [],
+            availability: Array.isArray(t.availability) && t.availability.length ? t.availability.join(" · ") : "Availability by arrangement",
+            initials: getInitials(name),
+            bio: t.bio || "",
+            cloud: true
+        };
+    });
+    appData.tutors = [...(appData.tutors || []).filter(t => !t.cloud), ...cloudTutors];
+    saveData();
+}
+
+function openTutorProfileEditor() {
+    const user = getCurrentUserFromData();
+    if (!user) return;
+    const existing = appData.tutors.find(t => String(t.userId) === String(user.id));
+    const subjects = ["English","Mathematics","Science","French","Te Reo Māori","History","Social Studies","Physics","Chemistry","Biology","PE","Digital Technology"];
+    const days = ["Monday","Tuesday","Wednesday","Thursday","Friday","After school","Lunchtime","Weekends"];
+    openModal(`
+        <div class="card-header">
+            <div><p class="eyebrow">BECOME A PEER</p><h2>${existing ? "Edit your tutor profile" : "Create your tutor profile"}</h2></div>
+            <button type="button" class="icon-button" id="closeTutorProfileEditor" aria-label="Close">×</button>
+        </div>
+        <form id="tutorProfileForm" class="modal-form">
+            <div class="form-group"><label for="tutorBio">A little about how you can help</label><textarea id="tutorBio" name="bio" rows="3" maxlength="400" placeholder="E.g. I can help explain algebra step by step.">${escapeHTML(existing?.bio || user.bio || "")}</textarea></div>
+            <fieldset class="form-group"><legend>Subjects you can help with</legend><div class="form-check-grid">${subjects.map(subject => `<label class="checkbox-label"><input type="checkbox" name="tutorSubjects" value="${escapeHTML(subject)}" ${(existing?.subjects || user.subjects || []).includes(subject) ? "checked" : ""}> ${escapeHTML(subject)}</label>`).join("")}</div></fieldset>
+            <fieldset class="form-group"><legend>When you're usually available</legend><div class="form-check-grid">${days.map(day => `<label class="checkbox-label"><input type="checkbox" name="tutorAvailability" value="${escapeHTML(day)}" ${(existing?.availability || user.availability || []).includes(day) ? "checked" : ""}> ${escapeHTML(day)}</label>`).join("")}</div></fieldset>
+            <p id="tutorProfileMessage" class="muted" role="status"></p>
+            <div class="modal-actions"><button type="button" class="secondary-button" id="cancelTutorProfileEditor">Cancel</button><button type="submit" class="primary-button">Save tutor profile</button></div>
+        </form>
+    `);
+    $("#closeTutorProfileEditor")?.addEventListener("click", closeModal);
+    $("#cancelTutorProfileEditor")?.addEventListener("click", closeModal);
+    $("#tutorProfileForm")?.addEventListener("submit", async event => {
+        event.preventDefault();
+        const form = event.currentTarget;
+        const selectedSubjects = $('input[name="tutorSubjects"]:checked', form).map(input => input.value);
+        const selectedAvailability = $('input[name="tutorAvailability"]:checked', form).map(input => input.value);
+        const bio = $("#tutorBio", form)?.value.trim() || "";
+        const message = $("#tutorProfileMessage", form);
+        if (!selectedSubjects.length) {
+            if (message) message.textContent = "Choose at least one subject before saving.";
+            return;
+        }
+        const submit = $('button[type="submit"]', form);
+        if (submit) { submit.disabled = true; submit.textContent = "Saving…"; }
+        try {
+            if (supabaseClient && String(user.id || "").startsWith("google-")) {
+                const authId = String(user.id).slice("google-".length);
+                const { error } = await supabaseClient.from("tutor_profiles").upsert({
+                    user_id: authId,
+                    bio,
+                    subjects: selectedSubjects,
+                    availability: selectedAvailability,
+                    active: true,
+                    updated_at: new Date().toISOString()
+                }, { onConflict: "user_id" });
+                if (error) throw error;
+                updateCurrentUser({ role: "tutor", subjects: selectedSubjects, availability: selectedAvailability, bio });
+                await loadSupabaseTutors();
+            } else {
+                updateCurrentUser({ role: "tutor", subjects: selectedSubjects, availability: selectedAvailability, bio });
+                const tutor = {
+                    id: existing?.id || "local-tutor-" + user.id,
+                    userId: user.id,
+                    name: user.name,
+                    year: user.year || "—",
+                    className: user.className || "",
+                    subjects: selectedSubjects,
+                    availability: selectedAvailability.length ? selectedAvailability.join(" · ") : "Availability by arrangement",
+                    initials: getInitials(user.name),
+                    bio
+                };
+                appData.tutors = [...(appData.tutors || []).filter(t => String(t.userId) !== String(user.id)), tutor];
+                saveData();
+            }
+            closeModal();
+            showToast("Your tutor profile has been saved.");
+            renderPage("tutors");
+        } catch (error) {
+            console.error("Could not save tutor profile:", error);
+            if (message) message.textContent = "We couldn't save your profile. Check your connection and try again.";
+            showToast("Tutor profile wasn't saved. Please try again.");
+            if (submit) { submit.disabled = false; submit.textContent = "Save tutor profile"; }
+        }
+    });
 }
 function renderTutorCard(t){return `<article class="tutor-card card" data-tutor-name="${escapeHTML(String(t.name||"").toLowerCase())}" data-tutor-subjects="${escapeHTML((t.subjects||[]).join(" ").toLowerCase())}"><div class="tutor-avatar">${escapeHTML(t.initials||getInitials(t.name))}</div><div class="tutor-year">Year ${escapeHTML(String(t.year||"—"))}</div><h3>${escapeHTML(t.name||"Student tutor")}</h3><div class="tutor-subjects">${(t.subjects||[]).map(s=>`<span class="subject-tag">${escapeHTML(s)}</span>`).join("")}</div><p>${escapeHTML(t.bio||"Peer tutor")}</p><div class="tutor-availability">◷ ${escapeHTML(t.availability||"Availability by arrangement")}</div><div class="tutor-buttons"><button type="button" class="primary-button" data-action="book-tutor" data-id="${escapeHTML(String(t.id))}">Choose a time</button><button type="button" class="secondary-button" data-action="view-tutor" data-id="${escapeHTML(String(t.id))}">View</button></div></article>`;}
 function renderBookingRow(b){const user=getCurrentUserFromData(),isTutor=b.tutorUserId===user?.id,status=b.status||"pending",demoResponse=!b.tutorUserId&&b.studentId===user?.id;return `<article class="booking-row"><div><strong>${escapeHTML(isTutor?b.studentName:b.tutorName)}</strong><p>${escapeHTML(b.subject)} · ${escapeHTML(b.date)} at ${escapeHTML(b.time)}</p><span class="booking-status status-${escapeHTML(status)}">${escapeHTML(status)}</span></div>${(isTutor||demoResponse)&&status==="pending"?`<div class="booking-actions"><button type="button" class="primary-button" data-action="update-booking" data-id="${escapeHTML(String(b.id))}" data-status="accepted">${demoResponse?"Simulate accept":"Accept"}</button><button type="button" class="secondary-button" data-action="update-booking" data-id="${escapeHTML(String(b.id))}" data-status="declined">${demoResponse?"Simulate decline":"Decline"}</button></div>`:""}</article>`;}
@@ -3923,6 +4046,10 @@ function setupGlobalClicks() {
 
                 case "close-modal":
                     closeModal();
+                    break;
+
+                case "edit-tutor-profile":
+                    openTutorProfileEditor();
                     break;
 
                 case "view-tutor": {
