@@ -682,6 +682,7 @@ async function restoreSupabaseSession() {
         await loadSupabaseTutors();
 
         await loadSupabaseBookings();
+        await loadSupabasePoints();
 
         // Load this student's assignments from Supabase.
         const { data: cloudAssignments, error: assignmentError } =
@@ -4854,11 +4855,23 @@ async function updateBookingStatus(id,status){
  appData.notificationsList.push({id:"notice-"+Date.now(),userId:booking.studentId,message:"Your session with "+booking.tutorName+" was "+status+".",read:false});
  if(status==="accepted"){
    if(!appData.calendarEvents.some(e=>e.id==="booking-"+booking.id))appData.calendarEvents.push({id:"booking-"+booking.id,title:"Peer tutoring: "+booking.subject+" with "+booking.tutorName,date:booking.date,time:booking.time,type:"Tutoring",source:"booking",bookingId:booking.id});
-   awardPeerPoints(booking.tutorUserId,10,"Accepted a tutoring request");awardPeerPoints(booking.studentId,5,"Booked a peer study session");
+   if(!booking.cloud){awardPeerPoints(booking.tutorUserId,10,"Accepted a tutoring request");awardPeerPoints(booking.studentId,5,"Booked a peer study session");}
  }
- saveData();showToast("Booking "+status+".");await loadSupabaseBookings();renderPage("tutors");
+ saveData();showToast("Booking "+status+".");await loadSupabaseBookings();if(booking.cloud)await loadSupabasePoints();renderPage("tutors");
 }
 
+async function loadSupabasePoints(){
+ const user=getCurrentUserFromData();
+ if(!supabaseClient||!user||!String(user.id||"").startsWith("google-"))return;
+ try{
+  const authId=String(user.id).slice(7);
+  const {data,error}=await supabaseClient.from("points_transactions").select("id, points, reason, created_at").eq("user_id",authId).order("created_at",{ascending:false});
+  if(error)throw error;
+  user.pointHistory=(data||[]).map(row=>({id:row.id,amount:Number(row.points||0),reason:row.reason,date:row.created_at}));
+  user.points=user.pointHistory.reduce((sum,item)=>sum+item.amount,0);
+  saveData();
+ }catch(error){console.error("Could not load Peer Points:",error);}
+}
 function awardPeerPoints(id,amount,reason){if(!id)return;const u=appData.users.find(x=>String(x.id)===String(id));if(!u)return;u.points=Number(u.points||0)+amount;u.pointHistory=u.pointHistory||[];u.pointHistory.push({amount,reason,date:new Date().toISOString()});appData.notificationsList.push({id:"points-"+Date.now(),userId:u.id,message:"+"+amount+" Peer Points: "+reason+".",read:false});}
 function getPeerLevel(p){if(p>=500)return{name:"Scholar",floor:500,next:null};if(p>=300)return{name:"Mentor",floor:300,next:500};if(p>=150)return{name:"Collaborator",floor:150,next:300};if(p>=50)return{name:"Contributor",floor:50,next:150};return{name:"New Leaf",floor:0,next:50};}
 function renderPeerPoints(c){const users=(appData.users||[]).slice().sort((a,b)=>Number(b.points||0)-Number(a.points||0)),u=getCurrentUserFromData(),p=Number(u?.points||0),l=getPeerLevel(p),prog=l.next?Math.min(100,Math.round((p-l.floor)/(l.next-l.floor)*100)):100,h=(u?.pointHistory||[]).slice().reverse().slice(0,6);c.innerHTML=`<div class="page-header"><div><p class="eyebrow">YOUR PROGRESS</p><h1>Peer Points</h1><p>Helping each other should count for something.</p></div></div><section class="points-hero card"><p class="eyebrow">YOUR CURRENT LEVEL</p><h2>${l.name} ✦</h2><div class="points-total">${p}<span> points</span></div><div class="points-progress"><div class="points-progress-fill" style="width:${prog}%"></div></div><p>${l.next?l.next-p+" points until "+getPeerLevel(l.next).name:"You've reached the highest current level."}</p></section><div class="points-columns"><section class="feature-panel points-panel"><p class="eyebrow">HOW TO EARN POINTS</p><h2>Give help. Get better.</h2><ul class="points-rules"><li><strong>+10</strong><span>Tutor request accepted</span></li><li><strong>+5</strong><span>Book a peer study session</span></li><li><strong>+20</strong><span>Complete a focus session</span></li><li><strong>+10</strong><span>Help a classmate as a tutor</span></li></ul><p class="muted">Booking points are tracked in this prototype when a request is accepted.</p></section><section class="feature-panel points-panel"><p class="eyebrow">RECENT ACTIVITY</p><h2>Point history</h2>${h.length?h.map(x=>`<div class="point-history-row"><span>${escapeHTML(x.reason)}</span><strong>+${Number(x.amount||0)} pts</strong></div>`).join(""):'<p class="muted">Your activity will appear here as you earn points.</p>'}</section></div><section class="feature-panel"><p class="eyebrow">FRIENDLY COMPETITION</p><h2>Leaderboard</h2><p class="muted">Demo account names and points are shown for this prototype.</p><div class="leaderboard">${users.map((x,i)=>`<div class="leaderboard-row ${x.id===u?.id?"is-current-user":""}"><span class="leaderboard-rank">${i+1}</span><span class="leaderboard-avatar">${escapeHTML(getInitials(x.name))}</span><span class="leaderboard-name">${escapeHTML(x.name)}${x.id===u?.id?" (you)":""}<small>${getPeerLevel(Number(x.points||0)).name}</small></span><strong>${Number(x.points||0)} pts</strong></div>`).join("")}</div></section>`;}
