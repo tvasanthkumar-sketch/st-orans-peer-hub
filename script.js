@@ -5,6 +5,15 @@
 
 "use strict";
 
+// Supabase browser client. The publishable key is designed for frontend use;
+// never put a Supabase service-role/secret key or Google client secret here.
+const supabaseClient = window.supabase?.createClient
+    ? window.supabase.createClient(
+        "https://yxrozzpqdzmksvivbutg.supabase.co",
+        "sb_publishable_6rk7jHSRj4xllCHSnn-d1A_O5xGxtme"
+    )
+    : null;
+
 
 /* =========================================================
    STORAGE
@@ -343,15 +352,16 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
-function initialiseApp() {
+async function initialiseApp() {
     setupAuthTabs();
-   console.log("AUTH SETUP RUNNING");
-setupAuthentication();
+    setupAuthentication();
     setupNavigation();
     setupTopbar();
     setupGlobalClicks();
     setupFocusMode();
     setupEnhancedFeatures();
+
+    await restoreSupabaseSession();
 
     if (currentUser) {
         showApplication();
@@ -558,23 +568,81 @@ function handleSignUp(event) {
 }
 
 
-function handleGoogleDemo() {
-    const demo = appData.users.find(
-        user => user.id === "demo-maya"
-    );
-
-    if (!demo) {
-        showToast("Demo account unavailable.");
+async function handleGoogleDemo() {
+    if (!supabaseClient) {
+        showToast("Google sign-in could not load. Refresh and try again.");
         return;
     }
 
-    currentUser = demo;
+    const { error } = await supabaseClient.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+            redirectTo: window.location.origin
+        }
+    });
 
-    saveCurrentUser();
+    if (error) {
+        console.error("Google sign-in failed:", error);
+        showToast("Google sign-in failed. Please try again.");
+    }
+}
 
-    showToast("Signed in with demo account 🐉");
+async function restoreSupabaseSession() {
+    if (!supabaseClient) {
+        return;
+    }
 
-    showApplication();
+    try {
+        const { data, error } = await supabaseClient.auth.getSession();
+
+        if (error) throw error;
+
+        const authUser = data.session?.user;
+        if (!authUser) return;
+
+        const email = (authUser.email || "").trim().toLowerCase();
+
+        if (!email.endsWith("@storans.school.nz")) {
+            await supabaseClient.auth.signOut();
+            currentUser = null;
+            localStorage.removeItem(CURRENT_USER_KEY);
+            showAuth();
+            showToast("Please sign in with your St Oran's school Google account.");
+            return;
+        }
+
+        const metadata = authUser.user_metadata || {};
+        const name = metadata.full_name || metadata.name || email.split("@")[0];
+        let user = appData.users.find(
+            account => account.email?.toLowerCase() === email
+        );
+
+        if (!user) {
+            user = {
+                id: "google-" + authUser.id,
+                name,
+                email,
+                year: "",
+                className: "",
+                points: 0,
+                previousPoints: 0,
+                sessions: 0,
+                role: "student",
+                subjects: [],
+                availability: []
+            };
+            appData.users.push(user);
+            saveData();
+        } else {
+            user.name = name;
+        }
+
+        currentUser = user;
+        saveCurrentUser();
+    } catch (error) {
+        console.error("Could not restore Supabase session:", error);
+        showToast("We couldn't finish signing you in. Please try again.");
+    }
 }
 
 
@@ -4216,7 +4284,15 @@ function openSpotify() {
    SIGN OUT
    ========================================================= */
 
-function signOut() {
+async function signOut() {
+
+    if (supabaseClient) {
+        try {
+            await supabaseClient.auth.signOut();
+        } catch (error) {
+            console.error("Supabase sign-out failed:", error);
+        }
+    }
 
     clearInterval(
         timerInterval
