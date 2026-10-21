@@ -4822,7 +4822,7 @@ async function createSpecificBooking(){
  }
 }
 function mapSupabaseBooking(row,user,knownTutor){
- const dateTime=new Date(row.requested_at),date=String(row.requested_at||"").slice(0,10),time=String(row.requested_at||"").slice(11,16),notes=String(row.notes||""),durationMatch=notes.match(/Duration:\s*(\d+)\s*minutes/i),duration=Number(durationMatch?.[1]||60),note=notes.replace(/Duration:\s*\d+\s*minutes\n?/i,"").trim();
+ const dateTime=new Date(row.requested_at),date=dateTime.getFullYear()+"-"+String(dateTime.getMonth()+1).padStart(2,"0")+"-"+String(dateTime.getDate()).padStart(2,"0"),time=String(dateTime.getHours()).padStart(2,"0")+":"+String(dateTime.getMinutes()).padStart(2,"0"),notes=String(row.notes||""),durationMatch=notes.match(/Duration:\s*(\d+)\s*minutes/i),duration=Number(durationMatch?.[1]||60),note=notes.replace(/Duration:\s*\d+\s*minutes\n?/i,"").trim();
  const requesterId="google-"+row.requester_id,tutorUserId="google-"+row.tutor_id,profiles=appData.users||[],requester=profiles.find(x=>String(x.id)===requesterId),tutor=knownTutor||appData.tutors.find(x=>String(x.userId)===tutorUserId);
  return {id:row.id,tutorId:tutor?.id||("cloud-"+row.tutor_id),tutorUserId,tutorName:tutor?.name||"Peer tutor",studentId:requesterId,studentName:requester?.name||(requesterId===user?.id?user.name:"Student"),subject:row.subject,date,time,duration,startMinutes:Number(time.slice(0,2))*60+Number(time.slice(3,5)),note,status:row.status,createdAt:row.created_at,cloud:true};
 }
