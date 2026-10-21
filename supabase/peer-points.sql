@@ -46,7 +46,7 @@ language plpgsql
 stable
 security definer
 set search_path = public
-as $
+as $leaderboard$
 begin
   if auth.uid() is null
     or lower(coalesce(auth.jwt() ->> 'email', '')) not like '%@storans.school.nz' then
@@ -63,7 +63,7 @@ begin
   order by coalesce(sum(pt.points), 0) desc, lower(coalesce(p.full_name, '')) asc
   limit 100;
 end;
-$;
+$leaderboard$;
 
 revoke all on function public.get_peer_points_leaderboard() from public, anon;
 grant execute on function public.get_peer_points_leaderboard() to authenticated;
