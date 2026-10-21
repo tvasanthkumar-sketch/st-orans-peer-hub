@@ -1821,22 +1821,6 @@ function openTutorProfileEditor() {
             if (!savedRow) throw new Error("Supabase accepted the save request but the row could not be read back. Check the tutor_profiles Row Level Security policies.");
             updateCurrentUser({ role: "tutor", subjects: selectedSubjects, availability: selectedAvailability, bio });
             await loadSupabaseTutors();
-            
-                updateCurrentUser({ role: "tutor", subjects: selectedSubjects, availability: selectedAvailability, bio });
-                const tutor = {
-                    id: existing?.id || "local-tutor-" + user.id,
-                    userId: user.id,
-                    name: user.name,
-                    year: user.year || "—",
-                    className: user.className || "",
-                    subjects: selectedSubjects,
-                    availability: selectedAvailability.length ? selectedAvailability.join(" · ") : "Availability by arrangement",
-                    initials: getInitials(user.name),
-                    bio
-                };
-                appData.tutors = [...(appData.tutors || []).filter(t => String(t.userId) !== String(user.id)), tutor];
-                saveData();
-            }
             closeModal();
             showToast("Your tutor profile has been saved.");
             renderPage("tutors");
