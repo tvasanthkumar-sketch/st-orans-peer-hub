@@ -17,14 +17,26 @@ create table if not exists public.profiles (
 alter table public.profiles enable row level security;
 drop policy if exists "Signed-in students can view profiles" on public.profiles;
 create policy "Signed-in students can view profiles"
-    on public.profiles for select to authenticated using (true);
+    on public.profiles for select to authenticated
+    using (lower(coalesce(auth.jwt() ->> 'email', '')) like '%@storans.school.nz');
 drop policy if exists "Students can create their own profile" on public.profiles;
 create policy "Students can create their own profile"
-    on public.profiles for insert to authenticated with check (auth.uid() = id);
+    on public.profiles for insert to authenticated
+    with check (
+        auth.uid() = id
+        and lower(coalesce(auth.jwt() ->> 'email', '')) like '%@storans.school.nz'
+    );
 drop policy if exists "Students can update their own profile" on public.profiles;
 create policy "Students can update their own profile"
     on public.profiles for update to authenticated
-    using (auth.uid() = id) with check (auth.uid() = id);
+    using (
+        auth.uid() = id
+        and lower(coalesce(auth.jwt() ->> 'email', '')) like '%@storans.school.nz'
+    )
+    with check (
+        auth.uid() = id
+        and lower(coalesce(auth.jwt() ->> 'email', '')) like '%@storans.school.nz'
+    );
 
 create table if not exists public.tutor_profiles (
     user_id uuid primary key references auth.users(id) on delete cascade,
@@ -39,19 +51,35 @@ alter table public.tutor_profiles enable row level security;
 drop policy if exists "Students can view active tutor profiles" on public.tutor_profiles;
 create policy "Students can view active tutor profiles"
     on public.tutor_profiles for select to authenticated
-    using (active = true or auth.uid() = user_id);
+    using (
+        lower(coalesce(auth.jwt() ->> 'email', '')) like '%@storans.school.nz'
+        and (active = true or auth.uid() = user_id)
+    );
 drop policy if exists "Students can create their own tutor profile" on public.tutor_profiles;
 create policy "Students can create their own tutor profile"
     on public.tutor_profiles for insert to authenticated
-    with check (auth.uid() = user_id);
+    with check (
+        auth.uid() = user_id
+        and lower(coalesce(auth.jwt() ->> 'email', '')) like '%@storans.school.nz'
+    );
 drop policy if exists "Students can update their own tutor profile" on public.tutor_profiles;
 create policy "Students can update their own tutor profile"
     on public.tutor_profiles for update to authenticated
-    using (auth.uid() = user_id) with check (auth.uid() = user_id);
+    using (
+        auth.uid() = user_id
+        and lower(coalesce(auth.jwt() ->> 'email', '')) like '%@storans.school.nz'
+    )
+    with check (
+        auth.uid() = user_id
+        and lower(coalesce(auth.jwt() ->> 'email', '')) like '%@storans.school.nz'
+    );
 drop policy if exists "Students can remove their own tutor profile" on public.tutor_profiles;
 create policy "Students can remove their own tutor profile"
     on public.tutor_profiles for delete to authenticated
-    using (auth.uid() = user_id);
+    using (
+        auth.uid() = user_id
+        and lower(coalesce(auth.jwt() ->> 'email', '')) like '%@storans.school.nz'
+    );
 
 create table if not exists public.bookings (
     id uuid primary key default gen_random_uuid(),
@@ -70,7 +98,10 @@ alter table public.bookings enable row level security;
 drop policy if exists "Booking participants can view bookings" on public.bookings;
 create policy "Booking participants can view bookings"
     on public.bookings for select to authenticated
-    using (auth.uid() = requester_id or auth.uid() = tutor_id);
+    using (
+        lower(coalesce(auth.jwt() ->> 'email', '')) like '%@storans.school.nz'
+        and (auth.uid() = requester_id or auth.uid() = tutor_id)
+    );
 drop policy if exists "Students can request sessions for themselves" on public.bookings;
 create policy "Students can request sessions for themselves"
     on public.bookings for insert to authenticated
@@ -78,12 +109,21 @@ create policy "Students can request sessions for themselves"
 drop policy if exists "Tutors can update their bookings" on public.bookings;
 create policy "Tutors can update their bookings"
     on public.bookings for update to authenticated
-    using (auth.uid() = tutor_id)
-    with check (auth.uid() = tutor_id);
+    using (
+        auth.uid() = tutor_id
+        and lower(coalesce(auth.jwt() ->> 'email', '')) like '%@storans.school.nz'
+    )
+    with check (
+        auth.uid() = tutor_id
+        and lower(coalesce(auth.jwt() ->> 'email', '')) like '%@storans.school.nz'
+    );
 drop policy if exists "Requesters can cancel their bookings" on public.bookings;
 create policy "Requesters can cancel their bookings"
     on public.bookings for delete to authenticated
-    using (auth.uid() = requester_id);
+    using (
+        auth.uid() = requester_id
+        and lower(coalesce(auth.jwt() ->> 'email', '')) like '%@storans.school.nz'
+    );
 
 create table if not exists public.notifications (
     id uuid primary key default gen_random_uuid(),
