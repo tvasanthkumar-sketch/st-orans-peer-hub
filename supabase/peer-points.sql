@@ -34,6 +34,40 @@ when (new.status = 'accepted')
 execute function public.award_booking_peer_points();
 
 
+-- A read-only shared leaderboard. It exposes only display names and point totals,
+-- never school email addresses or private profile details.
+create or replace function public.get_peer_points_leaderboard()
+returns table (
+  profile_id uuid,
+  full_name text,
+  points bigint
+)
+language plpgsql
+stable
+security definer
+set search_path = public
+as $
+begin
+  if auth.uid() is null
+    or lower(coalesce(auth.jwt() ->> 'email', '')) not like '%@storans.school.nz' then
+    raise exception 'Use your St Oran''s school account to view the leaderboard.';
+  end if;
+
+  return query
+  select p.id as profile_id,
+         coalesce(nullif(trim(p.full_name), ''), 'St Oran''s student') as full_name,
+         coalesce(sum(pt.points), 0)::bigint as points
+  from public.profiles p
+  left join public.points_transactions pt on pt.user_id = p.id
+  group by p.id, p.full_name
+  order by coalesce(sum(pt.points), 0) desc, lower(coalesce(p.full_name, '')) asc
+  limit 100;
+end;
+$;
+
+revoke all on function public.get_peer_points_leaderboard() from public, anon;
+grant execute on function public.get_peer_points_leaderboard() to authenticated;
+
 -- Focus sessions are started and completed through database functions so the
 -- server, rather than browser storage, controls the award.
 create table if not exists public.focus_sessions (
