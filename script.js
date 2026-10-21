@@ -639,6 +639,35 @@ async function restoreSupabaseSession() {
 
         currentUser = user;
         saveCurrentUser();
+
+        // Load this student's assignments from Supabase.
+        const { data: cloudAssignments, error: assignmentError } =
+            await supabaseClient
+                .from("assignments")
+                .select("id, title, subject, due_date, importance, completed")
+                .eq("user_id", authUser.id)
+                .order("created_at", { ascending: false });
+
+        if (assignmentError) {
+            console.error("Could not load cloud assignments:", assignmentError);
+        } else {
+            appData.assignments = (cloudAssignments || []).map(item => ({
+                id: item.id,
+                title: item.title,
+                subject: item.subject,
+                dueDate: item.due_date,
+                due: item.due_date
+                    ? new Date(item.due_date + "T00:00:00").toLocaleDateString(
+                        "en-NZ",
+                        { day: "numeric", month: "short", year: "numeric" }
+                    )
+                    : "",
+                importance: item.importance,
+                completed: item.completed,
+                cloud: true
+            }));
+            saveData();
+        }
     } catch (error) {
         console.error("Could not restore Supabase session:", error);
         showToast("We couldn't finish signing you in. Please try again.");
@@ -1595,7 +1624,24 @@ function toggleAssignment(id) {
         return;
     }
 
+    const previousCompleted = assignment.completed;
     assignment.completed = !assignment.completed;
+
+    if (assignment.cloud && supabaseClient) {
+        supabaseClient
+            .from("assignments")
+            .update({ completed: assignment.completed })
+            .eq("id", assignment.id)
+            .then(({ error }) => {
+                if (error) {
+                    console.error("Could not update cloud assignment:", error);
+                    assignment.completed = previousCompleted;
+                    saveData();
+                    renderPage(currentPage);
+                    showToast("Couldn't save that change. Please try again.");
+                }
+            });
+    }
 
     if (assignment.completed) {
         updateCurrentUser({
@@ -2350,6 +2396,16 @@ function openModal(content) {
     backdrop?.addEventListener("click", event => {
         if (event.target === backdrop) closeModal();
     });
+
+    // Bind both Cancel and × controls. The previous code queried only one
+    // element and then called forEach, which prevented the handlers binding.
+    $('[data-action="close-modal"]', root).forEach(button => {
+        button.addEventListener("click", event => {
+            event.preventDefault();
+            event.stopPropagation();
+            closeModal();
+        });
+    });
 }
 
 
@@ -2510,8 +2566,7 @@ function openAddAssignmentModal() {
             }
 
             const assignmentId = Date.now();
-
-            appData.assignments.push({
+            const newAssignment = {
                 id: assignmentId,
                 title,
                 subject,
@@ -2519,27 +2574,60 @@ function openAddAssignmentModal() {
                 dueDate,
                 importance,
                 completed: false
-            });
+            };
 
-            appData.calendarEvents.push({
-                id: "assignment-" + assignmentId,
-                title,
-                date: dueDate,
-                type: "Assignment",
-                time: "",
-                source: "assignment",
-                assignmentId
-            });
+            const saveAssignment = async () => {
+                if (supabaseClient && String(currentUser?.id || "").startsWith("google-")) {
+                    const { data: sessionData } = await supabaseClient.auth.getSession();
+                    const authUser = sessionData.session?.user;
 
-            saveData();
+                    if (authUser) {
+                        const { data: saved, error } = await supabaseClient
+                            .from("assignments")
+                            .insert({
+                                user_id: authUser.id,
+                                title,
+                                subject,
+                                due_date: dueDate,
+                                importance,
+                                completed: false
+                            })
+                            .select("id, title, subject, due_date, importance, completed")
+                            .single();
 
-            closeModal();
+                        if (error) {
+                            console.error("Could not save assignment to Supabase:", error);
+                            showToast("Assignment wasn't saved. Check the database setup and try again.");
+                            return;
+                        }
 
-            showToast(
-                "Assignment added successfully."
-            );
+                        Object.assign(newAssignment, {
+                            id: saved.id,
+                            dueDate: saved.due_date,
+                            cloud: true
+                        });
+                    }
+                }
 
-            renderPage("assignments");
+                appData.assignments.push(newAssignment);
+
+                appData.calendarEvents.push({
+                    id: "assignment-" + newAssignment.id,
+                    title,
+                    date: dueDate,
+                    type: "Assignment",
+                    time: "",
+                    source: "assignment",
+                    assignmentId: newAssignment.id
+                });
+
+                saveData();
+                closeModal();
+                showToast("Assignment added successfully.");
+                renderPage("assignments");
+            };
+
+            saveAssignment();
         }
     );
 }
