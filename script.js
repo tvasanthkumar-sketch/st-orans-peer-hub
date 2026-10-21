@@ -2106,8 +2106,60 @@ function renderProfile(container) {
                 </p>
             </section>
 
+            <section class="profile-card profile-edit-card">
+                <p class="eyebrow">SCHOOL DETAILS</p>
+                <h2>Complete your profile</h2>
+                <p>Adding your year level and class helps other students recognise your profile.</p>
+
+                <form id="profileDetailsForm">
+                    <div class="form-group">
+                        <label for="profileYear">Year level</label>
+                        <select id="profileYear" name="year" required>
+                            <option value="">Choose your year</option>
+                            ${[7, 8, 9, 10, 11, 12, 13].map(year => `
+                                <option value="${year}" ${String(user.year || "") === String(year) ? "selected" : ""}>Year ${year}</option>
+                            `).join("")}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="profileClass">Class</label>
+                        <input
+                            id="profileClass"
+                            name="className"
+                            type="text"
+                            maxlength="12"
+                            placeholder="e.g. 8WI"
+                            value="${escapeHTML(user.className || "")}"
+                            required
+                        >
+                    </div>
+
+                    <button type="submit" class="primary-button">Save school details</button>
+                    <p id="profileDetailsMessage" role="status" aria-live="polite"></p>
+                </form>
+            </section>
+
         </div>
     `;
+
+    $("#profileDetailsForm")?.addEventListener("submit", async event => {
+        event.preventDefault();
+
+        const year = $("#profileYear")?.value;
+        const className = $("#profileClass")?.value.trim().toUpperCase();
+        const message = $("#profileDetailsMessage");
+
+        if (!year || !className) {
+            if (message) message.textContent = "Please choose your year and enter your class.";
+            return;
+        }
+
+        updateCurrentUser({ year, className });
+
+        if (message) message.textContent = "School details saved.";
+        showToast("School details saved 🌿");
+    });
 }
 function renderSettings(container) {
     container.innerHTML = `
