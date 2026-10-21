@@ -1790,7 +1790,11 @@ function openTutorProfileEditor() {
         const submit = $('button[type="submit"]', form);
         if (submit) { submit.disabled = true; submit.textContent = "Saving…"; }
         try {
-            if (supabaseClient && String(user.id || "").startsWith("google-")) {
+            const isGoogleUser = String(user.id || "").startsWith("google-");
+            if (isGoogleUser && !supabaseClient) {
+                throw new Error("Supabase did not load on this page, so your tutor profile was not saved to the database. Refresh the page and try again. If this continues, check that the Supabase JavaScript library is loading.");
+            }
+            if (isGoogleUser && supabaseClient) {
                 const authId = String(user.id).slice("google-".length);
                 const { error } = await supabaseClient.from("tutor_profiles").upsert({
                     user_id: authId,
