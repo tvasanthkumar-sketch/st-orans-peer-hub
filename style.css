@@ -3770,3 +3770,43 @@ button, input, select, textarea {
         justify-self: start;
     }
 }
+
+
+/* Notification delete controls */
+.notification-row {
+    min-width: 0;
+}
+
+.notification-row > p {
+    flex: 1;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.notification-delete {
+    flex: 0 0 auto;
+    min-height: 36px;
+    padding: 7px 11px;
+    border-color: rgba(122, 38, 56, 0.22);
+    color: var(--burgundy, #7a2638);
+    font-size: 0.8rem;
+}
+
+.notification-delete:hover {
+    background: rgba(122, 38, 56, 0.08);
+}
+
+@media (max-width: 520px) {
+    .notification-row {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .notification-row > p {
+        flex: 1 1 calc(100% - 24px);
+    }
+
+    .notification-delete {
+        margin-left: 18px;
+    }
+}
