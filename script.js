@@ -4139,6 +4139,12 @@ function setupGlobalClicks() {
                     closeModal();
                     break;
 
+                case "delete-notification":
+                    event.preventDefault();
+                    event.stopPropagation();
+                    void deleteNotification(actionElement.dataset.id);
+                    break;
+
                 case "edit-tutor-profile":
                     openTutorProfileEditor();
                     break;
@@ -5004,6 +5010,33 @@ function renderPeerPoints(c){
  c.innerHTML=`<div class="page-header"><div><p class="eyebrow">YOUR PROGRESS</p><h1>Peer Points</h1><p>Helping each other should count for something.</p></div></div><section class="points-hero card"><p class="eyebrow">YOUR CURRENT LEVEL</p><h2>${l.name} ✦</h2><div class="points-total">${p}<span> points</span></div><div class="points-progress"><div class="points-progress-fill" style="width:${prog}%"></div></div><p>${l.next?l.next-p+" points until "+getPeerLevel(l.next).name:"You've reached the highest current level."}</p></section><div class="points-columns"><section class="feature-panel points-panel"><p class="eyebrow">HOW TO EARN POINTS</p><h2>Give help. Get better.</h2><ul class="points-rules"><li><strong>+10</strong><span>Tutor request accepted</span></li><li><strong>+5</strong><span>Book a peer study session</span></li><li><strong>+20</strong><span>Complete a focus session</span></li><li><strong>+10</strong><span>Help a classmate as a tutor</span></li></ul><p class="muted">Points are saved to your school account when earned through connected features.</p></section><section class="feature-panel points-panel"><p class="eyebrow">RECENT ACTIVITY</p><h2>Point history</h2>${h.length?h.map(x=>`<div class="point-history-row"><span>${escapeHTML(x.reason)}</span><strong>+${Number(x.amount||0)} pts</strong></div>`).join(""):'<p class="muted">Your activity will appear here as you earn points.</p>'}</section></div><section class="feature-panel"><p class="eyebrow">FRIENDLY COMPETITION</p><h2>${isRealUser?"School leaderboard":"Leaderboard"}</h2><p class="muted">${isRealUser?(supabaseLeaderboard===null?"Loading live school rankings…":supabaseLeaderboard.length?"Live totals from school accounts. Only names and Peer Points are shown.":"No shared school profiles are available yet."):"Demo account names and points are shown for this prototype."}</p><div class="leaderboard">${leaderboardRows||(!isRealUser?'<p class="muted">No leaderboard entries yet.</p>':"")}</div></section>`;
 }
 function openTutorDetails(t){if(!t)return;openModal(`<div class="card-header"><div><p class="eyebrow">PEER TUTOR</p><h2>${escapeHTML(t.name)}</h2></div><button type="button" class="icon-button" data-action="close-modal">×</button></div><div class="modal-form"><p>${escapeHTML(t.bio||"")}</p><div class="tutor-subjects">${(t.subjects||[]).map(s=>`<span class="subject-tag">${escapeHTML(s)}</span>`).join("")}</div><p><strong>Availability:</strong> ${escapeHTML(t.availability||"By arrangement")}</p><div class="modal-actions"><button type="button" class="secondary-button" data-action="close-modal">Close</button><button type="button" class="primary-button" data-action="book-tutor" data-id="${escapeHTML(String(t.id))}">Choose a time</button></div></div>`);}
+async function deleteNotification(id){
+ const u=getCurrentUserFromData();
+ if(!u||!id){showToast("This notification cannot be deleted.");return;}
+ const notification=(appData.notificationsList||[]).find(n=>String(n.id)===String(id));
+ if(!notification){showToast("Notification not found.");return;}
+ if(!window.confirm("Delete this notification? This cannot be undone."))return;
+ if(notification.cloud&&supabaseClient&&String(u.id||"").startsWith("google-")){
+  try{
+   const authId=String(u.id).slice(7);
+   const {data,error}=await supabaseClient.from("notifications")
+    .delete().eq("id",id).eq("user_id",authId).select("id");
+   if(error)throw error;
+   if(!data||!data.length){showToast("Could not delete this notification. Check the Supabase delete policy.");return;}
+  }catch(error){
+   console.error("Could not delete notification:",error);
+   showToast("Couldn't delete it. Check the Supabase notification permissions.");
+   return;
+  }
+ }
+ appData.notificationsList=(appData.notificationsList||[])
+  .filter(n=>String(n.id)!==String(id));
+ saveData();
+ updateTopbar();
+ showToast("Notification deleted.");
+ await showNotifications();
+}
+
 async function showNotifications(){
  if(!appData.settings.notifications){showToast("Notifications are turned off.");return;}
  const u=getCurrentUserFromData();
@@ -5011,7 +5044,7 @@ async function showNotifications(){
   await loadSupabaseNotifications();
   const msgs=(appData.notificationsList||[]).filter(n=>n.cloud&&n.userId===u.id);
   if(!msgs.length){showToast("You're all caught up ✦");return;}
-  openModal(`<div class="card-header"><div><p class="eyebrow">UPDATES</p><h2>Notifications</h2></div><button type="button" class="icon-button" data-action="close-modal">×</button></div><div class="modal-form notification-list">${msgs.slice(0,12).map(n=>`<article class="notification-row"><span class="notification-dot"></span><p><strong>${escapeHTML(n.title||"Update")}</strong><br>${escapeHTML(n.message)}</p></article>`).join("")}</div><div class="modal-actions"><button type="button" class="primary-button" data-action="close-modal">Done</button></div>`);
+  openModal(`<div class="card-header"><div><p class="eyebrow">UPDATES</p><h2>Notifications</h2></div><button type="button" class="icon-button" data-action="close-modal" aria-label="Close notifications">×</button></div><div class="modal-form notification-list">${msgs.slice(0,12).map(n=>`<article class="notification-row"><span class="notification-dot"></span><p><strong>${escapeHTML(n.title||"Update")}</strong><br>${escapeHTML(n.message)}</p><button type="button" class="secondary-button notification-delete" data-action="delete-notification" data-id="${escapeHTML(String(n.id))}" aria-label="Delete notification">Delete</button></article>`).join("")}</div><div class="modal-actions"><button type="button" class="primary-button" data-action="close-modal">Done</button></div>`);
   try{
    const authId=String(u.id).slice(7);
    const {error}=await supabaseClient.from("notifications").update({is_read:true}).eq("user_id",authId).eq("is_read",false);
@@ -5022,6 +5055,6 @@ async function showNotifications(){
  }
  const msgs=(appData.notificationsList||[]).filter(n=>n.userId===u?.id||(!n.userId&&u?.id==="demo-maya"));
  if(!msgs.length){const n=(appData.assignments||[]).filter(a=>!a.completed).length;showToast(n?n+" assignments still need attention.":"You're all caught up ✦");return;}
- openModal(`<div class="card-header"><div><p class="eyebrow">UPDATES</p><h2>Notifications</h2></div><button type="button" class="icon-button" data-action="close-modal">×</button></div><div class="modal-form notification-list">${msgs.slice().reverse().slice(0,12).map(n=>`<article class="notification-row"><span class="notification-dot"></span><p>${escapeHTML(n.message)}</p></article>`).join("")}</div><div class="modal-actions"><button type="button" class="primary-button" data-action="close-modal">Done</button></div>`);
+ openModal(`<div class="card-header"><div><p class="eyebrow">UPDATES</p><h2>Notifications</h2></div><button type="button" class="icon-button" data-action="close-modal" aria-label="Close notifications">×</button></div><div class="modal-form notification-list">${msgs.slice().reverse().slice(0,12).map(n=>`<article class="notification-row"><span class="notification-dot"></span><p>${escapeHTML(n.title||"Update")}<br>${escapeHTML(n.message||"")}</p><button type="button" class="secondary-button notification-delete" data-action="delete-notification" data-id="${escapeHTML(String(n.id||""))}" aria-label="Delete notification">Delete</button></article>`).join("")}</div><div class="modal-actions"><button type="button" class="primary-button" data-action="close-modal">Done</button></div>`);
  msgs.forEach(n=>n.read=true);saveData();updateTopbar();
 }
