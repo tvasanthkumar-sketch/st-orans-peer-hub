@@ -1505,6 +1505,7 @@ function renderSelectedDay() {
                         <span>
                             ${escapeHTML(event.type || "Event")}
                             ${event.time ? " · " + escapeHTML(formatEventTime(event.time)) : ""}
+                            ${event.location ? " · 📍 " + escapeHTML(event.location) : ""}
                         </span>
                     </div>
                 `
@@ -5115,10 +5116,10 @@ async function updateBookingStatus(id,status){
  booking.status=status;
  appData.notificationsList.push({id:"notice-"+Date.now(),userId:booking.studentId,message:"Your session with "+booking.tutorName+" was "+status+".",read:false});
  if(status==="accepted"){
-   if(!appData.calendarEvents.some(e=>e.id==="booking-"+booking.id))appData.calendarEvents.push({id:"booking-"+booking.id,title:"Peer tutoring: "+booking.subject+" with "+booking.tutorName,date:booking.date,time:booking.time,type:"Tutoring",source:"booking",bookingId:booking.id});
+   if(!appData.calendarEvents.some(e=>e.id==="booking-"+booking.id))appData.calendarEvents.push({id:"booking-"+booking.id,title:"Peer tutoring: "+booking.subject+" with "+booking.tutorName,date:booking.date,time:booking.time,location:booking.location||"",type:"Tutoring",source:"booking",bookingId:booking.id});
    if(!booking.cloud){awardPeerPoints(booking.tutorUserId,10,"Accepted a tutoring request");awardPeerPoints(booking.studentId,5,"Booked a peer study session");}
  }
- saveData();showToast("Booking "+status+".");await loadSupabaseBookings();if(booking.cloud)await loadSupabasePoints();renderPage("tutors");
+ saveUserCalendarEvents();saveData();showToast("Booking "+status+".");await loadSupabaseBookings();if(booking.cloud)await loadSupabasePoints();renderPage("tutors");
 }
 
 async function loadSupabaseNotifications(){
