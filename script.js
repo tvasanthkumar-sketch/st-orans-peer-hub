@@ -243,6 +243,51 @@ function saveData() {
     }
 }
 
+function getWorkspaceStorageKey(user = currentUser) {
+    const userId = String(user?.id || "guest");
+    return "stOransPeerHubWorkspace:" + userId;
+}
+
+function loadUserCalendarEvents(user = currentUser) {
+    try {
+        const saved = localStorage.getItem(getWorkspaceStorageKey(user));
+        if (!saved) return [];
+        const parsed = JSON.parse(saved);
+        return Array.isArray(parsed.calendarEvents) ? parsed.calendarEvents : [];
+    } catch (error) {
+        console.error("Could not load this user's calendar:", error);
+        return [];
+    }
+}
+
+function saveUserCalendarEvents() {
+    try {
+        localStorage.setItem(
+            getWorkspaceStorageKey(),
+            JSON.stringify({ calendarEvents: appData.calendarEvents || [] })
+        );
+    } catch (error) {
+        console.error("Could not save this user's calendar:", error);
+    }
+}
+
+function rebuildAssignmentCalendarEvents() {
+    const personalEvents = (appData.calendarEvents || []).filter(
+        event => event.source !== "assignment"
+    );
+    const assignmentEvents = (appData.assignments || []).map(assignment => ({
+        id: "assignment-" + assignment.id,
+        title: assignment.title,
+        date: assignment.dueDate,
+        type: "Assignment",
+        time: "",
+        source: "assignment",
+        assignmentId: assignment.id
+    }));
+    appData.calendarEvents = personalEvents.concat(assignmentEvents);
+    saveUserCalendarEvents();
+}
+
 
 function loadCurrentUser() {
     try {
@@ -675,6 +720,12 @@ async function restoreSupabaseSession() {
         currentUser = user;
         saveCurrentUser();
 
+        // Keep personal assignments and calendar events separate per signed-in account.
+        // Cloud assignments are loaded below using the authenticated user's ID.
+        appData.assignments = [];
+        appData.calendarEvents = loadUserCalendarEvents(currentUser);
+        saveData();
+
         // Show the app as soon as Google has authenticated the student.
         // Optional data requests load in the background so slow queries do not
         // leave the sign-in screen visible for 30 seconds.
@@ -721,6 +772,7 @@ async function restoreSupabaseSession() {
                         completed: item.completed,
                         cloud: true
                     }));
+                    rebuildAssignmentCalendarEvents();
                     saveData();
                     if (currentUser?.id === user.id) {
                         renderPage(currentPage);
@@ -1526,6 +1578,7 @@ function openAddCalendarEventModal() {
             source: "event"
         });
 
+        saveUserCalendarEvents();
         saveData();
         closeModal();
 
@@ -1900,7 +1953,7 @@ function openTutorProfileEditor() {
     });
 }
 function renderTutorCard(t){return `<article class="tutor-card card" data-tutor-name="${escapeHTML(String(t.name||"").toLowerCase())}" data-tutor-subjects="${escapeHTML((t.subjects||[]).join(" ").toLowerCase())}"><div class="tutor-avatar">${escapeHTML(t.initials||getInitials(t.name))}</div><div class="tutor-year">Year ${escapeHTML(String(t.year||"—"))}</div><h3>${escapeHTML(t.name||"Student tutor")}</h3><div class="tutor-subjects">${(t.subjects||[]).map(s=>`<span class="subject-tag">${escapeHTML(s)}</span>`).join("")}</div><p>${escapeHTML(t.bio||"Peer tutor")}</p><div class="tutor-availability">◷ ${escapeHTML(t.availability||"Availability by arrangement")}</div><div class="tutor-buttons"><button type="button" class="primary-button" data-action="book-tutor" data-id="${escapeHTML(String(t.id))}">Choose a time</button><button type="button" class="secondary-button" data-action="view-tutor" data-id="${escapeHTML(String(t.id))}">View</button></div></article>`;}
-function renderBookingRow(b){const user=getCurrentUserFromData(),isTutor=b.tutorUserId===user?.id,status=b.status||"pending",demoResponse=!b.tutorUserId&&b.studentId===user?.id;return `<article class="booking-row"><div><strong>${escapeHTML(isTutor?b.studentName:b.tutorName)}</strong><p>${escapeHTML(b.subject)} · ${escapeHTML(b.date)} at ${escapeHTML(b.time)}</p><span class="booking-status status-${escapeHTML(status)}">${escapeHTML(status)}</span></div>${(isTutor||demoResponse)&&status==="pending"?`<div class="booking-actions"><button type="button" class="primary-button" data-action="update-booking" data-id="${escapeHTML(String(b.id))}" data-status="accepted">${demoResponse?"Simulate accept":"Accept"}</button><button type="button" class="secondary-button" data-action="update-booking" data-id="${escapeHTML(String(b.id))}" data-status="declined">${demoResponse?"Simulate decline":"Decline"}</button></div>`:""}</article>`;}
+function renderBookingRow(b){const user=getCurrentUserFromData(),isTutor=b.tutorUserId===user?.id,status=b.status||"pending",demoResponse=!b.tutorUserId&&b.studentId===user?.id;return `<article class="booking-row"><div><strong>${escapeHTML(isTutor?b.studentName:b.tutorName)}</strong><p>${escapeHTML(b.subject)} · ${escapeHTML(b.date)} at ${escapeHTML(b.time)}</p><p class="booking-location">📍 ${escapeHTML(b.location||"Not specified")}</p><span class="booking-status status-${escapeHTML(status)}">${escapeHTML(status)}</span></div>${(isTutor||demoResponse)&&status==="pending"?`<div class="booking-actions"><button type="button" class="primary-button" data-action="update-booking" data-id="${escapeHTML(String(b.id))}" data-status="accepted">${demoResponse?"Simulate accept":"Accept"}</button><button type="button" class="secondary-button" data-action="update-booking" data-id="${escapeHTML(String(b.id))}" data-status="declined">${demoResponse?"Simulate decline":"Decline"}</button></div>`:""}</article>`;}
 
 function filterTutors(){const q=($("#tutorSearch")?.value||"").trim().toLowerCase(),s=($("#subjectFilter")?.value||"").trim().toLowerCase();$$(".tutor-card").forEach(c=>{const n=c.dataset.tutorName||"",ss=c.dataset.tutorSubjects||"";c.style.display=(!q||n.includes(q)||ss.includes(q))&&(!s||ss.includes(s))?"":"none";});}
 /* =========================================================
@@ -2950,6 +3003,7 @@ function openAddAssignmentModal() {
                     assignmentId: newAssignment.id
                 });
 
+                saveUserCalendarEvents();
                 saveData();
                 closeModal();
                 showToast("Assignment added successfully.");
@@ -4938,12 +4992,75 @@ document.addEventListener(
 function setupEnhancedFeatures(){appData.bookings=appData.bookings||[];appData.notificationsList=appData.notificationsList||[];const nav=$(".main-nav");if(nav&&!$('.nav-item[data-page="points"]',nav)){const b=document.createElement("button");b.type="button";b.className="nav-item";b.dataset.page="points";b.title="Peer Points";b.innerHTML='<span class="nav-icon">✦</span><span class="nav-text">Peer Points</span>';b.addEventListener("click",()=>navigateTo("points"));nav.appendChild(b);}const side=$(".sidebar");if(side&&!side.querySelector('[data-action="sign-out"]')){const b=document.createElement("button");b.type="button";b.className="secondary-button sidebar-signout";b.dataset.action="sign-out";b.textContent="Sign out";b.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();signOut();});side.appendChild(b);}document.addEventListener("click",e=>{const el=e.target.closest("[data-action]");if(!el)return;const a=el.dataset.action;if(a==="edit-tutor-profile")openTutorProfileForm();if(a==="book-tutor")openSpecificBookingForm(appData.tutors.find(t=>String(t.id)===String(el.dataset.id)));if(a==="view-tutor")openTutorDetails(appData.tutors.find(t=>String(t.id)===String(el.dataset.id)));if(a==="update-booking")updateBookingStatus(el.dataset.id,el.dataset.status);});document.addEventListener("submit",e=>{if(e.target.id==="tutorProfileForm"){e.preventDefault();saveTutorProfile();}if(e.target.id==="specificBookingForm"){e.preventDefault();createSpecificBooking();}});saveData();}
 function openTutorProfileForm(){const u=getCurrentUserFromData();if(!u)return;const t=appData.tutors.find(x=>String(x.userId)===String(u.id)),subs=["English","Mathematics","Science","French","Te Reo Māori","History","Social Studies","Physics","Chemistry","Biology","PE","Digital Technology"],days=["Monday","Tuesday","Wednesday","Thursday","Friday"];openModal(`<div class="card-header"><div><p class="eyebrow">PEER TUTOR</p><h2>${t?"Edit your tutor profile":"Become a tutor"}</h2></div><button type="button" class="icon-button" data-action="close-modal">×</button></div><form id="tutorProfileForm" class="modal-form"><div class="form-group"><label for="tutorBio">Short introduction</label><textarea id="tutorBio" required maxlength="240" placeholder="What can you help other students with?">${escapeHTML(t?.bio||"")}</textarea></div><div class="form-group"><label for="tutorSubjects">Subjects you can tutor</label><select id="tutorSubjects" multiple size="5" required>${subs.map(s=>`<option value="${escapeHTML(s)}" ${(t?.subjects||[]).includes(s)?"selected":""}>${escapeHTML(s)}</option>`).join("")}</select><small>Hold Cmd (Mac) or Ctrl (Windows) to choose multiple.</small></div><div class="form-group"><label>Days available</label><div class="choice-chips">${days.map(d=>`<label><input type="checkbox" name="tutorDays" value="${d}" ${(t?.availableDays||[]).includes(d)?"checked":""}> ${d}</label>`).join("")}</div></div><div class="form-grid"><div class="form-group"><label for="tutorStart">From</label><input id="tutorStart" type="time" value="${escapeHTML(t?.startTime||"15:30")}" required></div><div class="form-group"><label for="tutorEnd">Until</label><input id="tutorEnd" type="time" value="${escapeHTML(t?.endTime||"16:30")}" required></div></div><div class="modal-actions"><button type="button" class="secondary-button" data-action="close-modal">Cancel</button><button type="submit" class="primary-button">Save profile</button></div></form>`);}
 async function saveTutorProfile(){const u=getCurrentUserFromData();if(!u)return;const bio=$("#tutorBio")?.value.trim()||"",subjects=[...($("#tutorSubjects")?.selectedOptions||[])].map(o=>o.value),availableDays=$$('input[name="tutorDays"]:checked').map(x=>x.value),startTime=$("#tutorStart")?.value||"",endTime=$("#tutorEnd")?.value||"";if(!bio||!subjects.length||!availableDays.length||!startTime||!endTime||startTime>=endTime){showToast("Add an introduction, subjects, available days and a valid time range.");return;}const saveButton=$('#tutorProfileForm button[type="submit"]');if(saveButton){saveButton.disabled=true;saveButton.textContent="Saving…";}try{let authId=null;const isGoogleUser=String(u.id||"").startsWith("google-");if(isGoogleUser){if(!supabaseClient)throw new Error("Supabase did not load. Refresh the page and try again.");const {data,error:sessionError}=await supabaseClient.auth.getSession();if(sessionError)throw sessionError;const authUser=data?.session?.user;if(!authUser)throw new Error("Your Google sign-in session has expired. Sign in again and retry.");authId=authUser.id;const {error}=await supabaseClient.from("tutor_profiles").upsert({user_id:authId,bio,subjects,availability:[...availableDays,startTime+"–"+endTime],active:true,updated_at:new Date().toISOString()},{onConflict:"user_id"});if(error)throw error;const {data:verify,error:verifyError}=await supabaseClient.from("tutor_profiles").select("user_id").eq("user_id",authId).maybeSingle();if(verifyError)throw verifyError;if(!verify)throw new Error("The database did not return the saved tutor row. Check the tutor_profiles table policies.");}else if(supabaseClient){throw new Error("Please sign in with your school Google account before saving a tutor profile.");}let t=appData.tutors.find(x=>String(x.userId)===String(u.id));const row={id:t?.id||("tutor-"+u.id),userId:u.id,name:u.name,year:u.year||"Student",initials:getInitials(u.name),subjects,bio,availableDays,startTime,endTime,availability:availableDays.join(" · ")+" · "+startTime+"–"+endTime,cloud:!!authId};if(t)Object.assign(t,row);else appData.tutors.push(row);updateCurrentUser({role:"tutor",tutorProfile:true,subjects,bio,availability:availableDays});saveData();if(authId)await loadSupabaseTutors();closeModal();showToast("Tutor profile saved to the database.");renderPage("tutors");}catch(error){console.error("Tutor profile database save failed:",error);showToast("Tutor profile NOT saved: "+(error?.message||String(error)));if(saveButton){saveButton.disabled=false;saveButton.textContent="Save profile";}}}
-function openSpecificBookingForm(t){const u=getCurrentUserFromData();if(!u||!t)return;if(String(t.userId||"")===String(u.id)){showToast("That's your own tutor profile.");return;}const d=new Date(),today=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");openModal(`<div class="card-header"><div><p class="eyebrow">BOOK A PEER</p><h2>Choose a session time</h2></div><button type="button" class="icon-button" data-action="close-modal">×</button></div><form id="specificBookingForm" class="modal-form" data-tutor-id="${escapeHTML(String(t.id))}"><p>Request a session with <strong>${escapeHTML(t.name)}</strong>. It stays pending until they respond.</p><div class="form-group"><label for="bookingSubject">Subject</label><select id="bookingSubject" required>${(t.subjects||[]).map(s=>`<option value="${escapeHTML(s)}">${escapeHTML(s)}</option>`).join("")}</select></div><div class="form-group"><label for="bookingDate">Date</label><input id="bookingDate" type="date" min="${today}" required></div><div class="form-group"><label for="bookingTime">Start time</label><input id="bookingTime" type="time" value="${escapeHTML(t.startTime||"15:30")}" required><small>Usual availability: ${escapeHTML(t.availability||"By arrangement")}</small></div><div class="form-group"><label for="bookingDuration">Duration</label><select id="bookingDuration"><option value="30">30 minutes</option><option value="45">45 minutes</option><option value="60" selected>1 hour</option></select></div><div class="form-group"><label for="bookingNote">What would you like help with? (optional)</label><textarea id="bookingNote" maxlength="240"></textarea></div><div class="modal-actions"><button type="button" class="secondary-button" data-action="close-modal">Cancel</button><button type="submit" class="primary-button">Send request</button></div></form>`);}
+function openSpecificBookingForm(t) {
+    const u = getCurrentUserFromData();
+    if (!u || !t) return;
+    if (String(t.userId || "") === String(u.id)) {
+        showToast("That's your own tutor profile.");
+        return;
+    }
+
+    const d = new Date();
+    const today = d.getFullYear() + "-" +
+        String(d.getMonth() + 1).padStart(2, "0") + "-" +
+        String(d.getDate()).padStart(2, "0");
+
+    openModal(`
+        <div class="card-header">
+            <div><p class="eyebrow">BOOK A PEER</p><h2>Choose a session time</h2></div>
+            <button type="button" class="icon-button" data-action="close-modal">×</button>
+        </div>
+        <form id="specificBookingForm" class="modal-form" data-tutor-id="${escapeHTML(String(t.id))}">
+            <p>Request a session with <strong>${escapeHTML(t.name)}</strong>. It stays pending until they respond.</p>
+            <div class="form-group">
+                <label for="bookingSubject">Subject</label>
+                <select id="bookingSubject" required>${(t.subjects || []).map(s => `<option value="${escapeHTML(s)}">${escapeHTML(s)}</option>`).join("")}</select>
+            </div>
+            <div class="form-group"><label for="bookingDate">Date</label><input id="bookingDate" type="date" min="${today}" required></div>
+            <div class="form-group"><label for="bookingTime">Start time</label><input id="bookingTime" type="time" value="${escapeHTML(t.startTime || "15:30")}" required><small>Usual availability: ${escapeHTML(t.availability || "By arrangement")}</small></div>
+            <div class="form-group"><label for="bookingDuration">Duration</label><select id="bookingDuration"><option value="30">30 minutes</option><option value="45">45 minutes</option><option value="60" selected>1 hour</option></select></div>
+            <div class="form-group">
+                <label for="bookingLocation">Meeting location</label>
+                <select id="bookingLocation" required>
+                    <option value="Library">Library</option>
+                    <option value="School grounds">School grounds</option>
+                    <option value="Café">Café</option>
+                    <option value="Online">Online</option>
+                    <option value="Custom">Custom location…</option>
+                </select>
+            </div>
+            <div class="form-group hidden" id="customBookingLocationGroup">
+                <label for="bookingCustomLocation">Custom meeting place</label>
+                <input id="bookingCustomLocation" type="text" maxlength="160" placeholder="Enter a meeting place">
+            </div>
+            <div class="form-group"><label for="bookingNote">What would you like help with? (optional)</label><textarea id="bookingNote" maxlength="240"></textarea></div>
+            <div class="modal-actions"><button type="button" class="secondary-button" data-action="close-modal">Cancel</button><button type="submit" class="primary-button">Send request</button></div>
+        </form>
+    `);
+
+    const locationSelect = $("#bookingLocation");
+    const customGroup = $("#customBookingLocationGroup");
+    const customInput = $("#bookingCustomLocation");
+    locationSelect?.addEventListener("change", () => {
+        const custom = locationSelect.value === "Custom";
+        customGroup?.classList.toggle("hidden", !custom);
+        if (customInput) customInput.required = custom;
+    });
+}
 async function createSpecificBooking(){
  const u=getCurrentUserFromData(),f=$("#specificBookingForm");
  if(!u||!f)return;
- const t=appData.tutors.find(x=>String(x.id)===String(f.dataset.tutorId)),subject=$("#bookingSubject")?.value,date=$("#bookingDate")?.value,time=$("#bookingTime")?.value,duration=Number($("#bookingDuration")?.value||60),note=$("#bookingNote")?.value.trim()||"";
- if(!t||!date||!time||!subject)return;
+ const t=appData.tutors.find(x=>String(x.id)===String(f.dataset.tutorId)),
+ subject=$("#bookingSubject")?.value,
+ date=$("#bookingDate")?.value,
+ time=$("#bookingTime")?.value,
+ duration=Number($("#bookingDuration")?.value||60),
+ note=$("#bookingNote")?.value.trim()||"",
+ locationChoice=$("#bookingLocation")?.value||"",
+ customLocation=$("#bookingCustomLocation")?.value.trim()||"",
+ location=locationChoice==="Custom"?customLocation:locationChoice;
+ if(!t||!date||!time||!subject||!location)return;
+ if(locationChoice==="Custom"&&!customLocation){showToast("Enter a meeting place for this session.");return;}
  if(!supabaseClient||!String(u.id||"").startsWith("google-")||!String(t.userId||"").startsWith("google-")){
    showToast("Real session requests need a signed-in school account and a tutor with a saved database profile.");return;
  }
@@ -4954,8 +5071,8 @@ async function createSpecificBooking(){
  const submit=f.querySelector('button[type="submit"]');if(submit){submit.disabled=true;submit.textContent="Sending…";}
  try{
    const requestedAt=new Date(date+"T"+time+":00").toISOString();
-   const payload={requester_id:String(u.id).slice(7),tutor_id:String(t.userId).slice(7),subject,requested_at:requestedAt,notes:"Duration: "+duration+" minutes"+(note?"\n"+note:""),status:"pending"};
-   const {data,error}=await supabaseClient.from("bookings").insert(payload).select("id, requester_id, tutor_id, subject, requested_at, notes, status, created_at").single();
+   const payload={requester_id:String(u.id).slice(7),tutor_id:String(t.userId).slice(7),subject,requested_at:requestedAt,location,notes:"Duration: "+duration+" minutes"+(note?"\n"+note:""),status:"pending"};
+   const {data,error}=await supabaseClient.from("bookings").insert(payload).select("id, requester_id, tutor_id, subject, requested_at, location, notes, status, created_at").single();
    if(error)throw error;
    const b=mapSupabaseBooking(data,u,t);
    appData.bookings=appData.bookings||[];appData.bookings.push(b);saveData();
@@ -4969,14 +5086,14 @@ async function createSpecificBooking(){
 function mapSupabaseBooking(row,user,knownTutor){
  const dateTime=new Date(row.requested_at),date=dateTime.getFullYear()+"-"+String(dateTime.getMonth()+1).padStart(2,"0")+"-"+String(dateTime.getDate()).padStart(2,"0"),time=String(dateTime.getHours()).padStart(2,"0")+":"+String(dateTime.getMinutes()).padStart(2,"0"),notes=String(row.notes||""),durationMatch=notes.match(/Duration:\s*(\d+)\s*minutes/i),duration=Number(durationMatch?.[1]||60),note=notes.replace(/Duration:\s*\d+\s*minutes\n?/i,"").trim();
  const requesterId="google-"+row.requester_id,tutorUserId="google-"+row.tutor_id,profiles=appData.users||[],requester=profiles.find(x=>String(x.id)===requesterId),tutor=knownTutor||appData.tutors.find(x=>String(x.userId)===tutorUserId);
- return {id:row.id,tutorId:tutor?.id||("cloud-"+row.tutor_id),tutorUserId,tutorName:tutor?.name||"Peer tutor",studentId:requesterId,studentName:requester?.name||(requesterId===user?.id?user.name:"Student"),subject:row.subject,date,time,duration,startMinutes:Number(time.slice(0,2))*60+Number(time.slice(3,5)),note,status:row.status,createdAt:row.created_at,cloud:true};
+ return {id:row.id,tutorId:tutor?.id||("cloud-"+row.tutor_id),tutorUserId,tutorName:tutor?.name||"Peer tutor",studentId:requesterId,studentName:requester?.name||(requesterId===user?.id?user.name:"Student"),subject:row.subject,date,time,duration,startMinutes:Number(time.slice(0,2))*60+Number(time.slice(3,5)),note,location:row.location||"Not specified",status:row.status,createdAt:row.created_at,cloud:true};
 }
 async function loadSupabaseBookings(){
  const user=getCurrentUserFromData();
  if(!supabaseClient||!user||!String(user.id||"").startsWith("google-"))return;
  try{
    const authId=String(user.id).slice(7);
-   const {data,error}=await supabaseClient.from("bookings").select("id, requester_id, tutor_id, subject, requested_at, notes, status, created_at").order("created_at",{ascending:false});
+   const {data,error}=await supabaseClient.from("bookings").select("id, requester_id, tutor_id, subject, requested_at, location, notes, status, created_at").order("created_at",{ascending:false});
    if(error)throw error;
    const rows=(data||[]).filter(x=>x.requester_id===authId||x.tutor_id===authId);
    const mapped=rows.map(row=>mapSupabaseBooking(row,user));
