@@ -2674,6 +2674,13 @@ function openModal(content) {
     modal?.addEventListener(
         "click",
         event => {
+            const deleteButton = event.target.closest('[data-action="delete-notification"]');
+            if (deleteButton && modal.contains(deleteButton)) {
+                event.preventDefault();
+                event.stopPropagation();
+                void deleteNotification(deleteButton.dataset.id);
+                return;
+            }
             event.stopPropagation();
         }
     );
