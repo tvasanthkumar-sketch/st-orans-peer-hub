@@ -271,6 +271,91 @@ function saveUserCalendarEvents() {
     }
 }
 
+
+function getSupabaseAuthId() {
+    const user = getCurrentUserFromData();
+    return user && String(user.id || "").startsWith("google-")
+        ? String(user.id).slice(7)
+        : null;
+}
+
+async function syncSupabaseCalendarEvents() {
+    const authId = getSupabaseAuthId();
+    if (!supabaseClient || !authId) return;
+
+    const events = (appData.calendarEvents || []).filter(event =>
+        event.source === "event" && event.id && event.title && event.date
+    );
+
+    if (!events.length) return;
+
+    const rows = events.map(event => ({
+        user_id: authId,
+        event_id: String(event.id),
+        title: String(event.title).slice(0, 160),
+        event_date: event.date,
+        event_time: String(event.time || ""),
+        event_type: String(event.type || "Personal"),
+        location: String(event.location || ""),
+        updated_at: new Date().toISOString()
+    }));
+
+    const { error } = await supabaseClient
+        .from("calendar_events")
+        .upsert(rows, { onConflict: "user_id,event_id" });
+
+    if (error) {
+        console.error("Could not sync calendar events:", error);
+        showToast("Calendar saved on this device, but cloud sync failed. Please try again.");
+    }
+}
+
+async function loadSupabaseCalendarEvents() {
+    const authId = getSupabaseAuthId();
+    if (!supabaseClient || !authId) return;
+
+    const { data, error } = await supabaseClient
+        .from("calendar_events")
+        .select("event_id, title, event_date, event_time, event_type, location")
+        .eq("user_id", authId)
+        .order("event_date", { ascending: true });
+
+    if (error) {
+        console.error("Could not load calendar events:", error);
+        showToast("Couldn't load calendar events from the cloud.");
+        return;
+    }
+
+    const localEvents = (appData.calendarEvents || []).filter(event =>
+        event.source !== "event"
+    );
+    const personalById = new Map(
+        (appData.calendarEvents || [])
+            .filter(event => event.source === "event")
+            .map(event => [String(event.id), event])
+    );
+
+    (data || []).forEach(row => {
+        personalById.set(String(row.event_id), {
+            id: String(row.event_id),
+            title: row.title,
+            date: row.event_date,
+            time: row.event_time || "",
+            type: row.event_type || "Personal",
+            location: row.location || "",
+            source: "event",
+            cloud: true
+        });
+    });
+
+    appData.calendarEvents = localEvents.concat([...personalById.values()]);
+    saveUserCalendarEvents();
+    saveData();
+
+    // Upload events created before cloud sync was enabled on this device.
+    await syncSupabaseCalendarEvents();
+}
+
 function rebuildAssignmentCalendarEvents() {
     const personalEvents = (appData.calendarEvents || []).filter(
         event => event.source !== "assignment"
@@ -773,6 +858,7 @@ async function restoreSupabaseSession() {
                         cloud: true
                     }));
                     rebuildAssignmentCalendarEvents();
+                    await loadSupabaseCalendarEvents();
                     saveData();
                     if (currentUser?.id === user.id) {
                         renderPage(currentPage);
@@ -1581,6 +1667,7 @@ function openAddCalendarEventModal() {
 
         saveUserCalendarEvents();
         saveData();
+        void syncSupabaseCalendarEvents();
         closeModal();
 
         const parts = date.split("-").map(Number);
