@@ -5322,7 +5322,7 @@ function syncAcceptedBookingCalendarEvents(bookings, user) {
  const currentUserId=String(user?.id||"");
  const cloudBookingIds=new Set((bookings||[]).map(b=>"booking-"+String(b.id)));
  appData.calendarEvents=(appData.calendarEvents||[]).filter(event =>
-   event.source!=="booking" || !event.cloud || !cloudBookingIds.has(String(event.id))
+   event.source!=="booking" || !cloudBookingIds.has(String(event.id))
  );
 
  (bookings||[]).filter(booking=>booking.cloud&&booking.status==="accepted").forEach(booking=>{
