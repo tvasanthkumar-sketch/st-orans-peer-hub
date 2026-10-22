@@ -1851,6 +1851,9 @@ function renderAssignments(container) {
         assignment => !assignment.completed
     );
 
+    appData.settings = appData.settings || {};
+    const hideCompleted = appData.settings.hideCompletedAssignments !== false;
+
     container.innerHTML = `
         <div class="page-header">
 
@@ -1908,22 +1911,30 @@ function renderAssignments(container) {
                     <p class="eyebrow">COMPLETED</p>
                     <h3>${completed.length} finished</h3>
                 </div>
+                <button
+                    type="button"
+                    class="secondary-button"
+                    data-action="toggle-completed-assignments"
+                    aria-expanded="${!hideCompleted}"
+                >${hideCompleted ? "Show completed" : "Hide completed"}</button>
             </div>
 
             ${
-                completed.length
-                    ? `
-                        <div class="assignment-list">
-                            ${completed
-                                .map(renderAssignmentRow)
-                                .join("")}
-                        </div>
-                    `
-                    : `
-                        <div class="empty-state">
-                            <p>No completed assignments yet.</p>
-                        </div>
-                    `
+                hideCompleted
+                    ? ""
+                    : completed.length
+                        ? `
+                            <div class="assignment-list">
+                                ${completed
+                                    .map(renderAssignmentRow)
+                                    .join("")}
+                            </div>
+                        `
+                        : `
+                            <div class="empty-state">
+                                <p>No completed assignments yet.</p>
+                            </div>
+                        `
             }
 
         </div>
@@ -4433,6 +4444,14 @@ function setupGlobalClicks() {
                     toggleAssignment(
                         actionElement.dataset.id
                     );
+                    break;
+
+                case "toggle-completed-assignments":
+                    appData.settings = appData.settings || {};
+                    appData.settings.hideCompletedAssignments =
+                        appData.settings.hideCompletedAssignments === false;
+                    saveData();
+                    renderPage("assignments");
                     break;
 
                 case "add-assignment":
