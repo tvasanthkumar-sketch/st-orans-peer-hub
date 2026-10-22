@@ -878,8 +878,15 @@ function updateTopbar() {
     const dot = $("#notifDot");
 
     if (dot) {
+        const notifications = appData.notificationsList || [];
+        const hasUnread = notifications.some(notification =>
+            (notification.userId === user.id ||
+                (!notification.userId && user.id === "demo-maya")) &&
+            !notification.read
+        );
+
         dot.style.display =
-            appData.settings.notifications
+            appData.settings.notifications && hasUnread
                 ? "block"
                 : "none";
     }
@@ -4952,6 +4959,7 @@ async function loadSupabaseNotifications(){
   appData.notificationsList=(appData.notificationsList||[])
    .filter(n=>!n.cloud&&n.userId!==user.id).concat(cloud);
   saveData();
+  updateTopbar();
  }catch(error){console.error("Could not load notifications:",error);}
 }
 async function loadSupabasePoints(){
@@ -5008,12 +5016,12 @@ async function showNotifications(){
    const authId=String(u.id).slice(7);
    const {error}=await supabaseClient.from("notifications").update({is_read:true}).eq("user_id",authId).eq("is_read",false);
    if(error)throw error;
-   msgs.forEach(n=>n.read=true);saveData();
+   msgs.forEach(n=>n.read=true);saveData();updateTopbar();
   }catch(error){console.error("Could not mark notifications read:",error);}
   return;
  }
  const msgs=(appData.notificationsList||[]).filter(n=>n.userId===u?.id||(!n.userId&&u?.id==="demo-maya"));
  if(!msgs.length){const n=(appData.assignments||[]).filter(a=>!a.completed).length;showToast(n?n+" assignments still need attention.":"You're all caught up ✦");return;}
  openModal(`<div class="card-header"><div><p class="eyebrow">UPDATES</p><h2>Notifications</h2></div><button type="button" class="icon-button" data-action="close-modal">×</button></div><div class="modal-form notification-list">${msgs.slice().reverse().slice(0,12).map(n=>`<article class="notification-row"><span class="notification-dot"></span><p>${escapeHTML(n.message)}</p></article>`).join("")}</div><div class="modal-actions"><button type="button" class="primary-button" data-action="close-modal">Done</button></div>`);
- msgs.forEach(n=>n.read=true);saveData();
+ msgs.forEach(n=>n.read=true);saveData();updateTopbar();
 }
