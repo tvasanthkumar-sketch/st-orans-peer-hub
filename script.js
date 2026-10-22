@@ -5313,8 +5313,40 @@ async function loadSupabaseBookings(){
    const mapped=rows.map(row=>mapSupabaseBooking(row,user));
    const cloudIds=new Set(mapped.map(x=>String(x.id)));
    appData.bookings=(appData.bookings||[]).filter(x=>!x.cloud&&!cloudIds.has(String(x.id))).concat(mapped);
+   syncAcceptedBookingCalendarEvents(mapped, user);
    saveData();
  }catch(error){console.error("Could not load session requests:",error);}
+}
+
+function syncAcceptedBookingCalendarEvents(bookings, user) {
+ const currentUserId=String(user?.id||"");
+ const cloudBookingIds=new Set((bookings||[]).map(b=>"booking-"+String(b.id)));
+ appData.calendarEvents=(appData.calendarEvents||[]).filter(event =>
+   event.source!=="booking" || !event.cloud || !cloudBookingIds.has(String(event.id))
+ );
+
+ (bookings||[]).filter(booking=>booking.cloud&&booking.status==="accepted").forEach(booking=>{
+   const isTutor=String(booking.tutorUserId)===currentUserId;
+   const otherName=isTutor?(booking.studentName||"Student"):(booking.tutorName||"Peer tutor");
+   const eventId="booking-"+String(booking.id);
+   const event={
+     id:eventId,
+     title:"Peer tutoring: "+booking.subject+" with "+otherName,
+     date:booking.date,
+     time:booking.time,
+     location:booking.location||"",
+     type:"Tutoring",
+     source:"booking",
+     bookingId:booking.id,
+     cloud:true
+   };
+   const existingIndex=appData.calendarEvents.findIndex(item=>String(item.id)===eventId);
+   if(existingIndex>=0)appData.calendarEvents[existingIndex]=event;
+   else appData.calendarEvents.push(event);
+ });
+
+ saveUserCalendarEvents();
+ saveData();
 }
 async function updateBookingStatus(id,status){
  const user=getCurrentUserFromData(),booking=(appData.bookings||[]).find(x=>String(x.id)===String(id));
