@@ -675,44 +675,61 @@ async function restoreSupabaseSession() {
         currentUser = user;
         saveCurrentUser();
 
-        // Save the student's shared profile for the Peer Hub directory.
-        await syncSupabaseProfile();
+        // Show the app as soon as Google has authenticated the student.
+        // Optional data requests load in the background so slow queries do not
+        // leave the sign-in screen visible for 30 seconds.
+        showApplication();
 
-        // Load active tutor profiles so the directory is shared between school accounts.
-        await loadSupabaseTutors();
+        void (async () => {
+            const backgroundLoads = await Promise.allSettled([
+                syncSupabaseProfile(),
+                loadSupabaseTutors(),
+                loadSupabaseBookings(),
+                loadSupabaseNotifications(),
+                loadSupabasePoints()
+            ]);
 
-        await loadSupabaseBookings();
-        await loadSupabaseNotifications();
-        await loadSupabasePoints();
+            backgroundLoads.forEach((result, index) => {
+                if (result.status === "rejected") {
+                    console.error("A background Peer Hub load failed:", index, result.reason);
+                }
+            });
 
-        // Load this student's assignments from Supabase.
-        const { data: cloudAssignments, error: assignmentError } =
-            await supabaseClient
-                .from("assignments")
-                .select("id, title, subject, due_date, importance, completed")
-                .eq("user_id", authUser.id)
-                .order("created_at", { ascending: false });
+            try {
+                const { data: cloudAssignments, error: assignmentError } =
+                    await supabaseClient
+                        .from("assignments")
+                        .select("id, title, subject, due_date, importance, completed")
+                        .eq("user_id", authUser.id)
+                        .order("created_at", { ascending: false });
 
-        if (assignmentError) {
-            console.error("Could not load cloud assignments:", assignmentError);
-        } else {
-            appData.assignments = (cloudAssignments || []).map(item => ({
-                id: item.id,
-                title: item.title,
-                subject: item.subject,
-                dueDate: item.due_date,
-                due: item.due_date
-                    ? new Date(item.due_date + "T00:00:00").toLocaleDateString(
-                        "en-NZ",
-                        { day: "numeric", month: "short", year: "numeric" }
-                    )
-                    : "",
-                importance: item.importance,
-                completed: item.completed,
-                cloud: true
-            }));
-            saveData();
-        }
+                if (assignmentError) {
+                    console.error("Could not load cloud assignments:", assignmentError);
+                } else {
+                    appData.assignments = (cloudAssignments || []).map(item => ({
+                        id: item.id,
+                        title: item.title,
+                        subject: item.subject,
+                        dueDate: item.due_date,
+                        due: item.due_date
+                            ? new Date(item.due_date + "T00:00:00").toLocaleDateString(
+                                "en-NZ",
+                                { day: "numeric", month: "short", year: "numeric" }
+                            )
+                            : "",
+                        importance: item.importance,
+                        completed: item.completed,
+                        cloud: true
+                    }));
+                    saveData();
+                    if (currentUser?.id === user.id) {
+                        renderPage(currentPage);
+                    }
+                }
+            } catch (assignmentLoadError) {
+                console.error("Could not load cloud assignments:", assignmentLoadError);
+            }
+        })();
     } catch (error) {
         console.error("Could not restore Supabase session:", error);
         showToast("We couldn't finish signing you in. Please try again.");
