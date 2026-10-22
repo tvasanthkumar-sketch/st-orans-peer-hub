@@ -5407,8 +5407,6 @@ async function cancelBooking(id){
    if(error)throw error;
    if(!data)throw new Error("The session may already have changed. Refresh and try again.");
    booking.status="cancelled";
-   appData.notificationsList=appData.notificationsList||[];
-   appData.notificationsList.push({id:"notice-"+Date.now(),userId:booking.studentId===user.id?booking.tutorUserId:booking.studentId,title:"Tutoring session cancelled",message:"The session for "+booking.subject+" on "+booking.date+" at "+booking.time+" was cancelled.",read:false});
    saveData();await loadSupabaseBookings();renderPage("tutors");showToast("Session cancelled.");
  }catch(error){console.error("Could not cancel booking:",error);showToast("Cancellation failed: "+(error?.message||String(error))+" Check database permissions if cancellation is blocked.");}
 }
