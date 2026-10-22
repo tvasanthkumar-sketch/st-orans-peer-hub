@@ -920,6 +920,41 @@ function showNotifications() {
    HOME PAGE
    ========================================================= */
 
+function renderQuickGuide() {
+    const dismissed = !!appData.settings?.quickGuideDismissed;
+    if (dismissed) {
+        return `
+            <div class="quick-guide-reopen">
+                <button type="button" class="text-button" data-action="show-quick-guide">
+                    <span aria-hidden="true">✦</span> Show the quick guide
+                </button>
+            </div>
+        `;
+    }
+
+    return `
+        <section class="quick-guide card" aria-label="Peer Hub quick guide">
+            <div class="quick-guide-heading">
+                <div>
+                    <p class="eyebrow">FIRST TIME HERE?</p>
+                    <h2>Your mini guide</h2>
+                    <p class="quick-guide-intro">The useful bits, without a 40-page instruction manual.</p>
+                </div>
+                <button type="button" class="icon-button quick-guide-close" data-action="dismiss-quick-guide" aria-label="Close quick guide" title="Close guide">×</button>
+            </div>
+            <div class="quick-guide-grid">
+                <div class="quick-guide-item"><span class="quick-guide-icon" aria-hidden="true">🔔</span><div><strong>Notifications</strong><p>Tap the bell in the top bar to read updates. Delete old ones with the Delete button.</p></div></div>
+                <div class="quick-guide-item"><span class="quick-guide-icon" aria-hidden="true">🌿</span><div><strong>Study full screen</strong><p>Open Study, choose an environment, then start Focus Mode for a distraction-free screen and timer.</p></div></div>
+                <div class="quick-guide-item"><span class="quick-guide-icon" aria-hidden="true">📅</span><div><strong>Calendar</strong><p>See upcoming plans and add events so your study sessions and deadlines stay organised.</p></div></div>
+                <div class="quick-guide-item"><span class="quick-guide-icon" aria-hidden="true">✓</span><div><strong>Assignments</strong><p>Add tasks, set due dates, and mark work complete. Due dates can show on your calendar.</p></div></div>
+                <div class="quick-guide-item"><span class="quick-guide-icon" aria-hidden="true">🤝</span><div><strong>Find a Peer</strong><p>Browse peer tutors, check their subjects and availability, and request a session.</p></div></div>
+                <div class="quick-guide-item"><span class="quick-guide-icon" aria-hidden="true">✦</span><div><strong>Peer Points</strong><p>Track points, levels, and the leaderboard as you use connected study features.</p></div></div>
+            </div>
+        </section>
+    `;
+}
+
+
 function renderHome(container) {
     const user = getCurrentUserFromData();
 
@@ -973,6 +1008,8 @@ function renderHome(container) {
                 🐉
             </div>
         </section>
+
+        ${renderQuickGuide()}
 
         <section class="stats-grid">
 
@@ -4144,6 +4181,20 @@ function setupGlobalClicks() {
 
                 case "close-modal":
                     closeModal();
+                    break;
+
+                case "dismiss-quick-guide":
+                    appData.settings = appData.settings || {};
+                    appData.settings.quickGuideDismissed = true;
+                    saveData();
+                    renderPage("home");
+                    break;
+
+                case "show-quick-guide":
+                    appData.settings = appData.settings || {};
+                    appData.settings.quickGuideDismissed = false;
+                    saveData();
+                    renderPage("home");
                     break;
 
                 case "delete-notification":
