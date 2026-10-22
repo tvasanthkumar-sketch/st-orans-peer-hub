@@ -3399,3 +3399,374 @@ textarea:focus {
 .demo-note small{margin-top:4px}
 @media(max-width:760px){.points-columns{grid-template-columns:minmax(0,1fr)}.points-panel{height:auto}.leaderboard-row{grid-template-columns:26px 34px minmax(0,1fr) auto}.leaderboard-row>strong{grid-column:auto}}
 @media(max-width:420px){.leaderboard-row{grid-template-columns:24px 30px minmax(0,1fr)}.leaderboard-row>strong{grid-column:3;justify-self:start}.leaderboard-avatar{width:30px;height:30px}}
+
+
+/* =========================================================
+   MOBILE-FIRST POLISH
+   Keep the desktop layout intact and make small screens feel
+   intentionally designed rather than squeezed.
+   ========================================================= */
+
+html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+img, iframe, video, canvas, svg {
+    max-width: 100%;
+}
+
+button, input, select, textarea {
+    max-width: 100%;
+}
+
+@media (max-width: 700px) {
+    body {
+        overflow-x: hidden;
+    }
+
+    .app {
+        display: block;
+        width: 100%;
+        min-width: 0;
+    }
+
+    /* Turn the desktop sidebar into a familiar, scrollable bottom nav. */
+    .sidebar {
+        top: auto;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: auto;
+        min-height: 66px;
+        padding: 7px max(8px, env(safe-area-inset-left)) calc(7px + env(safe-area-inset-bottom));
+        border-top: 1px solid rgba(215, 194, 143, 0.24);
+        box-shadow: 0 -8px 24px rgba(16, 44, 37, 0.16);
+        overflow: hidden;
+    }
+
+    .sidebar-brand,
+    .roran-sidebar-card,
+    .sidebar-footer {
+        display: none !important;
+    }
+
+    .main-nav {
+        display: flex;
+        flex-direction: row;
+        align-items: stretch;
+        gap: 4px;
+        width: 100%;
+        overflow-x: auto;
+        overflow-y: hidden;
+        overscroll-behavior-x: contain;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .main-nav::-webkit-scrollbar {
+        display: none;
+    }
+
+    .nav-item {
+        display: flex;
+        flex: 0 0 68px;
+        flex-direction: column;
+        justify-content: center;
+        gap: 3px;
+        min-width: 0;
+        min-height: 51px;
+        padding: 5px 3px;
+        border-radius: 11px;
+        text-align: center;
+    }
+
+    .nav-icon {
+        display: grid;
+        width: 100%;
+        min-height: 22px;
+        place-items: center;
+        font-size: 1.15rem;
+        line-height: 1;
+    }
+
+    .nav-text {
+        display: block !important;
+        max-width: 100%;
+        overflow: hidden;
+        color: inherit;
+        font-size: 0.62rem;
+        line-height: 1.15;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .main {
+        width: 100%;
+        min-width: 0;
+        min-height: 100vh;
+        margin-left: 0;
+        padding-bottom: calc(82px + env(safe-area-inset-bottom));
+    }
+
+    .topbar {
+        position: sticky;
+        top: 0;
+        min-width: 0;
+        height: 64px;
+        padding: 0 14px;
+    }
+
+    .mobile-brand {
+        display: flex;
+        min-width: 0;
+        align-items: center;
+        gap: 9px;
+    }
+
+    .mobile-brand strong {
+        font-size: 1rem;
+        white-space: nowrap;
+    }
+
+    .profile-top {
+        gap: 7px;
+        padding: 4px;
+    }
+
+    .page-content {
+        width: 100%;
+        min-width: 0;
+        padding: 22px 15px 28px;
+    }
+
+    .page-content > *,
+    .page-content section,
+    .page-content article,
+    .page-header,
+    .feature-panel,
+    .card {
+        min-width: 0;
+        max-width: 100%;
+    }
+
+    .page-header {
+        gap: 12px;
+    }
+
+    .page-header h1 {
+        font-size: clamp(1.65rem, 7vw, 2.1rem);
+        overflow-wrap: anywhere;
+    }
+
+    .page-header p {
+        overflow-wrap: anywhere;
+    }
+
+    .home-grid,
+    .study-grid,
+    .points-columns,
+    .calendar-layout,
+    .form-grid {
+        grid-template-columns: minmax(0, 1fr) !important;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .stat-card,
+    .feature-panel,
+    .card {
+        padding: 16px;
+        border-radius: 16px;
+    }
+
+    .primary-button,
+    .secondary-button,
+    .danger-button,
+    .booking-actions button,
+    .modal-actions button {
+        min-height: 44px;
+    }
+
+    input:not([type="checkbox"]):not([type="radio"]),
+    select,
+    textarea {
+        min-height: 44px;
+        font-size: 16px;
+    }
+
+    textarea {
+        min-height: 100px;
+    }
+
+    .calendar-toolbar {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .calendar-nav {
+        flex: 1 1 100%;
+        justify-content: space-between;
+        min-width: 0;
+    }
+
+    .calendar-nav h2 {
+        flex: 1;
+        min-width: 0;
+        margin: 0;
+        font-size: clamp(1rem, 4.5vw, 1.2rem);
+    }
+
+    .calendar-today {
+        width: 100%;
+    }
+
+    .calendar-card {
+        min-width: 0;
+        padding: 8px;
+    }
+
+    .calendar-grid {
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+        gap: 2px;
+    }
+
+    .calendar-weekday {
+        min-width: 0;
+        padding: 6px 0;
+        font-size: clamp(0.48rem, 2vw, 0.62rem);
+        letter-spacing: 0;
+    }
+
+    .calendar-day {
+        min-width: 0;
+        min-height: 52px;
+        padding: 4px 2px;
+        border-radius: 7px;
+    }
+
+    .calendar-day .event,
+    .calendar-day .calendar-event {
+        max-width: 100%;
+        overflow: hidden;
+        font-size: 0.55rem;
+        text-overflow: ellipsis;
+    }
+
+    .booking-row {
+        gap: 10px;
+    }
+
+    .booking-actions {
+        width: 100%;
+    }
+
+    .booking-actions button {
+        flex: 1 1 auto;
+    }
+
+    .leaderboard-row {
+        gap: 7px;
+        overflow-wrap: anywhere;
+    }
+
+    .leaderboard-row > strong {
+        font-size: 0.82rem;
+    }
+
+    .modal {
+        width: min(100% - 24px, 560px);
+        max-height: calc(100dvh - 24px);
+        margin: 12px auto;
+        padding: 18px;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+    }
+
+    #modalRoot {
+        padding: 12px;
+    }
+
+    .modal-actions {
+        flex-wrap: wrap;
+    }
+
+    .modal-actions > button {
+        flex: 1 1 120px;
+    }
+
+    .study-environment-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .study-environment-card,
+    .study-environment-content {
+        min-height: 260px;
+    }
+
+    .study-environment-actions {
+        flex-wrap: wrap;
+    }
+
+    .study-environment-actions button {
+        min-height: 42px;
+        font-size: 0.78rem;
+    }
+
+    .timer-settings {
+        gap: 16px;
+        padding: 16px;
+    }
+
+    .focus-mode-overlay {
+        padding: 16px;
+    }
+}
+
+@media (max-width: 380px) {
+    .page-content {
+        padding-right: 11px;
+        padding-left: 11px;
+    }
+
+    .nav-item {
+        flex-basis: 62px;
+    }
+
+    .stats-grid {
+        gap: 8px;
+    }
+
+    .stat-card {
+        padding: 12px;
+    }
+
+    .calendar-day {
+        min-height: 44px;
+    }
+
+    .calendar-weekday {
+        font-size: 0.46rem;
+    }
+
+    .leaderboard-row {
+        grid-template-columns: 22px 28px minmax(0, 1fr);
+    }
+
+    .leaderboard-avatar {
+        width: 28px;
+        height: 28px;
+    }
+
+    .leaderboard-row > strong {
+        grid-column: 3;
+        justify-self: start;
+    }
+}
