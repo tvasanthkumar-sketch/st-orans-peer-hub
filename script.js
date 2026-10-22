@@ -1551,53 +1551,171 @@ function renderCalendar(container) {
 
 function renderSelectedDay() {
     const date = selectedCalendarDate;
-
     const events = getEventsForDate(date);
+    const readableDate = date.toLocaleDateString("en-NZ", {
+        weekday: "long", day: "numeric", month: "long"
+    });
 
-    const readableDate =
-        date.toLocaleDateString("en-NZ", {
-            weekday: "long",
-            day: "numeric",
-            month: "long"
-        });
-
-    if (events.length === 0) {
-        return `
-            <p class="eyebrow">SELECTED DAY</p>
-
-            <h3 class="selected-day-date">
-                ${readableDate}
-            </h3>
-
-            <div class="empty-state">
-                <div>✦</div>
-                <p>No events planned.</p>
-            </div>
-        `;
-    }
+    const eventRows = events.map(event => `
+        <div class="day-item">
+            <strong>${escapeHTML(event.title)}</strong>
+            <span>
+                ${escapeHTML(event.type || "Event")}
+                ${event.time ? " · " + escapeHTML(formatEventTime(event.time)) : ""}
+                ${event.location ? " · 📍 " + escapeHTML(event.location) : ""}
+            </span>
+            ${event.source === "event" ? `
+                <div class="day-item-actions">
+                    <button type="button" class="secondary-button" data-action="edit-calendar-event" data-id="${escapeHTML(String(event.id))}">Edit</button>
+                    <button type="button" class="secondary-button" data-action="delete-calendar-event" data-id="${escapeHTML(String(event.id))}">Delete</button>
+                </div>
+            ` : ""}
+        </div>
+    `).join("");
 
     return `
         <p class="eyebrow">SELECTED DAY</p>
-
-        <h3 class="selected-day-date">
-            ${readableDate}
-        </h3>
-
-        ${events
-            .map(
-                event => `
-                    <div class="day-item">
-                        <strong>${escapeHTML(event.title)}</strong>
-                        <span>
-                            ${escapeHTML(event.type || "Event")}
-                            ${event.time ? " · " + escapeHTML(formatEventTime(event.time)) : ""}
-                            ${event.location ? " · 📍 " + escapeHTML(event.location) : ""}
-                        </span>
-                    </div>
-                `
-            )
-            .join("")}
+        <h3 class="selected-day-date">${readableDate}</h3>
+        ${events.length ? eventRows : `
+            <div class="empty-state"><div>✦</div><p>No events planned.</p></div>
+        `}
     `;
+}
+
+
+async function deleteCalendarEvent(id) {
+    const event = (appData.calendarEvents || []).find(item =>
+        String(item.id) === String(id) && item.source === "event"
+    );
+    if (!event) {
+        showToast("That personal calendar event could not be found.");
+        return;
+    }
+    if (!window.confirm('Delete "' + event.title + '" from your calendar?')) return;
+
+    const authId = getSupabaseAuthId();
+    if (supabaseClient && authId) {
+        try {
+            const { data, error } = await supabaseClient
+                .from("calendar_events")
+                .delete()
+                .eq("user_id", authId)
+                .eq("event_id", String(event.id))
+                .select("event_id");
+            if (error) throw error;
+            if (!data || !data.length) throw new Error("The database did not confirm the deletion.");
+        } catch (error) {
+            console.error("Could not delete calendar event:", error);
+            showToast("Event was not deleted from the cloud. Please try again.");
+            return;
+        }
+    }
+
+    appData.calendarEvents = (appData.calendarEvents || []).filter(item =>
+        !(String(item.id) === String(id) && item.source === "event")
+    );
+    saveUserCalendarEvents();
+    saveData();
+    closeModal();
+    showToast("Calendar event deleted.");
+    renderPage("calendar");
+}
+
+function openEditCalendarEventModal(id) {
+    const event = (appData.calendarEvents || []).find(item =>
+        String(item.id) === String(id) && item.source === "event"
+    );
+    if (!event) {
+        showToast("That personal calendar event could not be found.");
+        return;
+    }
+
+    openModal(`
+        <div class="card-header">
+            <div><p class="eyebrow">PLAN AHEAD</p><h2>Edit Calendar Event</h2></div>
+            <button type="button" class="icon-button" data-action="close-modal" aria-label="Close">×</button>
+        </div>
+        <form id="calendarEventForm" class="modal-form">
+            <div class="form-group">
+                <label for="newEventTitle">Event</label>
+                <input id="newEventTitle" type="text" maxlength="160" required value="${escapeHTML(event.title)}">
+            </div>
+            <div class="form-group">
+                <label for="newEventDate">Date</label>
+                <input id="newEventDate" type="date" required value="${escapeHTML(event.date)}">
+            </div>
+            <div class="form-group">
+                <label for="newEventTime">Time <span>(optional)</span></label>
+                <input id="newEventTime" type="time" value="${escapeHTML(event.time || "")}">
+            </div>
+            <div class="form-group">
+                <label for="newEventType">Type</label>
+                <select id="newEventType">
+                    ${["Event", "School", "Study", "Personal"].map(type =>
+                        `<option value="${type}" ${(event.type || "Event") === type ? "selected" : ""}>${type}</option>`
+                    ).join("")}
+                </select>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="secondary-button" data-action="close-modal">Cancel</button>
+                <button type="submit" class="primary-button">Save Changes</button>
+            </div>
+        </form>
+    `);
+
+    $("#calendarEventForm")?.addEventListener("submit", async submitEvent => {
+        submitEvent.preventDefault();
+        const title = $("#newEventTitle")?.value.trim();
+        const date = $("#newEventDate")?.value;
+        const time = $("#newEventTime")?.value || "";
+        const type = $("#newEventType")?.value || "Event";
+        if (!title || !date) return;
+
+        const index = (appData.calendarEvents || []).findIndex(item =>
+            String(item.id) === String(event.id) && item.source === "event"
+        );
+        if (index < 0) {
+            showToast("This event is no longer in your calendar.");
+            closeModal();
+            return;
+        }
+
+        appData.calendarEvents[index] = {
+            ...appData.calendarEvents[index], title, date, time, type
+        };
+        saveUserCalendarEvents();
+        saveData();
+
+        const authId = getSupabaseAuthId();
+        if (supabaseClient && authId) {
+            try {
+                const { error } = await supabaseClient
+                    .from("calendar_events")
+                    .upsert({
+                        user_id: authId,
+                        event_id: String(event.id),
+                        title: String(title).slice(0, 160),
+                        event_date: date,
+                        event_time: time,
+                        event_type: type,
+                        location: String(event.location || ""),
+                        updated_at: new Date().toISOString()
+                    }, { onConflict: "user_id,event_id" });
+                if (error) throw error;
+                showToast("Calendar event updated and synced ✦");
+            } catch (error) {
+                console.error("Could not update calendar event:", error);
+                showToast("Changes saved on this device, but cloud sync failed. Please check your connection.");
+            }
+        } else {
+            showToast("Calendar event updated ✦");
+        }
+
+        const parts = date.split("-").map(Number);
+        selectedCalendarDate = new Date(parts[0], parts[1] - 1, parts[2]);
+        closeModal();
+        renderPage("calendar");
+    });
 }
 
 
@@ -4323,6 +4441,14 @@ function setupGlobalClicks() {
 
                 case "close-modal":
                     closeModal();
+                    break;
+
+                case "edit-calendar-event":
+                    openEditCalendarEventModal(actionElement.dataset.id);
+                    break;
+
+                case "delete-calendar-event":
+                    void deleteCalendarEvent(actionElement.dataset.id);
                     break;
 
                 case "dismiss-quick-guide":
