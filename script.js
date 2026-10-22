@@ -5222,7 +5222,7 @@ document.addEventListener(
    END OF SCRIPT
    ========================================================= */
 /* Lucy feedback: tutor registration, specific booking times, notifications and points. */
-function setupEnhancedFeatures(){appData.bookings=appData.bookings||[];appData.notificationsList=appData.notificationsList||[];const nav=$(".main-nav");if(nav&&!$('.nav-item[data-page="points"]',nav)){const b=document.createElement("button");b.type="button";b.className="nav-item";b.dataset.page="points";b.title="Peer Points";b.innerHTML='<span class="nav-icon">✦</span><span class="nav-text">Peer Points</span>';b.addEventListener("click",()=>navigateTo("points"));nav.appendChild(b);}const side=$(".sidebar");if(side&&!side.querySelector('[data-action="sign-out"]')){const b=document.createElement("button");b.type="button";b.className="secondary-button sidebar-signout";b.dataset.action="sign-out";b.textContent="Sign out";b.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();signOut();});side.appendChild(b);}document.addEventListener("click",e=>{const el=e.target.closest("[data-action]");if(!el)return;const a=el.dataset.action;if(a==="edit-tutor-profile")openTutorProfileForm();if(a==="book-tutor")openSpecificBookingForm(appData.tutors.find(t=>String(t.id)===String(el.dataset.id)));if(a==="view-tutor")openTutorDetails(appData.tutors.find(t=>String(t.id)===String(el.dataset.id)));if(a==="update-booking")updateBookingStatus(el.dataset.id,el.dataset.status);if(a==="cancel-booking")cancelBooking(el.dataset.id);if(a==="dismiss-booking-status"){const user=getCurrentUserFromData(),key=String(el.dataset.id)+":"+String(el.dataset.status||"").toLowerCase();appData.settings=appData.settings||{};appData.settings.dismissedSessionStatusesByUser=appData.settings.dismissedSessionStatusesByUser||{};const list=appData.settings.dismissedSessionStatusesByUser[user?.id]||[];if(!list.includes(key))list.push(key);appData.settings.dismissedSessionStatusesByUser[user?.id]=list;saveData();renderPage("tutors");}});document.addEventListener("submit",e=>{if(e.target.id==="tutorProfileForm"){e.preventDefault();saveTutorProfile();}if(e.target.id==="specificBookingForm"){e.preventDefault();createSpecificBooking();}});saveData();}
+function setupEnhancedFeatures(){appData.bookings=appData.bookings||[];appData.notificationsList=appData.notificationsList||[];const nav=$(".main-nav");if(nav&&!$('.nav-item[data-page="points"]',nav)){const b=document.createElement("button");b.type="button";b.className="nav-item";b.dataset.page="points";b.title="Peer Points";b.innerHTML='<span class="nav-icon">✦</span><span class="nav-text">Peer Points</span>';b.addEventListener("click",()=>navigateTo("points"));nav.appendChild(b);}const side=$(".sidebar");if(side&&!side.querySelector('[data-action="sign-out"]')){const b=document.createElement("button");b.type="button";b.className="secondary-button sidebar-signout";b.dataset.action="sign-out";b.textContent="Sign out";b.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();signOut();});side.appendChild(b);}document.addEventListener("click",e=>{const el=e.target.closest("[data-action]");if(!el)return;const a=el.dataset.action;if(a==="edit-tutor-profile")openTutorProfileForm();if(a==="book-tutor")openSpecificBookingForm(appData.tutors.find(t=>String(t.id)===String(el.dataset.id)));if(a==="view-tutor")openTutorDetails(appData.tutors.find(t=>String(t.id)===String(el.dataset.id)));if(a==="update-booking")updateBookingStatus(el.dataset.id,el.dataset.status);if(a==="cancel-booking")cancelBooking(el.dataset.id);if(a==="dismiss-booking-status"){dismissBookingStatus(el.dataset.id,el.dataset.status);}});document.addEventListener("submit",e=>{if(e.target.id==="tutorProfileForm"){e.preventDefault();saveTutorProfile();}if(e.target.id==="specificBookingForm"){e.preventDefault();createSpecificBooking();}});saveData();}
 function openTutorProfileForm(){const u=getCurrentUserFromData();if(!u)return;const t=appData.tutors.find(x=>String(x.userId)===String(u.id)),subs=["English","Mathematics","Science","French","Te Reo Māori","History","Social Studies","Physics","Chemistry","Biology","PE","Digital Technology"],days=["Monday","Tuesday","Wednesday","Thursday","Friday"];openModal(`<div class="card-header"><div><p class="eyebrow">PEER TUTOR</p><h2>${t?"Edit your tutor profile":"Become a tutor"}</h2></div><button type="button" class="icon-button" data-action="close-modal">×</button></div><form id="tutorProfileForm" class="modal-form"><div class="form-group"><label for="tutorBio">Short introduction</label><textarea id="tutorBio" required maxlength="240" placeholder="What can you help other students with?">${escapeHTML(t?.bio||"")}</textarea></div><div class="form-group"><label for="tutorSubjects">Subjects you can tutor</label><select id="tutorSubjects" multiple size="5" required>${subs.map(s=>`<option value="${escapeHTML(s)}" ${(t?.subjects||[]).includes(s)?"selected":""}>${escapeHTML(s)}</option>`).join("")}</select><small>Hold Cmd (Mac) or Ctrl (Windows) to choose multiple.</small></div><div class="form-group"><label>Days available</label><div class="choice-chips">${days.map(d=>`<label><input type="checkbox" name="tutorDays" value="${d}" ${(t?.availableDays||[]).includes(d)?"checked":""}> ${d}</label>`).join("")}</div></div><div class="form-grid"><div class="form-group"><label for="tutorStart">From</label><input id="tutorStart" type="time" value="${escapeHTML(t?.startTime||"15:30")}" required></div><div class="form-group"><label for="tutorEnd">Until</label><input id="tutorEnd" type="time" value="${escapeHTML(t?.endTime||"16:30")}" required></div></div><div class="modal-actions"><button type="button" class="secondary-button" data-action="close-modal">Cancel</button><button type="submit" class="primary-button">Save profile</button></div></form>`);}
 async function saveTutorProfile(){const u=getCurrentUserFromData();if(!u)return;const bio=$("#tutorBio")?.value.trim()||"",subjects=[...($("#tutorSubjects")?.selectedOptions||[])].map(o=>o.value),availableDays=$$('input[name="tutorDays"]:checked').map(x=>x.value),startTime=$("#tutorStart")?.value||"",endTime=$("#tutorEnd")?.value||"";if(!bio||!subjects.length||!availableDays.length||!startTime||!endTime||startTime>=endTime){showToast("Add an introduction, subjects, available days and a valid time range.");return;}const saveButton=$('#tutorProfileForm button[type="submit"]');if(saveButton){saveButton.disabled=true;saveButton.textContent="Saving…";}try{let authId=null;const isGoogleUser=String(u.id||"").startsWith("google-");if(isGoogleUser){if(!supabaseClient)throw new Error("Supabase did not load. Refresh the page and try again.");const {data,error:sessionError}=await supabaseClient.auth.getSession();if(sessionError)throw sessionError;const authUser=data?.session?.user;if(!authUser)throw new Error("Your Google sign-in session has expired. Sign in again and retry.");authId=authUser.id;const {error}=await supabaseClient.from("tutor_profiles").upsert({user_id:authId,bio,subjects,availability:[...availableDays,startTime+"–"+endTime],active:true,updated_at:new Date().toISOString()},{onConflict:"user_id"});if(error)throw error;const {data:verify,error:verifyError}=await supabaseClient.from("tutor_profiles").select("user_id").eq("user_id",authId).maybeSingle();if(verifyError)throw verifyError;if(!verify)throw new Error("The database did not return the saved tutor row. Check the tutor_profiles table policies.");}else if(supabaseClient){throw new Error("Please sign in with your school Google account before saving a tutor profile.");}let t=appData.tutors.find(x=>String(x.userId)===String(u.id));const row={id:t?.id||("tutor-"+u.id),userId:u.id,name:u.name,year:u.year||"Student",initials:getInitials(u.name),subjects,bio,availableDays,startTime,endTime,availability:availableDays.join(" · ")+" · "+startTime+"–"+endTime,cloud:!!authId};if(t)Object.assign(t,row);else appData.tutors.push(row);updateCurrentUser({role:"tutor",tutorProfile:true,subjects,bio,availability:availableDays});saveData();if(authId)await loadSupabaseTutors();closeModal();showToast("Tutor profile saved to the database.");renderPage("tutors");}catch(error){console.error("Tutor profile database save failed:",error);showToast("Tutor profile NOT saved: "+(error?.message||String(error)));if(saveButton){saveButton.disabled=false;saveButton.textContent="Save profile";}}}
 function openSpecificBookingForm(t) {
@@ -5328,6 +5328,33 @@ function mapSupabaseBooking(row,user,knownTutor){
  const requesterId="google-"+row.requester_id,tutorUserId="google-"+row.tutor_id,profiles=appData.users||[],requester=profiles.find(x=>String(x.id)===requesterId),tutor=knownTutor||appData.tutors.find(x=>String(x.userId)===tutorUserId);
  return {id:row.id,tutorId:tutor?.id||("cloud-"+row.tutor_id),tutorUserId,tutorName:tutor?.name||"Peer tutor",studentId:requesterId,studentName:requester?.name||(requesterId===user?.id?user.name:"Student"),subject:row.subject,date,time,duration,startMinutes:Number(time.slice(0,2))*60+Number(time.slice(3,5)),note,location:row.location||"Not specified",status:row.status,createdAt:row.created_at,cloud:true};
 }
+async function dismissBookingStatus(bookingId,status){
+ const user=getCurrentUserFromData();
+ const cleanStatus=String(status||"").toLowerCase();
+ if(!user||!["declined","cancelled"].includes(cleanStatus))return;
+ const key=String(bookingId)+":"+cleanStatus;
+ if(String(user.id).startsWith("google-")){
+   try{
+     const authId=String(user.id).slice(7);
+     const {error}=await supabaseClient.from("booking_status_views").upsert(
+       {booking_id:String(bookingId),user_id:authId,status:cleanStatus},
+       {onConflict:"booking_id,user_id,status"}
+     );
+     if(error)throw error;
+   }catch(error){
+     console.error("Could not sync dismissed session status:",error);
+     showToast("Could not sync this dismissal. Please try again.");
+     return;
+   }
+ }
+ appData.settings=appData.settings||{};
+ appData.settings.dismissedSessionStatusesByUser=appData.settings.dismissedSessionStatusesByUser||{};
+ const list=appData.settings.dismissedSessionStatusesByUser[user.id]||[];
+ if(!list.includes(key))list.push(key);
+ appData.settings.dismissedSessionStatusesByUser[user.id]=list;
+ saveData();
+ renderPage("tutors");
+}
 async function loadSupabaseBookings(){
  const user=getCurrentUserFromData();
  if(!supabaseClient||!user||!String(user.id||"").startsWith("google-"))return;
@@ -5337,6 +5364,14 @@ async function loadSupabaseBookings(){
    if(error)throw error;
    const rows=(data||[]).filter(x=>x.requester_id===authId||x.tutor_id===authId);
    const mapped=rows.map(row=>mapSupabaseBooking(row,user));
+   const {data:views,error:viewsError}=await supabaseClient
+     .from("booking_status_views")
+     .select("booking_id, status")
+     .eq("user_id",authId);
+   if(viewsError)throw viewsError;
+   appData.settings=appData.settings||{};
+   appData.settings.dismissedSessionStatusesByUser=appData.settings.dismissedSessionStatusesByUser||{};
+   appData.settings.dismissedSessionStatusesByUser[user.id]=(views||[]).map(v=>String(v.booking_id)+":"+String(v.status).toLowerCase());
    const cloudIds=new Set(mapped.map(x=>String(x.id)));
    appData.bookings=(appData.bookings||[]).filter(x=>!x.cloud&&!cloudIds.has(String(x.id))).concat(mapped);
    syncAcceptedBookingCalendarEvents(mapped, user);
