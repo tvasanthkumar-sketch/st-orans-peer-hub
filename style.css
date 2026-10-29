@@ -3907,3 +3907,40 @@ button, input, select, textarea {
         padding: 12px;
     }
 }
+
+
+/* Feedback button and form */
+.feedback-sidebar-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    min-height: 40px;
+    margin-bottom: 12px;
+    padding: 9px 12px;
+    border: 1px solid rgba(183, 154, 98, 0.45);
+    border-radius: 10px;
+    background: rgba(183, 154, 98, 0.10);
+    color: var(--cream);
+    font-size: 0.84rem;
+    font-weight: 700;
+    transition: background var(--transition), transform var(--transition);
+}
+.feedback-sidebar-button:hover {
+    background: rgba(183, 154, 98, 0.22);
+    transform: translateY(-1px);
+}
+.feedback-intro {
+    margin: 0 0 16px;
+    line-height: 1.6;
+}
+.feedback-character-note {
+    display: block;
+    margin-top: 6px;
+    color: var(--muted);
+    font-size: 0.78rem;
+}
+#feedbackError {
+    margin-top: 8px;
+}
