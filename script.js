@@ -648,7 +648,7 @@ async function handleSignIn(event) {
                 : (signInError.message || "We couldn't sign you in. Please try again.");
         }
     } finally {
-        if (submit) { submit.disabled = false; submit.textContent = "Log in"; }
+        if (submit) { submit.disabled = false; submit.textContent = "Sign In"; }
     }
 }
 
@@ -714,7 +714,7 @@ async function handleSignUp(event) {
         console.error("Email/password account creation failed:", signUpError);
         if (error) error.textContent = signUpError.message || "We couldn't create your account. Please try again.";
     } finally {
-        if (submit) { submit.disabled = false; submit.textContent = "Create account"; }
+        if (submit) { submit.disabled = false; submit.textContent = "Create Account"; }
     }
 }
 
