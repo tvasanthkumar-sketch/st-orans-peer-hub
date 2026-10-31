@@ -530,6 +530,18 @@ async function initialiseApp() {
     setupFocusMode();
     setupEnhancedFeatures();
 
+    // OAuth returns with a code in the URL. Keep the sign-in form hidden
+    // while Supabase restores that session, avoiding a brief login-screen flash.
+    const isOAuthCallback =
+        new URLSearchParams(window.location.search).has("code") ||
+        window.location.hash.includes("access_token=") ||
+        window.location.hash.includes("refresh_token=");
+
+    if (isOAuthCallback) {
+        $("#authScreen")?.classList.add("hidden");
+        $("#app")?.classList.add("hidden");
+    }
+
     await restoreSupabaseSession();
 
     if (currentUser) {
