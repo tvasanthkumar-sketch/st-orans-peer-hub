@@ -605,147 +605,117 @@ function setupAuthentication() {
 }
 
 
-function handleSignIn(event) {
+async function handleSignIn(event) {
     event.preventDefault();
 
-    const email = $("#signinEmail")?.value
-        .trim()
-        .toLowerCase();
-
+    const email = $("#signinEmail")?.value.trim().toLowerCase();
     const password = $("#signinPassword")?.value;
-
     const error = $("#signinError");
+    const submit = $('#signinForm button[type="submit"]');
 
-    if (error) {
-        error.textContent = "";
-    }
+    if (error) error.textContent = "";
 
     if (!email || !password) {
-        if (error) {
-            error.textContent =
-                "Please enter your school email and password.";
-        }
-
+        if (error) error.textContent = "Please enter your school email and password.";
         return;
     }
 
-    const user = appData.users.find(
-        account =>
-            account.email.toLowerCase() === email &&
-            account.password === password
-    );
-
-    if (!user) {
-        if (error) {
-            error.textContent =
-                "We couldn't find an account with those details.";
-        }
-
+    if (!email.endsWith("@storans.school.nz")) {
+        if (error) error.textContent = "Please use your St Oran's school email.";
         return;
     }
 
-    currentUser = user;
+    if (!supabaseClient) {
+        if (error) error.textContent = "Sign-in could not load. Refresh the page and try again.";
+        return;
+    }
 
-    saveCurrentUser();
+    if (submit) { submit.disabled = true; submit.textContent = "Signing in…"; }
 
-    showToast(
-        "Welcome back, " +
-        user.name.split(" ")[0] +
-        " 🌿"
-    );
+    try {
+        const { error: signInError } = await supabaseClient.auth.signInWithPassword({
+            email,
+            password
+        });
+        if (signInError) throw signInError;
 
-    showApplication();
+        await restoreSupabaseSession();
+    } catch (signInError) {
+        console.error("Email/password sign-in failed:", signInError);
+        if (error) {
+            error.textContent = signInError.message?.includes("Invalid login credentials")
+                ? "That email and password don't match an account. Check them or create an account first."
+                : (signInError.message || "We couldn't sign you in. Please try again.");
+        }
+    } finally {
+        if (submit) { submit.disabled = false; submit.textContent = "Log in"; }
+    }
 }
 
 
-function handleSignUp(event) {
+async function handleSignUp(event) {
     event.preventDefault();
 
     const name = $("#signupName")?.value.trim();
-    const email = $("#signupEmail")?.value
-        .trim()
-        .toLowerCase();
-
+    const email = $("#signupEmail")?.value.trim().toLowerCase();
     const year = $("#signupYear")?.value;
     const password = $("#signupPassword")?.value;
-
     const error = $("#signupError");
+    const submit = $('#signupForm button[type="submit"]');
 
-    if (error) {
-        error.textContent = "";
-    }
+    if (error) error.textContent = "";
 
     if (!name || !email || !year || !password) {
-        if (error) {
-            error.textContent =
-                "Please complete all the fields.";
-        }
-
+        if (error) error.textContent = "Please complete all the fields.";
         return;
     }
 
-    if (!/storans\.school\.nz$/i.test(email)) {
-        if (error) {
-            error.textContent =
-                "Please use your St Oran's school email.";
-        }
-
+    if (!email.endsWith("@storans.school.nz")) {
+        if (error) error.textContent = "Please use your St Oran's school email.";
         return;
     }
 
     if (password.length < 6) {
-        if (error) {
-            error.textContent =
-                "Your password needs at least 6 characters.";
-        }
-
+        if (error) error.textContent = "Your password needs at least 6 characters.";
         return;
     }
 
-    const existing = appData.users.find(
-        user => user.email.toLowerCase() === email
-    );
-
-    if (existing) {
-        if (error) {
-            error.textContent =
-                "An account with that email already exists.";
-        }
-
+    if (!supabaseClient) {
+        if (error) error.textContent = "Account creation could not load. Refresh the page and try again.";
         return;
     }
 
-    const newUser = {
-        id:
-            "user-" +
-            Date.now() +
-            "-" +
-            Math.random().toString(36).slice(2, 8),
+    if (submit) { submit.disabled = true; submit.textContent = "Creating account…"; }
 
-        name,
-        email,
-        password,
-        year,
-        className: `${year}XX`,
-        points: 0,
-        previousPoints: 0,
-        sessions: 0,
-        role: "student",
-        subjects: [],
-        availability: []
-    };
+    try {
+        const { data, error: signUpError } = await supabaseClient.auth.signUp({
+            email,
+            password,
+            options: {
+                data: {
+                    full_name: name,
+                    name,
+                    year_level: year
+                },
+                emailRedirectTo: window.location.origin + window.location.pathname
+            }
+        });
+        if (signUpError) throw signUpError;
 
-    appData.users.push(newUser);
-
-    saveData();
-
-    currentUser = newUser;
-
-    saveCurrentUser();
-
-    showToast("Account created successfully 🌿");
-
-    showApplication();
+        if (data.session) {
+            await restoreSupabaseSession();
+            showToast("Your Peer Hub account is ready 🌿");
+        } else {
+            if (error) {
+                error.textContent = "Account created. Check your school email for the confirmation link, then return here and log in.";
+            }
+        }
+    } catch (signUpError) {
+        console.error("Email/password account creation failed:", signUpError);
+        if (error) error.textContent = signUpError.message || "We couldn't create your account. Please try again.";
+    } finally {
+        if (submit) { submit.disabled = false; submit.textContent = "Create account"; }
+    }
 }
 
 
